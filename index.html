@@ -1,0 +1,1301 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="apple-touch-icon" href="icon.png">
+<style>html{color-scheme:light}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}.authc{max-width:380px;margin:10vh auto 0}</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+<title>سمراء – التشيك ليست</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Noto+Sans+Bengali:wght@400;500;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#FFFFFF;--card:#FFFFFF;--soft:#FAF7F2;--fg:#2A241B;--mut:#7A6E5E;--line:#ECE4D6;--gold:#AB7D2F;--brown:#8A6A38;--head:#F6F1E9;--ok:#2F7A4B;--okbg:#E4F2E9;--bad:#B3392F;--badbg:#F9E3E0;--warn:#9A6A00;--warnbg:#FBF0D3;--onacc:#fff;--shadow:0 8px 26px rgba(80,55,20,.07);color-scheme:light}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:"IBM Plex Sans Arabic","Noto Sans Devanagari","Noto Sans Bengali",system-ui,sans-serif;font-size:15px;line-height:1.55;direction:rtl;padding-block:0 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden}
+.wrap{max-width:720px;margin:0 auto}
+button{font:inherit;color:inherit}
+/* ---------- hero (compact, plays instantly) ---------- */
+#hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding-block:calc(28px + env(safe-area-inset-top,0px)) 26px}
+.hl{opacity:0;transform:translateY(22px) scale(.97);filter:blur(8px)}
+.hl.go{animation:hin .9s cubic-bezier(.2,.7,.2,1) forwards}
+@keyframes hin{to{opacity:1;transform:none;filter:none}}
+.logo{height:clamp(64px,16vw,86px);margin-bottom:8px}
+.big{font-size:clamp(30px,8.5vw,44px);font-weight:700;line-height:1.15;margin:0;text-wrap:balance}
+.big em{font-style:normal;color:var(--gold)}
+.mid{font-size:clamp(19px,5.2vw,24px);font-weight:500;color:var(--fg);margin:0;text-wrap:balance}
+.gold{color:var(--gold)}
+.sub{color:var(--mut);font-size:14px;margin:0}
+/* ---------- reveal on scroll ---------- */
+.rv{opacity:0;transform:translateY(36px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+body:not(.ready) #main .rv{transition-delay:.9s}
+/* ---------- cards & forms ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.stack{display:flex;flex-direction:column;gap:12px}
+h2{font-size:20px;margin:0}
+.lbl{display:flex;flex-direction:column;gap:6px;font-weight:500}
+.lbl small{color:var(--mut);font-weight:400}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:11px 12px;min-height:46px;width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--gold);outline-offset:1px}
+textarea{min-height:84px}
+.btn{border:1px solid var(--line);background:var(--card);padding:10px 16px;border-radius:12px;cursor:pointer;min-height:46px;font-weight:500}
+.btn.pri{background:var(--gold);border-color:var(--gold);color:var(--onacc);font-weight:700;font-size:16px;width:100%}
+.btn:disabled{opacity:.55}
+.link{background:none;border:0;color:var(--mut);text-decoration:underline;cursor:pointer;padding:6px}
+.err{color:var(--bad);font-size:13px;min-height:1em}
+.tasks{display:flex;flex-direction:column;gap:12px}
+.task{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .3s}
+.task.sent{border-color:var(--ok)}
+.task>button.top{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;padding:16px;cursor:pointer}
+.task .t{flex:1;min-width:0}.task .t b{display:block;font-size:17px}.task .t small{color:var(--mut);direction:ltr;display:block;text-align:right}
+.pill{padding:4px 11px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+.p-ok{background:var(--okbg);color:var(--ok)}.p-bad{background:var(--badbg);color:var(--bad)}.p-warn{background:var(--warnbg);color:var(--warn)}
+.body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s cubic-bezier(.2,.7,.2,1)}
+.task.open .body{grid-template-rows:1fr}
+.body>div{overflow:hidden;min-height:0}
+.inner{padding:0 16px 16px}
+.item{display:flex;gap:12px;align-items:center;padding:11px 2px;border-bottom:1px solid var(--line)}
+.item input[type=checkbox]{appearance:none;width:28px;height:28px;min-height:0;padding:0;border:2px solid var(--line);border-radius:8px;flex:none;cursor:pointer;display:grid;place-content:center;transition:background .2s,border-color .2s,transform .15s;background:var(--soft)}
+.item input[type=checkbox]:checked{background:var(--gold);border-color:var(--gold);transform:scale(1.06)}
+.item input[type=checkbox]:checked::after{content:"✓";color:var(--onacc);font-weight:700;font-size:17px}
+.item label{flex:1;min-width:0;cursor:pointer}
+.item .ar{display:block;font-weight:500}.item .en{display:block;color:var(--mut);font-size:12px;direction:ltr;text-align:right}
+.item .val{width:96px;flex:none;min-height:40px;padding:7px}
+.sec{background:var(--head);color:var(--brown);font-weight:700;padding:7px 12px;border-radius:10px;margin:12px 0 2px}
+.avgrow{display:grid;grid-template-columns:72px 1fr 1fr 74px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}.avgrow input{min-height:40px;padding:7px;text-align:center;direction:ltr}.avgrow .a{font-weight:700;color:var(--gold);text-align:center;direction:ltr}.avgrow.hd{font-size:12px;color:var(--mut);border:0;padding-bottom:0}.avgsum{display:flex;gap:8px;margin:6px 0 4px}.avgsum div{flex:1;background:var(--head);border-radius:12px;padding:8px;text-align:center;font-size:12px;color:var(--mut)}.avgsum b{display:block;font-size:20px;color:var(--fg);direction:ltr}
+.prog{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin:4px 0 8px}.prog i{display:block;height:100%;background:var(--gold);width:0;transition:width .4s}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:99px;font-weight:500;transition:.35s;z-index:20;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.msg{padding:14px;border-radius:14px;background:var(--warnbg);color:var(--warn)}
+footer{text-align:center;color:var(--mut);font-size:12px;margin-top:40px;display:flex;flex-direction:column;align-items:center;gap:4px}
+/* ---------- dashboard ---------- */
+#dash{padding-top:calc(16px + env(safe-area-inset-top,0px))}
+.dtop{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.dtop img{height:44px}.dtop h1{font-size:19px;margin:0;flex:1}
+.datebar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.datebar input{flex:1;min-width:0}
+.datebar .btn{padding:8px 12px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center;font-size:12px;color:var(--mut)}
+.tile b{display:block;font-size:26px;color:var(--fg);line-height:1.2}
+.tabs{display:flex;gap:6px;background:var(--head);padding:4px;border-radius:14px;margin-bottom:12px}
+.tabs button{flex:1;border:0;background:none;padding:9px;border-radius:10px;cursor:pointer;font-weight:500;min-height:42px}
+.tabs button.on{background:var(--card);box-shadow:var(--shadow);color:var(--gold);font-weight:700}
+.row{display:flex;gap:10px;align-items:center;padding:13px 14px;border-radius:14px;border:1px solid var(--line);background:var(--card);margin-bottom:8px}
+.row .t{flex:1;min-width:0}.row .t b{display:block}.row .t small{color:var(--mut);display:block}
+.row.miss{border-color:var(--bad)}
+details.row{display:block;padding:0}
+details.row summary{display:flex;gap:10px;align-items:center;padding:13px 14px;cursor:pointer;list-style:none}
+details.row summary::-webkit-details-marker{display:none}
+.det{padding:0 14px 14px;font-size:13px;color:var(--mut);border-top:1px dashed var(--line);padding-top:10px}
+.det .x{color:var(--bad)}.det .who{color:var(--fg);font-weight:700;margin-top:8px}
+.avt{border-collapse:collapse;width:100%;margin-top:6px;font-size:13px;direction:rtl}.avt th,.avt td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:center;color:var(--fg)}.avt th{color:var(--mut);font-weight:500}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{border:1.5px solid var(--line);background:var(--soft);border-radius:12px;padding:10px 8px;cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:center;transition:.2s}
+.seg button small{color:var(--mut);font-weight:400;font-size:12px}
+.seg button.on{border-color:var(--gold);background:var(--head);color:var(--brown)}
+.seg button:disabled{opacity:.35;cursor:not-allowed}
+.shiftchip{display:inline-block;margin-top:6px;background:var(--head);color:var(--brown);font-size:12px;font-weight:700;padding:4px 10px;border-radius:99px}
+.rban{margin:0 16px 14px;padding:10px 12px;border-radius:12px;font-size:13px}
+.rban.ok{background:var(--okbg);color:var(--ok)}.rban.bad{background:var(--badbg);color:var(--bad)}.rban.warn{background:var(--warnbg);color:var(--warn)}
+.entry{padding-top:10px;margin-top:10px;border-top:1px solid var(--line)}.entry:first-child{border:0;margin-top:0;padding-top:0}
+.rvbox{margin-top:10px;background:var(--soft);border-radius:12px;padding:10px}
+.rvbtns{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.btn.sm{min-height:38px;padding:6px 12px;font-size:13px}
+.okb{border-color:var(--ok);color:var(--ok)}.badb{border-color:var(--bad);color:var(--bad)}
+.rvf{margin-top:8px;display:flex;flex-direction:column;gap:8px}.rvf textarea{min-height:64px;background:var(--card)}
+.pills{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.mstats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
+.mstats div{background:var(--soft);border-radius:10px;padding:8px 4px;text-align:center;font-size:11px}.mstats b{display:block;font-size:18px;color:var(--fg)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal span{aspect-ratio:1;border-radius:8px;display:grid;place-content:center;font-size:11px;background:var(--soft);color:var(--mut)}
+.cal .f,.legend .f{background:var(--okbg);color:var(--ok)}.cal .p,.legend .p{background:var(--warnbg);color:var(--warn)}.cal .n,.legend .n{background:var(--badbg);color:var(--bad)}.cal .o,.legend .o{background:#EAF1F7;color:#3D6A8F}.p-off{background:#EAF1F7;color:#3D6A8F}
+.legend{display:flex;gap:6px;margin-top:8px;font-size:11px}.legend span{padding:2px 8px;border-radius:99px}
+.prow{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px;transition:opacity .2s}
+.prow.isoff{opacity:.7;background:var(--soft)}
+.ph{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:space-between}.ph b{font-size:15px}
+.seg3{display:flex;background:var(--head);border-radius:10px;padding:3px;gap:2px}
+.seg3 button{border:0;background:none;padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer;min-height:34px}
+.seg3 button.on{background:var(--card);color:var(--gold);font-weight:700;box-shadow:var(--shadow)}.seg3 button.on.off{color:#3D6A8F}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chips button{border:1px solid var(--line);background:var(--soft);border-radius:99px;padding:6px 11px;font-size:12.5px;cursor:pointer;min-height:34px}
+.chips button.on{background:var(--gold);border-color:var(--gold);color:var(--onacc);font-weight:700}
+.chips button:disabled{opacity:.4}
+.psave{margin-top:12px;gap:8px}
+body.ltr{direction:ltr}
+body.ltr .item .en,body.ltr .task .t small{text-align:left}
+.langs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.langs button{border:1.5px solid var(--line);background:var(--soft);border-radius:12px;padding:10px 4px;cursor:pointer;font-weight:500;min-height:46px}
+.langs button.on{border-color:var(--gold);background:var(--head);color:var(--brown);font-weight:700}
+.addrow{display:grid;grid-template-columns:1fr 1fr auto;gap:8px}
+@media (max-width:420px){.addrow{grid-template-columns:1fr}}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--head);padding:4px;border-radius:12px;margin-bottom:10px}
+.seg2 button{border:0;background:none;padding:9px;border-radius:9px;cursor:pointer;font-weight:500;min-height:40px}
+.seg2 button.on{background:var(--card);color:var(--gold);font-weight:700;box-shadow:var(--shadow)}
+.pline{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}.pline select{flex:1;min-width:0;min-height:38px;padding:6px 10px}
+.delb{color:var(--bad)}.delc{display:flex;gap:6px;align-items:center;color:var(--bad);font-size:13px}
+.trow{display:flex;justify-content:space-between;gap:10px;padding:8px 4px;border-bottom:1px solid var(--line);font-size:14px}.trow span{color:var(--mut);text-align:end}.trow.me{background:var(--head);border-radius:8px;padding-inline:8px}
+/*../patch3.css*/.wtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:8px;scrollbar-width:none}
+.wtabs button{flex:none;border:1px solid var(--line);background:var(--soft);border-radius:99px;padding:6px 12px;font-size:13px;cursor:pointer;min-height:36px}
+.wtabs button.on{background:var(--fg);color:var(--bg);border-color:var(--fg);font-weight:700}
+.prow.ovr{border-color:var(--gold)}
+.award{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#FBF3E2,#F3E3C3);border:1px solid #E7CF9E;border-radius:16px;padding:12px 14px;font-size:26px;color:var(--brown);width:100%;text-align:start;margin-bottom:10px}
+.award div{flex:1;display:flex;flex-direction:column;font-size:14px}.award small{font-size:12px;color:var(--brown)}.award b{font-size:18px;color:var(--fg)}
+.awbtn{cursor:pointer;font:inherit;font-size:26px}
+.best{margin-bottom:12px;display:flex;flex-direction:column;gap:8px}.besth{font-weight:700;color:var(--brown);font-size:16px}
+.brow{display:grid;grid-template-columns:32px 1fr;align-items:center;column-gap:8px;padding:8px;border-radius:12px;background:var(--soft)}
+.brow span{font-size:22px;grid-row:span 2}.brow small{color:var(--mut);font-size:12px}.brow.top{background:linear-gradient(135deg,#FBF3E2,#F3E3C3)}
+.cal .l,.legend .l{background:#FCE6CF;color:#A55A0B}
+/*../patch4.css*/.todash{position:fixed;left:calc(16px + env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;border:0;background:var(--fg);color:var(--bg);padding:12px 16px;border-radius:99px;font:inherit;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.2);cursor:pointer}
+.dtop .btn{padding:8px 12px;min-height:42px}
+.avgsum{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.salesline{background:var(--okbg);color:var(--ok);border-radius:10px;padding:6px 10px;margin:6px 0;font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+@media (max-width:520px){.kpis{grid-template-columns:1fr}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow)}
+.kpi small{color:var(--mut);font-size:12px}.kpi b{font-size:26px;line-height:1.15}.kpi b i{font-style:normal;font-size:13px;color:var(--mut);font-weight:500}
+.tprog{height:8px;background:var(--line);border-radius:9px;overflow:hidden;margin:6px 0 2px}.tprog i{display:block;height:100%;border-radius:9px;transition:width .6s}
+.mcard{margin-bottom:12px}.mh{font-weight:700;color:var(--brown);margin-bottom:8px;font-size:16px}
+.bars{display:flex;align-items:flex-end;gap:3px;height:150px;padding-top:6px;overflow-x:auto}
+.bar{flex:1;min-width:9px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px}
+.bar i{display:block;width:100%;background:var(--gold);border-radius:4px 4px 0 0;min-height:2px}.bar span{font-size:9px;color:var(--mut)}
+/*../patch5.css*/.hello{margin:-4px 0 8px;color:var(--mut);font-size:14px}.hello b{color:var(--fg)}
+.swl{margin:-4px 0 10px}.swl .link{padding:4px 0;color:var(--brown);font-weight:500}
+.mgrb{display:flex;justify-content:space-between;align-items:center;width:100%}.mgrb small{color:var(--mut)}
+/*../patch6.css*/.reqc{margin-bottom:10px;border-color:var(--gold)}.reqr{padding:8px 0;border-top:1px solid var(--line)}.reqr small{display:block;color:var(--mut);direction:ltr;text-align:right}.chips .rej{border-color:var(--bad);color:var(--bad)}
+/*../patch7.css*/body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:25;display:flex;align-items:center;gap:10px;height:56px;margin:0 calc(-1 * max(16px, env(safe-area-inset-right,0px))) 0 calc(-1 * max(16px, env(safe-area-inset-left,0px)));padding:0 max(12px, env(safe-area-inset-right,0px)) 0 max(12px, env(safe-area-inset-left,0px));background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.menub{width:44px;height:44px;border:0;background:none;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;cursor:pointer;border-radius:12px;flex:none}
+.menub span{display:block;width:22px;height:2.2px;background:var(--fg);border-radius:2px}
+.menub:active{background:var(--head)}
+.tbt{flex:1;min-width:0;font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbs{width:44px;flex:none}
+body[dir=rtl] .topbar{flex-direction:row}
+.drawer{position:fixed;inset:0;z-index:40}
+.dback{position:absolute;inset:0;background:rgba(20,14,8,.35);opacity:0;transition:opacity .25s}
+.dpanel{position:absolute;top:0;bottom:0;inset-inline-start:0;width:min(300px,84vw);background:var(--card);box-shadow:0 0 40px rgba(0,0,0,.18);transform:translateX(100%);transition:transform .26s cubic-bezier(.2,.7,.2,1);padding:calc(10px + env(safe-area-inset-top,0px)) 14px calc(14px + env(safe-area-inset-bottom,0px));overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+body.ltr .dpanel{transform:translateX(-100%)}
+.drawer.on .dback{opacity:1}.drawer.on .dpanel{transform:none}
+.dtopp{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}.dtopp img{height:46px}
+.dclose{border:0;background:var(--head);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:15px}
+.dwho{background:var(--head);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;margin-bottom:4px}.dwho small{color:var(--mut)}
+.dgl{font-size:12px;color:var(--mut);font-weight:700;margin:10px 6px 2px;letter-spacing:.02em}
+.dgrp{display:flex;flex-direction:column;gap:2px}
+.ditem{display:flex;align-items:center;gap:10px;border:0;background:none;text-align:start;padding:11px 10px;border-radius:12px;cursor:pointer;font:inherit;font-size:15px;min-height:46px;color:var(--fg)}
+.ditem span{width:24px;text-align:center}
+.ditem.on{background:var(--head);color:var(--brown);font-weight:700}
+.ditem:hover{background:var(--soft)}
+#dash .tabs{display:none}
+.hsec{display:flex;flex-direction:column;gap:12px;scroll-margin-top:72px}
+.sech h2{font-size:19px}.sech .sub{margin-top:2px}.sech .shiftchip{margin-top:6px}
+#secTeam{margin-top:14px}
+@media (prefers-reduced-motion:reduce){.dpanel,.dback{transition:none}}
+/*../patch8.css*/.mhello{font-size:22px;font-weight:700;margin:4px 0 12px;display:flex;flex-direction:column}.mhello b{color:var(--gold)}.mhello small{font-size:13px;color:var(--mut);font-weight:500}
+.repc{margin-bottom:12px;border-color:var(--gold);background:linear-gradient(135deg,#FFFDF8,#FBF3E2)}
+.repold{border-top:1px solid var(--line);padding:8px 0;white-space:pre-wrap}.repold small{color:var(--mut)}
+/*../patch10.css*/.gate{display:flex;flex-direction:column;gap:12px;max-width:460px;margin:0 auto}
+.gbtn{display:flex;align-items:center;gap:14px;width:100%;text-align:start;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:18px;cursor:pointer;font:inherit;box-shadow:var(--shadow);transition:border-color .2s,transform .15s}
+.gbtn:hover{border-color:var(--gold)}.gbtn:active{transform:scale(.98)}
+.gi{width:52px;height:52px;border-radius:16px;background:var(--head);display:grid;place-content:center;font-size:24px;flex:none}
+.gt{flex:1;display:flex;flex-direction:column;gap:2px}.gt b{font-size:18px}.gt small{color:var(--mut)}
+.ga{color:var(--gold);font-size:20px}
+/*../patch11.css*/html.noscroll,html.noscroll body{overflow:hidden!important;overscroll-behavior:none}
+.dpanel{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+/*../patch13.css*/@keyframes drop{from{opacity:0;transform:translateY(-26px);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+.hl.drop{transform:translateY(-26px)}
+.hl.drop.go{animation-name:drop;animation-duration:1s}
+.seqin{opacity:0;animation:drop 1s cubic-bezier(.2,.7,.2,1) forwards}
+@media (prefers-reduced-motion:reduce){.seqin{animation:fdin .6s forwards}.hl.drop{transform:none}}
+/*../patch14.css*/.rsec{gap:4px}.rsec .rh{font-weight:700;color:var(--brown);font-size:15px}.rsec small{color:var(--mut);font-size:12px}.rsec textarea{min-height:76px}
+.repcard{margin-bottom:12px}.rch{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:6px}.rch small{color:var(--mut)}
+.rsv{padding:8px 0;border-bottom:1px dashed var(--line)}.rsv:last-child{border:0}.rsv span{display:block;font-size:12px;color:var(--brown);font-weight:700}.rsv div{white-space:pre-wrap}
+.awbtn2{display:block;width:100%;text-align:start;cursor:pointer;font:inherit;position:relative}.awbtn2>span{position:absolute;inset-inline-end:14px;top:14px;color:var(--gold)}
+/*../patch15.css*/.staffmsg{background:linear-gradient(135deg,#FBF3E2,#F3E3C3);border:1px solid #E7CF9E;border-radius:16px;padding:12px 14px}.smh{font-weight:700;color:var(--brown);margin-bottom:4px}.smt{white-space:pre-wrap}
+.copy{direction:ltr;user-select:all;color:var(--fg)}
+.pin{max-width:340px;margin:12dvh auto 0;text-align:center}
+.pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
+.fade{animation:fd .5s cubic-bezier(.2,.7,.2,1)}
+@keyframes fd{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.rv,.body,.fade{transition:none!important;animation:none!important;opacity:1;transform:none}.hl{transform:none;filter:none}.hl.go{animation:fdin .7s ease forwards}}
+@keyframes fdin{to{opacity:1}}
+</style>
+
+<header class="topbar" id="topbar"><button class="menub" id="menuBtn" aria-label="القائمة"><span></span><span></span><span></span></button><div class="tbt" id="tbTitle"></div><div class="tbs"></div></header>
+<div class="drawer" id="drawer" hidden><div class="dback" id="dback"></div><nav class="dpanel" id="dpanel" aria-label="القائمة"></nav></div>
+<div class="wrap" id="emp">
+  <section id="hero">
+    <img class="logo hl go" alt="سمراء كافيه" src="data:image/png;base64,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">
+    <h1 class="big hl" id="hi" style="animation-delay:.1s">أهلاً 👋</h1>
+    <p class="mid hl drop" id="l2" style="animation-delay:.8s">كيف كان يومك؟</p>
+    <p class="mid gold hl drop" id="l3" style="animation-delay:1.4s;font-weight:700">جاهز تشيك ليستك؟</p>
+  </section>
+  <main id="main"><div class="msg rv">جاري التحميل…</div></main>
+  <footer><span>سمراء كافيه · Samraa Cafe</span></footer>
+</div>
+<div class="wrap" id="dash" hidden></div>
+<button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
+<div class="toast" id="toast"></div>
+
+<div class="wrap" id="auth" hidden></div>
+<script>
+/* ============================================================
+   سمراء — ربط الموقع بـ Supabase (تسجيل الدخول + قاعدة البيانات)
+   يوفّر نفس واجهة claude.use('db') و claude.use('user') اللي يستخدمها الموقع
+   ============================================================ */
+const SB_URL='https://ddkhtmquslpwsobwfzai.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRka2h0bXF1c2xwd3NvYndmemFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQyODkzOTIsImV4cCI6MjEwOTg2NTM5Mn0.2mQWRIeYfodHW7ExZpUtFnUYqjxVzOBAF1AyaMBwgYs';
+const sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+let SESSION=null,MEMBER=null,authResolve;const authReady=new Promise(r=>authResolve=r);
+
+/* ---------- helpers ---------- */
+const collOf=p=>p.replace(/\/[^/]+$/,'');
+const lastSeg=p=>p.split('/').pop();
+function deepMerge(a,b){const o={...(a&&typeof a==='object'&&!Array.isArray(a)?a:{})};
+  for(const [k,v] of Object.entries(b||{})){
+    if(v&&typeof v==='object'&&!Array.isArray(v)){if(v.__delete__){delete o[k];continue}o[k]=deepMerge(o[k],v)}
+    else o[k]=v}
+  return o}
+const snapDoc=(path,row)=>({id:lastSeg(path),exists:!!row,data:()=>row?JSON.parse(JSON.stringify(row.data)):undefined});
+const deny=(msg)=>{const e=new Error(msg||'refused');e.code='invalid_argument';throw e};
+let chanSeq=0;
+
+/* ---------- db ---------- */
+const DB={
+  doc(path){return {
+    async get(){const {data,error}=await sb.from('docs').select('path,data').eq('path',path).maybeSingle();if(error)throw error;return snapDoc(path,data)},
+    async set(d){const {error}=await sb.from('docs').upsert({path,data:d},{onConflict:'path'});if(error)deny(error.message)},
+    async update(patch){const {data:row,error}=await sb.from('docs').select('data').eq('path',path).maybeSingle();if(error)throw error;if(!row)deny('missing');
+      const next=deepMerge(row.data,patch);const {data:up,error:e2}=await sb.from('docs').update({data:next}).eq('path',path).select('path');if(e2)deny(e2.message);if(!up||!up.length)deny('refused')},
+    async delete(){const {error}=await sb.from('docs').delete().eq('path',path);if(error)deny(error.message)},
+    onSnapshot(next,err){let alive=true;const load=async()=>{try{const s=await this.get();if(alive)next(s)}catch(e){if(alive&&err)err(e)}};
+      load();const ch=sb.channel('d'+(++chanSeq)).on('postgres_changes',{event:'*',schema:'public',table:'docs',filter:'path=eq.'+path},()=>load()).subscribe();
+      return()=>{alive=false;sb.removeChannel(ch)}}
+  }},
+  collection(c){return {
+    onSnapshot(next,err){let alive=true,t=null;const load=async()=>{try{const {data,error}=await sb.from('docs').select('path,data').eq('coll',c);if(error)throw error;if(alive)next({docs:(data||[]).map(r=>snapDoc(r.path,r))})}catch(e){if(alive&&err)err(e)}};
+      const later=()=>{clearTimeout(t);t=setTimeout(load,250)};
+      load();const ch=sb.channel('c'+(++chanSeq)).on('postgres_changes',{event:'*',schema:'public',table:'docs',filter:'coll=eq.'+c},later).subscribe();
+      return()=>{alive=false;clearTimeout(t);sb.removeChannel(ch)}}
+  }}
+};
+
+/* ---------- user ---------- */
+const USER={
+  async isOwner(){return MEMBER?.level==='owner'},
+  async canEdit(){return MEMBER?.level==='owner'||MEMBER?.level==='admin'},
+  async id(){return SESSION?.user?.id||null},
+  async me(){return {id:SESSION?.user?.id||null,name:MEMBER?.name||'',email:SESSION?.user?.email||null,isOwner:MEMBER?.level==='owner',canEdit:MEMBER?.level==='owner'||MEMBER?.level==='admin'}},
+  async profiles(ids){const out={};if(!ids||!ids.length)return out;const {data}=await sb.from('members').select('uid,name,email').in('uid',ids);(data||[]).forEach(r=>{out[r.uid]={id:r.uid,name:r.name||'',email:r.email||''}});return out}
+};
+window.claude={use:async n=>{await authReady;if(!SESSION)return null;if(n==='db')return DB;if(n==='user')return USER;return null}};
+
+/* ---------- sign in / sign up screen ---------- */
+async function loadMember(){const {data}=await sb.from('members').select('uid,name,email,level').eq('uid',SESSION.user.id).maybeSingle();MEMBER=data||{level:'interact',name:''}}
+window.__logout=async()=>{try{await sb.auth.signOut()}catch(e){}location.reload()};
+function authScreen(){
+  const box=document.getElementById('auth');box.hidden=false;document.getElementById('emp').hidden=true;
+  let mode='in';
+  const draw=()=>{box.innerHTML=`<div class="authc card stack">
+    <img src="${document.querySelector('.logo').src}" alt="سمراء" style="height:80px;margin:0 auto">
+    <h2 style="text-align:center">${mode==='in'?'تسجيل الدخول':mode==='up'?'حساب جديد':'نسيت كلمة المرور'}<small class="sub" style="display:block;font-weight:400">${mode==='in'?'Sign in':mode==='up'?'Create account':'Reset password'}</small></h2>
+    <label class="lbl">الإيميل · Email<input id="a_email" type="email" dir="ltr" autocomplete="email"></label>
+    ${mode!=='reset'?`<label class="lbl">كلمة المرور · Password<input id="a_pass" type="password" dir="ltr" autocomplete="${mode==='up'?'new-password':'current-password'}"></label>`:''}
+    <div class="err" id="a_err"></div><div class="sub" id="a_ok" style="color:var(--ok)"></div>
+    <button class="btn pri" id="a_go">${mode==='in'?'دخول · Sign in':mode==='up'?'إنشاء الحساب · Create':'أرسل رابط · Send link'}</button>
+    ${mode==='in'?`<button class="link" data-m="up">ما عندي حساب — سجّل جديد · New account</button><button class="link" data-m="reset">نسيت كلمة المرور؟ · Forgot password?</button>`:`<button class="link" data-m="in">عندي حساب — دخول · Sign in</button>`}
+  </div>`;
+  box.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;draw()});
+  box.querySelector('#a_go').onclick=async()=>{const em=box.querySelector('#a_email').value.trim(),pw=(box.querySelector('#a_pass')||{}).value||'';const er=box.querySelector('#a_err'),ok=box.querySelector('#a_ok');er.textContent='';ok.textContent='';
+    if(!/^\S+@\S+\.\S+$/.test(em))return er.textContent='الإيميل غير صحيح · Invalid email';
+    if(mode!=='reset'&&pw.length<6)return er.textContent='كلمة المرور 6 أحرف على الأقل · At least 6 characters';
+    const b=box.querySelector('#a_go');b.disabled=true;
+    try{
+      if(mode==='in'){const {error}=await sb.auth.signInWithPassword({email:em,password:pw});if(error)throw error}
+      else if(mode==='up'){const {data,error}=await sb.auth.signUp({email:em,password:pw,options:{emailRedirectTo:location.origin+location.pathname}});if(error)throw error;if(!data.session){ok.textContent='انرسل لك إيميل تأكيد — افتحه ثم ارجع وسجّل دخول · Check your email to confirm';b.disabled=false;return}}
+      else{const {error}=await sb.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});if(error)throw error;ok.textContent='انرسل لك رابط على الإيميل · Link sent';b.disabled=false;return}
+    }catch(e){b.disabled=false;const m=String(e.message||e);er.textContent=/Invalid login/i.test(m)?'الإيميل أو كلمة المرور غلط · Wrong email or password':/registered/i.test(m)?'الإيميل مسجّل — سجّل دخول · Already registered':m}
+  }};
+  draw();
+}
+function recoveryScreen(){const box=document.getElementById('auth');box.hidden=false;document.getElementById('emp').hidden=true;
+  box.innerHTML=`<div class="authc card stack"><img src="${document.querySelector('.logo').src}" alt="سمراء" style="height:80px;margin:0 auto"><h2 style="text-align:center">كلمة مرور جديدة<small class="sub" style="display:block;font-weight:400">New password</small></h2><label class="lbl">كلمة المرور الجديدة · New password<input id="r_pass" type="password" dir="ltr" autocomplete="new-password"></label><div class="err" id="r_err"></div><button class="btn pri" id="r_go">حفظ · Save</button></div>`;
+  box.querySelector('#r_go').onclick=async()=>{const pw=box.querySelector('#r_pass').value;if(pw.length<6){box.querySelector('#r_err').textContent='6 أحرف على الأقل · At least 6 characters';return}const {error}=await sb.auth.updateUser({password:pw});if(error){box.querySelector('#r_err').textContent=error.message;return}location.replace(location.origin+location.pathname)}}
+async function startAuth(){
+  sb.auth.onAuthStateChange((ev)=>{if(ev==='PASSWORD_RECOVERY')setTimeout(recoveryScreen,0)});
+  if(/type=recovery/.test(location.hash)){return}
+  const {data:{session}}=await sb.auth.getSession();
+  if(session){SESSION=session;await loadMember();document.getElementById('auth').hidden=true;document.getElementById('emp').hidden=false;authResolve();return}
+  authScreen();
+  sb.auth.onAuthStateChange(async(ev,s)=>{if(s&&!SESSION){SESSION=s;await loadMember();document.getElementById('auth').hidden=true;document.getElementById('emp').hidden=false;authResolve()}});
+}
+startAuth();
+
+</script>
+<script>
+/* ======================= data ======================= */
+const SHEETS=[
+{id:'cashier_am',ar:'كاشير صباح',en:'Morning Cashier',items:[
+['#','افتتاح الصباح'],
+['Uniform & Personal Hygiene','الزي الرسمي والنظافة الشخصية'],['Station Setup & Cleanliness','تجهيز ونظافة محطة العمل'],['Equipment Check','فحص الأجهزة (المكينة، الطاحونة، الثلاجات)'],['Stock & Ingredients Check','التأكد من المخزون والمكونات'],['Opening Cash & POS Check','فحص الكاش والكاشير عند الافتتاح'],['Display & Pastry Arrangement','ترتيب الثلاجة والحلويات'],['Seating Area & Restroom Cleanliness','نظافة الجلسات ودورات المياه'],['Menu & Prices Check','التأكد من المنيو والأسعار'],['Customer Service Standards','الالتزام بمعايير خدمة العملاء'],['Station Handover to Next Shift','تسليم المحطة للوردية التالية'],
+['#','الكاشير'],
+['Cash drawer handover (no shortage / surplus)','استلام وتسليم الكاشير دون نقص أو زيادة','SAR'],['Improve cashier station appearance for customers','تحسين مظهر منطقة الكاشير من جانب العملاء'],['Provide water bottles beside cashier','توفير مياه الشرب بجانب الكاشير'],['Review & manage delivery apps status','مراجعة جميع التطبيقات للإتاحة أو الإيقاف'],['Ensure POS receipt paper & rolls supply','توفر ورق الكاشير والشبكة بكمية كافية'],['Check battery levels of all POS devices','مستوى شحن جميع أجهزة الكاشير والشبكة'],['Menu knowledge & product explanation','شرح وتوضيح المنتجات للعملاء'],['Active upselling & average ticket boost','تطبيق البيع الإضافي لرفع متوسط الفاتورة']]},
+{id:'cashier',ar:'كاشير مساء',en:'Evening Cashier',items:[
+['Cash drawer handover (no shortage / surplus)','استلام وتسليم الكاشير دون نقص أو زيادة','SAR'],['Improve cashier station appearance for customers','تحسين مظهر منطقة الكاشير من جانب العملاء'],['Provide water bottles beside cashier','توفير مياه الشرب بجانب الكاشير'],['Review & manage delivery apps status','مراجعة جميع التطبيقات للإتاحة أو الإيقاف'],['Ensure POS receipt paper & rolls supply','توفر ورق الكاشير والشبكة بكمية كافية'],['Check battery levels of all POS devices','مستوى شحن جميع أجهزة الكاشير والشبكة'],['Menu knowledge & product explanation','شرح وتوضيح المنتجات للعملاء'],['Active upselling & average ticket boost','تطبيق البيع الإضافي لرفع متوسط الفاتورة']]},
+{id:'bar',ar:'البار',en:'Bar Opening & Closing',items:[
+['#','أ. التجهيز والمعدات'],['Espresso machine & group heads','ماكينة القهوة ورؤوس الاستخلاص'],['Grinders cleaning & hoppers','نظافة الطواحين والمخازن العلوية'],['Batch brewer / drip machine','ماكينة قهوة اليوم والفلتر'],['Milk pitchers & steam wands','أباريق التبخير وعصا البخار'],['Kettles & water boilers','جاهزية ونظافة الغلايات'],['Big dallah / traditional pots','جاهزية ونظافة الدلة الكبيرة'],['Coffee thermoses & servers','نظافة ترامس وسيرفرات القهوة'],['Ice machine hygiene & filter','نظافة وفلتر ماكينة الثلج'],
+['#','ب. الجودة والقياسات'],['Grinder calibration','معايرة الطواحين (الوقت / الوزن)','s / g'],['Digital scales calibration','معايرة ونظافة الموازين'],['Water salinity & filtration (TDS)','قياس ملوحة وفلترة الماء','ppm'],['Milk fridge temperature','درجة حرارة ثلاجة الحليب','°C'],['Expiration dates on ingredients','متابعة تواريخ الانتهاء'],
+['#','ج. المخزون والترتيب'],['Cups & ceramic stock','توفر وترتيب الأكواب'],['Bar shelves & organization','أرفف البار والترتيب'],['Drawers & cabinets','ترتيب ونظافة الدواليب والأدراج'],
+['#','د. النظافة والإغلاق'],['Surfaces & bar counters','نظافة وتطهير الأسطح'],['Garbage & waste bins','تفريغ ونظافة الحاويات'],['Backflush espresso machine (closing)','الغسيل العكسي للماكينة وتنظيف الرؤوس (عند الإغلاق)']]},
+{id:'display',ar:'الديسبلاي',en:'Display & Chiller',items:[
+['Chiller temperature check','فحص درجة برودة الثلاجة','°C'],['Product quality & visual appearance','جودة ومظهر وجمالية المنتجات'],['All items fully available','توفر كامل الأصناف والمخبوزات'],['Expiry dates & removal of expired items','متابعة تواريخ الصلاحية وسحب المنتهي'],['Glass cleaning inside & out','نظافة الزجاج كامل من الداخل والخارج'],['Pick-up / takeaway supplies','توفر جميع أدوات ومستلزمات السفري'],['Gift & occasion supplies (boxes, candles, cards)','توفر مستلزمات المناسبات (بوكسات، شموع، كروت إهداء)'],['Napkins & tissues refill','توفر وتعبئة المناديل'],['Quantity tracking & kitchen follow-up','متابعة الكميات والربط مع المطبخ'],['Glove & mask food safety','الالتزام بالقفاز والكمامة والمعايير'],['Closing: cover sweets & clean chiller shelves','عند الإغلاق: تغطية الحلويات وتنظيف أرفف الثلاجة']]},
+{id:'reception',ar:'الاستقبال والمنطقة الخارجية',en:'Reception & Outdoor',items:[
+['Readiness of outdoor seating','جاهزية الجلسات الخارجية'],['Visual check: outdoor tables & chairs','فحص نظافة وترتيب الطاولات والكراسي'],['Waiting line / queue barrier setup','تنظيم شريط وحواجز الانتظار'],['Outdoor landscaping & plants','مظهر ونظافة التشجير الخارجي'],['Planter lights & ambiance','جاهزية إضاءات الأحواض'],['Safety & condition of planters','سلامة ونظافة الأحواض'],['Readiness & cleanliness of heaters','جاهزية ونظافة المدافئ'],['Readiness & cleanliness of ACs','جاهزية ونظافة المكيفات'],['Ground lights illumination','سلامة وعمل الإضاءات الأرضية'],['Umbrellas / canopies setup','فرد وجاهزية المظلات'],['Ensure watering of plants','التأكد من سقي الأشجار والنباتات'],['Outdoor signage & facade lights','جاهزية اللوحة الخارجية والواجهة'],['Parking area cleanliness','نظافة وترتيب منطقة المواقف']]}
+];
+const C1=[['Branch floor sweeping & mopping','كنس ومسح أرضية الفرع'],['Marble surfaces & counters polishing','تلميع الرخام والكونترات'],['Wood furniture & partitions wiping','مسح وتلميع الخشب والبارتشن'],['Restroom log filled every 30 min','تعبئة سجل دورة المياه كل 30 دقيقة'],['Main entrance & front door glass','نظافة الباب الأمامي والمدخل'],['Table stability & chair balance','ثبات الطاولات وتوازن الكراسي'],['Glass, windows & partition cleaning','نظافة الزجاج والشبابيك'],['Dusting all surfaces & ledges','مسح الغبار عن الأسطح'],['Indoor plants care & leaf dusting','العناية بالنباتات ومسح أوراقها'],['Display cleaning from all sides','نظافة الدسبلاي من كل الجهات']];
+const C2=[['Table tops sanitization & wiping','مسح وتعقيم أسطح الطاولات'],['Chair fabrics & leather cleaning','نظافة وتلميع الكراسي'],['Under-table & corners cleanliness','نظافة الزوايا وما أسفل الطاولات'],['iPads & payment screens cleaning','نظافة ومسح شاشات الايباد'],['Area fragrance & air freshness','رائحة المنطقة العامة والتعطير'],['Wall frames & artwork dusting','تنظيف المناظر واللوحات الجدارية'],['Outdoor seating area cleaning','نظافة وترتيب الجلسات الخارجية'],['Cleaning trays & caddy readiness','جاهزية صواني وأدوات التنظيف'],['Final check & table wipe-down','تأكيد تمسيح وتجهيز الطاولات']];
+SHEETS.push({id:'clean_am',ar:'كلينر الصباح',en:'Cleaner – Morning',items:[['#','القسم 1'],...C1,['#','القسم 2'],...C2,['#','الزجاج'],['Internal glass cleaning','تنظيف وتلميع الزجاج من الداخل']]});
+SHEETS.push({id:'clean_pm1',ar:'كلينر المساء – القسم 1',en:'Cleaner – Evening S1 (1–10)',items:[...C1]});
+SHEETS.push({id:'clean_pm2',ar:'كلينر المساء – القسم 2',en:'Cleaner – Evening S2 (11–19)',items:[...C2,['#','الزجاج'],['External glass cleaning','تنظيف وتلميع الزجاج من الخارج']]});
+SHEETS.push({id:'supervisor',ar:'مشرف الوردية',en:'Shift Supervisor',items:[
+['Front & Back Line Readiness','جاهزية ونظافة الخط الأمامي والخلفي'],['Staff Attendance & Uniform','حضور الموظفين والالتزام بالزي الكامل'],['Station & Task Assignment','توزيع الموظفين على أماكنهم'],['Checklists Completion','متابعة إتمام التشيك ليست'],['Facility & Equipment Check','التأكد من سلامة الأجهزة وعدم وجود أعطال'],['Influencer & Event Readiness','جاهزية المكان لاستقبال المعلنين'],['Upselling & Average Check','توجيه الكاشير لرفع الفاتورة والبيع الإضافي'],['Google Maps Reviews','حث الزبائن على التقييم في قوقل ماب'],['Customer Complaints & Feedback','حل ومتابعة شكاوى وملاحظات العملاء'],['Branch Phone & Calls Follow-up','متابعة والرد على جوال الفرع'],['Shift Closure & Handover','مطابقة الكاش وتسليم الوردية']]});
+SHEETS.push({id:'dreport',type:'report',nodue:true,ar:'التقرير اليومي',en:'Daily report',items:[['Staff','الموظفون'],['Customers','العملاء'],['Products','المنتجات'],['General notes','ملاحظات عامة']]});
+const REPSEC=[['staff','الموظفون','Staff','حضور - انصراف - نظافة شخصية - أداء - انضباط','Attendance - leaving - personal hygiene - performance - discipline',''],['cust','العملاء','Customers','شكوى - رضا - اقتراح - تعويضات','Complaints - satisfaction - suggestions - compensation','لا يوجد'],['prod','المنتجات','Products','نظافة الطبق - حرارته - مذاقه - ملاحظة - تأخير','Plate cleanliness - temperature - taste - notes - delays',''],['notes','ملاحظات عامة','General notes','','','']];
+(function(){const s=[];for(let m=420;m<=1440;m+=30){const h=Math.floor(m/60)%24,mi=String(m%60).padStart(2,'0'),h12=h%12||12,am=(m<720||m===1440);s.push([h12+':'+mi+' '+(am?'AM':'PM'),'الساعة '+h12+':'+mi+(am?' ص':' م'),null,m]);}
+SHEETS.push({id:'restroom',ar:'سجل دورة المياه',en:'Restroom Log · every 30 min',auto:true,items:s});})();
+(function(){const s=[];for(const m of [540,660,780,900,1020,1140,1260,1380,1440]){const h=Math.floor(m/60)%24,h12=h%12||12,am=(m<720||m===1440);s.push([h12+':00 '+(am?'AM':'PM'),'الساعة '+h12+':00'+(am?' ص':' م'),null,m]);}
+SHEETS.push({id:'avg',type:'avg',auto:true,ar:'المبيعات والأفرج (كل ساعتين)',en:'Sales & average · every 2 hours',items:s});})();
+const byId=Object.fromEntries(SHEETS.map(s=>[s.id,s]));
+const SHIFTS={am:{ar:'الوردية الصباحية',short:'صباحي',hours:'7:00 ص – 3:00 م',from:420,to:900},pm:{ar:'الوردية المسائية',short:'مسائي',hours:'3:00 م – 12:00 ص',from:901,to:1440}};
+const ROLES=[
+{id:'supervisor',ar:'مشرف وردية',sheets:['supervisor','dreport']},
+{id:'cashier_am',ar:'كاشير صباح',sheets:['cashier_am','avg'],shift:'am'},
+{id:'cashier',ar:'كاشير مساء',sheets:['cashier','avg'],shift:'pm'},
+{id:'barista',ar:'باريستا',sheets:['bar']},
+{id:'display',ar:'ديسبلاي',sheets:['display']},
+{id:'reception',ar:'استقبال',sheets:['reception']},
+{id:'clean_am',ar:'كلينر – الصباح',sheets:['clean_am','restroom'],shift:'am'},
+{id:'clean_pm1',ar:'كلينر – المساء القسم 1',sheets:['clean_pm1','restroom'],shift:'pm'},
+{id:'clean_pm2',ar:'كلينر – المساء القسم 2',sheets:['clean_pm2'],shift:'pm'},
+{id:'bar_sup',ar:'مشرف البار',sheets:['dreport']},
+{id:'service',ar:'سيرفس (تنزيل طلبات)',sheets:[]}];
+const roleById=Object.fromEntries(ROLES.map(r=>[r.id,r]));
+const shiftOf=s=>(s&&(s.shift||(roleById[s.role]&&roleById[s.role].shift)))||'';
+const inShift=(it,sh)=>it[3]==null||!SHIFTS[sh]||(it[3]>=SHIFTS[sh].from&&it[3]<=SHIFTS[sh].to);
+const visIdx=(s,sh)=>s.items.map((it,i)=>i).filter(i=>s.items[i][0]!=='#'&&inShift(s.items[i],sh));
+const DOW=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const dowOf=d=>new Date(d+'T12:00:00').getDay();
+/* ======================= languages ======================= */
+const LANGS={ar:{label:'عربي',dir:'rtl',loc:'ar-SA'},en:{label:'English',dir:'ltr',loc:'en-GB'},hi:{label:'हिन्दी',dir:'ltr',loc:'hi-IN'},bn:{label:'বাংলা',dir:'ltr',loc:'bn-BD'}};
+/* item translations: English → [Hindi, Bengali] */
+const TR={
+'Front & Back Line Readiness':['फ्रंट और बैक लाइन की तैयारी और सफ़ाई','ফ্রন্ট ও ব্যাক লাইনের প্রস্তুতি ও পরিচ্ছন্নতা'],
+'Staff Attendance & Uniform':['स्टाफ़ की हाज़िरी और पूरी वर्दी','স্টাফের উপস্থিতি ও পূর্ণ ইউনিফর্ম'],
+'Station & Task Assignment':['स्टाफ़ को उनकी जगह पर लगाना','স্টাফকে তাদের জায়গায় বণ্টন'],
+'Checklists Completion':['चेकलिस्ट पूरी होने पर नज़र','চেকলিস্ট সম্পূর্ণ হওয়া তদারকি'],
+'Facility & Equipment Check':['उपकरण ठीक हों और कोई खराबी न हो','যন্ত্রপাতি ঠিক আছে ও কোনো ত্রুটি নেই'],
+'Influencer & Event Readiness':['विज्ञापनदाताओं के स्वागत के लिए जगह तैयार','বিজ্ঞাপনদাতাদের অভ্যর্থনার জন্য জায়গা প্রস্তুত'],
+'Upselling & Average Check':['कैशियर को बिल और अतिरिक्त बिक्री बढ़ाने का मार्गदर्शन','ক্যাশিয়ারকে বিল ও অতিরিক্ত বিক্রি বাড়াতে নির্দেশনা'],
+'Google Maps Reviews':['ग्राहकों को Google Maps पर रिव्यू के लिए कहना','গ্রাহকদের Google Maps-এ রিভিউ দিতে উৎসাহ'],
+'Customer Complaints & Feedback':['ग्राहकों की शिकायतें और सुझाव हल करना','গ্রাহকের অভিযোগ ও মতামত সমাধান'],
+'Branch Phone & Calls Follow-up':['शाखा का फ़ोन देखना और जवाब देना','শাখার ফোন দেখা ও উত্তর দেওয়া'],
+'Shift Closure & Handover':['कैश मिलान और शिफ्ट सौंपना','ক্যাশ মেলানো ও শিফট হস্তান্তর'],
+'Uniform & Personal Hygiene':['वर्दी और व्यक्तिगत स्वच्छता','ইউনিফর্ম ও ব্যক্তিগত পরিচ্ছন্নতা'],
+'Station Setup & Cleanliness':['स्टेशन की तैयारी और सफ़ाई','স্টেশন প্রস্তুতি ও পরিচ্ছন্নতা'],
+'Equipment Check':['उपकरण जाँच (मशीन, ग्राइंडर, फ्रिज)','যন্ত্রপাতি পরীক্ষা (মেশিন, গ্রাইন্ডার, ফ্রিজ)'],
+'Stock & Ingredients Check':['स्टॉक और सामग्री की जाँच','স্টক ও উপকরণ পরীক্ষা'],
+'Opening Cash & POS Check':['खुलते समय कैश और POS की जाँच','খোলার সময় ক্যাশ ও POS পরীক্ষা'],
+'Display & Pastry Arrangement':['डिस्प्ले और पेस्ट्री की सजावट','ডিসপ্লে ও পেস্ট্রি সাজানো'],
+'Seating Area & Restroom Cleanliness':['बैठने की जगह और शौचालय की सफ़ाई','বসার জায়গা ও ওয়াশরুম পরিচ্ছন্নতা'],
+'Menu & Prices Check':['मेन्यू और कीमतों की जाँच','মেনু ও দাম পরীক্ষা'],
+'Customer Service Standards':['ग्राहक सेवा मानकों का पालन','গ্রাহক সেবার মান মেনে চলা'],
+'Station Handover to Next Shift':['अगली शिफ्ट को स्टेशन सौंपना','পরের শিফটে স্টেশন হস্তান্তর'],
+'Cash drawer handover (no shortage / surplus)':['कैश ड्रॉअर सौंपना (कोई कमी / ज़्यादा नहीं)','ক্যাশ ড্রয়ার হস্তান্তর (কম / বেশি নেই)'],
+'Improve cashier station appearance for customers':['ग्राहकों के लिए कैशियर स्टेशन सुंदर रखना','গ্রাহকদের জন্য ক্যাশিয়ার স্টেশন সুন্দর রাখা'],
+'Provide water bottles beside cashier':['कैशियर के पास पानी की बोतलें रखना','ক্যাশিয়ারের পাশে পানির বোতল রাখা'],
+'Review & manage delivery apps status':['डिलीवरी ऐप्स की स्थिति जाँचना और चलाना','ডেলিভারি অ্যাপের অবস্থা দেখা ও নিয়ন্ত্রণ'],
+'Ensure POS receipt paper & rolls supply':['POS रसीद पेपर और रोल पर्याप्त हों','POS রসিদ কাগজ ও রোল যথেষ্ট আছে কিনা'],
+'Check battery levels of all POS devices':['सभी POS डिवाइस की बैटरी जाँचना','সব POS ডিভাইসের ব্যাটারি পরীক্ষা'],
+'Menu knowledge & product explanation':['मेन्यू की जानकारी और उत्पाद समझाना','মেনু জানা ও পণ্য বুঝিয়ে বলা'],
+'Active upselling & average ticket boost':['अतिरिक्त बिक्री करके औसत बिल बढ़ाना','অতিরিক্ত বিক্রি করে গড় বিল বাড়ানো'],
+'Espresso machine & group heads':['एस्प्रेसो मशीन और ग्रुप हेड','এসপ্রেসো মেশিন ও গ্রুপ হেড'],
+'Grinders cleaning & hoppers':['ग्राइंडर और हॉपर की सफ़ाई','গ্রাইন্ডার ও হপার পরিষ্কার'],
+'Batch brewer / drip machine':['बैच ब्रूअर / ड्रिप मशीन','ব্যাচ ব্রুয়ার / ড্রিপ মেশিন'],
+'Milk pitchers & steam wands':['मिल्क पिचर और स्टीम वैंड','মিল্ক পিচার ও স্টিম ওয়ান্ড'],
+'Kettles & water boilers':['केतली और वॉटर बॉयलर','কেটলি ও পানি গরমের যন্ত্র'],
+'Big dallah / traditional pots':['बड़ी दल्ला / पारंपरिक बर्तन','বড় দাল্লা / ঐতিহ্যবাহী পাত্র'],
+'Coffee thermoses & servers':['कॉफ़ी थर्मस और सर्वर','কফি থার্মোস ও সার্ভার'],
+'Ice machine hygiene & filter':['आइस मशीन की सफ़ाई और फ़िल्टर','আইস মেশিন পরিষ্কার ও ফিল্টার'],
+'Grinder calibration':['ग्राइंडर कैलिब्रेशन (समय / वज़न)','গ্রাইন্ডার ক্যালিব্রেশন (সময় / ওজন)'],
+'Digital scales calibration':['डिजिटल तराज़ू कैलिब्रेशन और सफ़ाई','ডিজিটাল স্কেল ক্যালিব্রেশন ও পরিষ্কার'],
+'Water salinity & filtration (TDS)':['पानी की लवणता और फ़िल्ट्रेशन (TDS)','পানির লবণাক্ততা ও ফিল্টার (TDS)'],
+'Milk fridge temperature':['दूध फ्रिज का तापमान','দুধের ফ্রিজের তাপমাত্রা'],
+'Expiration dates on ingredients':['सामग्री की एक्सपायरी डेट','উপকরণের মেয়াদ তারিখ'],
+'Cups & ceramic stock':['कप और सिरेमिक स्टॉक','কাপ ও সিরামিক স্টক'],
+'Bar shelves & organization':['बार की शेल्फ़ और व्यवस्था','বারের তাক ও গোছানো'],
+'Drawers & cabinets':['दराज़ और अलमारियाँ','ড্রয়ার ও কেবিনেট'],
+'Surfaces & bar counters':['सतहें और बार काउंटर','সারফেস ও বার কাউন্টার'],
+'Garbage & waste bins':['कचरा और डस्टबिन','ময়লা ও ডাস্টবিন'],
+'Backflush espresso machine (closing)':['एस्प्रेसो मशीन बैकफ़्लश (बंद करते समय)','এসপ্রেসো মেশিন ব্যাকফ্লাশ (বন্ধের সময়)'],
+'Chiller temperature check':['चिलर तापमान जाँच','চিলারের তাপমাত্রা পরীক্ষা'],
+'Product quality & visual appearance':['उत्पाद की गुणवत्ता और दिखावट','পণ্যের মান ও দেখতে কেমন'],
+'All items fully available':['सभी आइटम पूरी तरह उपलब्ध','সব আইটেম পুরোপুরি আছে'],
+'Expiry dates & removal of expired items':['एक्सपायरी डेट और खराब आइटम हटाना','মেয়াদ দেখা ও মেয়াদোত্তীর্ণ সরানো'],
+'Glass cleaning inside & out':['अंदर और बाहर से कांच की सफ़ाई','ভেতরে ও বাইরে কাচ পরিষ্কার'],
+'Pick-up / takeaway supplies':['पिक-अप / टेकअवे का सामान','পিক-আপ / টেকঅ্যাওয়ে সামগ্রী'],
+'Gift & occasion supplies (boxes, candles, cards)':['गिफ़्ट और मौके का सामान (बॉक्स, मोमबत्ती, कार्ड)','উপহার ও অনুষ্ঠানের সামগ্রী (বাক্স, মোমবাতি, কার্ড)'],
+'Napkins & tissues refill':['नैपकिन और टिशू भरना','ন্যাপকিন ও টিস্যু ভরা'],
+'Quantity tracking & kitchen follow-up':['मात्रा पर नज़र और किचन से फ़ॉलो-अप','পরিমাণ খেয়াল ও কিচেনের সাথে যোগাযোগ'],
+'Glove & mask food safety':['दस्ताने और मास्क (खाद्य सुरक्षा)','গ্লাভস ও মাস্ক (খাদ্য নিরাপত্তা)'],
+'Closing: cover sweets & clean chiller shelves':['बंद करते समय: मिठाई ढकें और चिलर शेल्फ़ साफ़ करें','বন্ধের সময়: মিষ্টি ঢাকা ও চিলারের তাক পরিষ্কার'],
+'Readiness of outdoor seating':['बाहरी बैठक की तैयारी','বাইরের বসার জায়গা প্রস্তুত'],
+'Visual check: outdoor tables & chairs':['बाहरी टेबल और कुर्सियों की जाँच','বাইরের টেবিল ও চেয়ার দেখে নেওয়া'],
+'Waiting line / queue barrier setup':['कतार / क्यू बैरियर लगाना','লাইন / কিউ ব্যারিয়ার সাজানো'],
+'Outdoor landscaping & plants':['बाहरी बागवानी और पौधे','বাইরের বাগান ও গাছ'],
+'Planter lights & ambiance':['गमलों की लाइट और माहौल','টবের লাইট ও পরিবেশ'],
+'Safety & condition of planters':['गमलों की सुरक्षा और हालत','টবের নিরাপত্তা ও অবস্থা'],
+'Readiness & cleanliness of heaters':['हीटर की तैयारी और सफ़ाई','হিটার প্রস্তুত ও পরিষ্কার'],
+'Readiness & cleanliness of ACs':['AC की तैयारी और सफ़ाई','এসি প্রস্তুত ও পরিষ্কার'],
+'Ground lights illumination':['ज़मीनी लाइटें चालू','মাটির লাইট জ্বলছে কিনা'],
+'Umbrellas / canopies setup':['छाते / कैनोपी लगाना','ছাতা / ক্যানোপি খোলা'],
+'Ensure watering of plants':['पौधों को पानी देना सुनिश्चित करें','গাছে পানি দেওয়া নিশ্চিত'],
+'Outdoor signage & facade lights':['बाहरी साइनबोर्ड और सामने की लाइटें','বাইরের সাইনবোর্ড ও সামনের লাইট'],
+'Parking area cleanliness':['पार्किंग क्षेत्र की सफ़ाई','পার্কিং এলাকা পরিষ্কার'],
+'Branch floor sweeping & mopping':['शाखा के फ़र्श पर झाड़ू और पोछा','শাখার মেঝে ঝাড়ু ও মোছা'],
+'Marble surfaces & counters polishing':['मार्बल सतह और काउंटर की पॉलिश','মার্বেল সারফেস ও কাউন্টার পলিশ করা'],
+'Wood furniture & partitions wiping':['लकड़ी के फ़र्नीचर और पार्टीशन पोंछना','কাঠের আসবাব ও পার্টিশন মোছা'],
+'Restroom log filled every 30 min':['हर 30 मिनट में शौचालय लॉग भरना','প্রতি ৩০ মিনিটে ওয়াশরুম লগ পূরণ করা'],
+'Main entrance & front door glass':['मुख्य प्रवेश और सामने के दरवाज़े का कांच','প্রধান প্রবেশপথ ও সামনের দরজার কাচ পরিষ্কার'],
+'Table stability & chair balance':['टेबल की मज़बूती और कुर्सी का संतुलन','টেবিলের স্থিরতা ও চেয়ারের ভারসাম্য'],
+'Glass, windows & partition cleaning':['कांच, खिड़कियाँ और पार्टीशन की सफ़ाई','কাচ, জানালা ও পার্টিশন পরিষ্কার'],
+'Dusting all surfaces & ledges':['सभी सतहों और किनारों से धूल हटाना','সব সারফেস ও তাকের ধুলা মোছা'],
+'Indoor plants care & leaf dusting':['अंदर के पौधों की देखभाल और पत्तियों की धूल','ইনডোর গাছের যত্ন ও পাতার ধুলা মোছা'],
+'Display cleaning from all sides':['डिस्प्ले की हर तरफ़ से सफ़ाई','ডিসপ্লে সব দিক থেকে পরিষ্কার'],
+'Table tops sanitization & wiping':['टेबल की सतह सैनिटाइज़ और पोंछना','টেবিলের উপরের অংশ স্যানিটাইজ ও মোছা'],
+'Chair fabrics & leather cleaning':['कुर्सी के कपड़े और चमड़े की सफ़ाई','চেয়ারের কাপড় ও চামড়া পরিষ্কার'],
+'Under-table & corners cleanliness':['टेबल के नीचे और कोनों की सफ़ाई','টেবিলের নিচ ও কোণা পরিষ্কার'],
+'iPads & payment screens cleaning':['iPad और पेमेंट स्क्रीन की सफ़ाई','আইপ্যাড ও পেমেন্ট স্ক্রিন পরিষ্কার'],
+'Area fragrance & air freshness':['जगह की खुशबू और ताज़ी हवा','এলাকার সুগন্ধ ও বাতাসের সতেজতা'],
+'Wall frames & artwork dusting':['दीवार के फ़्रेम और पेंटिंग की धूल','দেয়ালের ফ্রেম ও শিল্পকর্মের ধুলা মোছা'],
+'Outdoor seating area cleaning':['बाहरी बैठने की जगह की सफ़ाई','বাইরের বসার জায়গা পরিষ্কার'],
+'Cleaning trays & caddy readiness':['सफ़ाई ट्रे और कैडी तैयार रखना','ক্লিনিং ট্রে ও ক্যাডি প্রস্তুত রাখা'],
+'Final check & table wipe-down':['अंतिम जाँच और टेबल पोंछना','চূড়ান্ত পরীক্ষা ও টেবিল মোছা'],
+'Internal glass cleaning':['अंदर से कांच की सफ़ाई और चमकाना','ভেতর থেকে কাচ পরিষ্কার ও পলিশ'],
+'External glass cleaning':['बाहर से कांच की सफ़ाई और चमकाना','বাইরে থেকে কাচ পরিষ্কার ও পলিশ']};
+/* section headers: Arabic → [English, Hindi, Bengali] */
+const SEC={'أ. التجهيز والمعدات':['A. Setup & Equipment','A. तैयारी और उपकरण','A. প্রস্তুতি ও যন্ত্রপাতি'],
+'ب. الجودة والقياسات':['B. Quality & Readings','B. गुणवत्ता और माप','B. মান ও পরিমাপ'],
+'ج. المخزون والترتيب':['C. Stock & Organization','C. स्टॉक और व्यवस्था','C. স্টক ও গোছানো'],
+'د. النظافة والإغلاق':['D. Hygiene & Closing','D. सफ़ाई और बंद करना','D. পরিচ্ছন্নতা ও বন্ধ করা'],
+'افتتاح الصباح':['Morning opening','सुबह की शुरुआत','সকালের শুরু'],'الكاشير':['Cashier','कैशियर','ক্যাশিয়ার'],
+'القسم 1':['Section 1','सेक्शन 1','সেকশন ১'],'القسم 2':['Section 2','सेक्शन 2','সেকশন ২'],'الزجاج':['Glass','कांच','কাচ']};
+/* sheet & station names: id → [English, Hindi, Bengali] */
+const SHEETN={dreport:['Daily report','दैनिक रिपोर्ट','দৈনিক রিপোর্ট'],supervisor:['Shift Supervisor','शिफ्ट सुपरवाइज़र','শিফট সুপারভাইজার'],cashier_am:['Morning Cashier','सुबह का कैशियर','সকালের ক্যাশিয়ার'],cashier:['Evening Cashier','शाम का कैशियर','সন্ধ্যার ক্যাশিয়ার'],bar:['Bar Opening & Closing','बार खोलना और बंद करना','বার খোলা ও বন্ধ'],display:['Display & Chiller','डिस्प्ले और चिलर','ডিসপ্লে ও চিলার'],reception:['Reception & Outdoor','रिसेप्शन और बाहरी क्षेत्र','রিসেপশন ও বাইরের এলাকা'],clean_am:['Cleaner – Morning','क्लीनर – सुबह','ক্লিনার – সকাল'],clean_pm1:['Cleaner – Evening S1 (1–10)','क्लीनर – शाम सेक्शन 1 (1–10)','ক্লিনার – সন্ধ্যা সেকশন ১ (১–১০)'],clean_pm2:['Cleaner – Evening S2 (11–19)','क्लीनर – शाम सेक्शन 2 (11–19)','ক্লিনার – সন্ধ্যা সেকশন ২ (১১–১৯)'],restroom:['Restroom Log · every 30 min','शौचालय लॉग · हर 30 मिनट','ওয়াশরুম লগ · প্রতি ৩০ মিনিট'],avg:['Sales & average · every 2 hours','बिक्री और औसत · हर 2 घंटे','বিক্রি ও গড় · প্রতি ২ ঘণ্টা']};
+const ROLEN={bar_sup:['Bar supervisor','बार सुपरवाइज़र','বার সুপারভাইজার'],service:['Service (order runner)','सर्विस (ऑर्डर पहुँचाना)','সার্ভিস (অর্ডার পৌঁছানো)'],supervisor:['Shift supervisor','शिफ्ट सुपरवाइज़र','শিফট সুপারভাইজার'],cashier_am:['Morning cashier','सुबह का कैशियर','সকালের ক্যাশিয়ার'],cashier:['Evening cashier','शाम का कैशियर','সন্ধ্যার ক্যাশিয়ার'],barista:['Barista','बरिस्ता','বারিস্তা'],display:['Display','डिस्प्ले','ডিসপ্লে'],reception:['Reception','रिसेप्शन','রিসেপশন'],clean_am:['Cleaner – Morning','क्लीनर – सुबह','ক্লিনার – সকাল'],clean_pm1:['Cleaner – Evening S1','क्लीनर – शाम सेक्शन 1','ক্লিনার – সন্ধ্যা সেকশন ১'],clean_pm2:['Cleaner – Evening S2','क्लीनर – शाम सेक्शन 2','ক্লিনার – সন্ধ্যা সেকশন ২']};
+const SHIFTN={am:['Morning shift','सुबह की शिफ्ट','সকালের শিফট'],pm:['Evening shift','शाम की शिफ्ट','সন্ধ্যার শিফট']};
+const SHIFTH={am:'7:00 AM – 3:00 PM',pm:'3:00 PM – 12:00 AM'};
+/* UI strings: key → [Arabic, English, Hindi, Bengali] */
+const UI={
+hello:['أهلاً','Hello','नमस्ते','হ্যালো'],
+howday:['كيف كان يومك؟',"How's your day going?",'आपका दिन कैसा रहा?','আপনার দিন কেমন কাটছে?'],
+ready:['جاهز تشيك ليستك؟ ↓','Ready for your checklist? ↓','अपनी चेकलिस्ट के लिए तैयार? ↓','আপনার চেকলিস্টের জন্য প্রস্তুত? ↓'],
+yourAssign:['توزيعك اليوم:','Your assignment today:','आज आपकी ड्यूटी:','আজ আপনার দায়িত্ব:'],
+offToday:['اليوم إجازتك 🌴','Today is your day off 🌴','आज आपकी छुट्टी है 🌴','আজ আপনার ছুটি 🌴'],
+enjoy:['استمتع بيومك','Enjoy your day','अपने दिन का आनंद लें','দিনটি উপভোগ করুন'],
+noTasksOff:['ما عليك قوائم اليوم — استمتع بيومك.','No checklists today — enjoy your day.','आज कोई चेकलिस्ट नहीं — दिन का आनंद लें।','আজ কোনো চেকলিস্ট নেই — দিনটি উপভোগ করুন।'],
+welcomeTeam:['حيّاك في فريق سمراء','Welcome to the Samraa team','सामरा टीम में आपका स्वागत है','সামরা টিমে স্বাগতম'],
+regOnce:['سجّل بياناتك مرة وحدة بس ↓',"Register once — that's it ↓",'बस एक बार रजिस्टर करें ↓','শুধু একবার নিবন্ধন করুন ↓'],
+todayTasks:['مهامك اليوم','Your tasks today','आज के आपके काम','আজকের কাজ'],
+editMe:['تعديل بياناتي','Edit my details','मेरी जानकारी बदलें','আমার তথ্য বদলান'],
+notSent:['لم تُرسل','Not sent','नहीं भेजा','পাঠানো হয়নি'],
+noAssign:['ما فيه توزيع لك اليوم — راجع المدير.','No assignment for you today — please check with the manager.','आज आपकी कोई ड्यूटी नहीं है — मैनेजर से पूछें।','আজ আপনার কোনো দায়িত্ব নেই — ম্যানেজারের সাথে কথা বলুন।'],
+notes:['ملاحظات','Notes','नोट्स','নোট'],
+notesPh:['أي مشكلة أو ملاحظة…','Any issue or note…','कोई समस्या या नोट…','কোনো সমস্যা বা নোট…'],
+send:['إرسال التشيك ليست','Send checklist','चेकलिस्ट भेजें','চেকলিস্ট পাঠান'],
+saveLog:['حفظ السجل','Save log','लॉग सेव करें','লগ সেভ করুন'],
+autosave:['كل علامة تنحفظ تلقائياً','Every tick saves automatically','हर टिक अपने आप सेव होता है','প্রতিটি টিক নিজে থেকে সেভ হয়'],
+sentToast:['تم الإرسال — يعطيك العافية ✓','Sent — thank you! ✓','भेज दिया — शुक्रिया! ✓','পাঠানো হয়েছে — ধন্যবাদ! ✓'],
+savedToast:['انحفظ ✓','Saved ✓','सेव हो गया ✓','সেভ হয়েছে ✓'],
+sendErr:['ما انرسل. تأكد من الإنترنت وجرب مرة ثانية.','Not sent. Check your internet and try again.','नहीं भेजा गया। इंटरनेट जाँचें और फिर कोशिश करें।','পাঠানো যায়নি। ইন্টারনেট দেখে আবার চেষ্টা করুন।'],
+approved:['✓ اعتمدها المدير','✓ Approved by the manager','✓ मैनेजर ने मंज़ूर किया','✓ ম্যানেজার অনুমোদন করেছেন'],
+followup:['⚠ المدير طلب إعادة متابعة','⚠ The manager asked for a redo','⚠ मैनेजर ने दोबारा करने को कहा','⚠ ম্যানেজার আবার করতে বলেছেন'],
+fixResend:['صحّح وأرسلها من جديد.','Fix it and send again.','ठीक करके फिर से भेजें।','ঠিক করে আবার পাঠান।'],
+resub:['↻ أعدت الإرسال — بانتظار مراجعة المدير','↻ Re-sent — waiting for manager review','↻ फिर से भेजा — मैनेजर की समीक्षा बाकी','↻ আবার পাঠানো হয়েছে — ম্যানেজারের দেখার অপেক্ষায়'],
+login:['لازم تفتح الرابط وأنت مسجّل دخول بحسابك (نفس الإيميل اللي وصلتك عليه الدعوة).','Please open the link while signed in with the email the invitation was sent to.','कृपया उसी ईमेल से लॉग इन करके लिंक खोलें जिस पर निमंत्रण आया था।','যে ইমেইলে আমন্ত্রণ এসেছে সেটি দিয়ে লগ ইন করে লিংকটি খুলুন।'],
+regTitle:['تسجيل الموظف','Staff registration','स्टाफ़ रजिस्ट्रेशन','স্টাফ নিবন্ধন'],
+regSub:['مرة وحدة بس — بعدها تطلع لك مهامك على طول.','Just once — then your tasks show up right away.','बस एक बार — फिर आपके काम तुरंत दिखेंगे।','শুধু একবার — তারপর আপনার কাজ সাথে সাথে দেখাবে।'],
+lang:['اللغة','Language','भाषा','ভাষা'],
+yourName:['اختر اسمك','Choose your name','अपना नाम चुनें','আপনার নাম বেছে নিন'],
+choose:['اختر…','Choose…','चुनें…','বেছে নিন…'],
+notListed:['اسمي مو موجود',"My name isn't listed",'मेरा नाम सूची में नहीं है','আমার নাম তালিকায় নেই'],
+typeName:['اكتب اسمك','Type your name','अपना नाम लिखें','আপনার নাম লিখুন'],
+email:['الإيميل','Email','ईमेल','ইমেইল'],
+phone:['رقم الجوال','Mobile number','मोबाइल नंबर','মোবাইল নম্বর'],
+start:['ابدأ','Start','शुरू करें','শুরু করুন'],
+save:['حفظ','Save','सेव करें','সেভ করুন'],
+cancel:['إلغاء','Cancel','रद्द करें','বাতিল'],
+errName:['اختر اسمك','Please choose your name','कृपया अपना नाम चुनें','আপনার নাম বেছে নিন'],
+errEmail:['الإيميل غير صحيح','Invalid email','ईमेल सही नहीं है','ইমেইল সঠিক নয়'],
+errPhone:['رقم الجوال غير صحيح','Invalid mobile number','मोबाइल नंबर सही नहीं है','মোবাইল নম্বর সঠিক নয়'],
+regErr:['ما انحفظ — تأكد أن صاحب الرابط دعاك بصلاحية تسمح بالتعبئة.','Not saved — make sure the owner invited you with access to fill in.','सेव नहीं हुआ — पक्का करें कि मालिक ने आपको भरने की अनुमति के साथ बुलाया है।','সেভ হয়নি — নিশ্চিত করুন মালিক আপনাকে পূরণের অনুমতি দিয়ে আমন্ত্রণ করেছেন।'],
+regSaved:['تم حفظ بياناتك ✓','Your details are saved ✓','आपकी जानकारी सेव हो गई ✓','আপনার তথ্য সেভ হয়েছে ✓'],
+avgHelp:['من تقرير الكاشير: اكتب إجمالي عدد الطلبات وإجمالي المبيعات من بداية ورديتك لين الساعة المحددة — الأفرج ينحسب تلقائي.','From the POS report: enter total orders and total sales from the start of your shift up to each time — the average is calculated automatically.','POS रिपोर्ट से: शिफ्ट शुरू होने से तय समय तक के कुल ऑर्डर और कुल बिक्री लिखें — औसत अपने आप निकलेगा।','POS রিপোর্ট থেকে: শিফট শুরু থেকে নির্দিষ্ট সময় পর্যন্ত মোট অর্ডার ও মোট বিক্রি লিখুন — গড় নিজে থেকে হিসাব হবে।'],
+avgShift:['أفرج الوردية','Shift average','शिफ्ट औसत','শিফটের গড়'],
+avgLast:['آخر ساعتين','Last 2 hours','पिछले 2 घंटे','শেষ ২ ঘণ্টা'],
+time:['الوقت','Time','समय','সময়'],
+orders:['عدد الطلبات','Orders','ऑर्डर','অর্ডার'],
+sales:['المبيعات SAR','Sales SAR','बिक्री SAR','বিক্রি SAR'],
+avg:['الأفرج','Average','औसत','গড়'],
+avgNotes:['ملاحظات (عروض، اقتراحات بيع إضافي…)','Notes (offers, upsell ideas…)','नोट्स (ऑफ़र, अतिरिक्त बिक्री…)','নোট (অফার, অতিরিক্ত বিক্রি…)'],
+sendShort:['إرسال','Send','भेजें','পাঠান'],
+team:['توزيع الموظفين',"Today's staff assignment",'आज की स्टाफ़ ड्यूटी','আজকের স্টাফ দায়িত্ব'],
+offList:['إجازة','Day off','छुट्टी','ছুটি'],
+hide:['إخفاء','Hide','छिपाएँ','লুকান'],
+due:['آخر موعد','Due by','अंतिम समय','শেষ সময়'],
+late:['متأخر','Late','देर','দেরি'],
+empMonth:['موظف الشهر','Employee of the month','महीने का कर्मचारी','মাসের সেরা কর্মী'],
+salesTotal:['مبيعات الوردية','Shift sales','शिफ्ट बिक्री','শিফটের বিক্রি'],
+noChecklist:['مسماك اليوم ما يحتاج تشيك ليست — يعطيك العافية','Your role today needs no checklist — thank you','आज आपकी भूमिका के लिए चेकलिस्ट नहीं है — धन्यवाद','আজ আপনার দায়িত্বে চেকলিস্ট নেই — ধন্যবাদ'],
+home:['الرئيسية','Home','होम','হোম'],
+myChecklist:['تشيك ليستك','Your checklist','आपकी चेकलिस्ट','আপনার চেকলিস্ট'],
+myDetails:['بياناتي','My details','मेरी जानकारी','আমার তথ্য'],
+pendingApp:['بانتظار تأكيد المشرف — يتأكد إن هذا حسابك، وبعدها تطلع مهامك.','Waiting for the supervisor to confirm your account — then your tasks will appear.','सुपरवाइज़र आपके खाते की पुष्टि करेंगे — उसके बाद आपके काम दिखेंगे।','সুপারভাইজার আপনার অ্যাকাউন্ট নিশ্চিত করবেন — তারপর আপনার কাজ দেখাবে।'],
+takenName:['هذا الاسم مسجّل باسم حساب ثاني. اختر اسمك الصحيح أو كلّم المشرف.','This name is linked to another account. Pick your correct name or talk to the supervisor.','यह नाम किसी दूसरे खाते से जुड़ा है। अपना सही नाम चुनें या सुपरवाइज़र से बात करें।','এই নাম অন্য অ্যাকাউন্টে নিবন্ধিত। আপনার সঠিক নাম বেছে নিন বা সুপারভাইজারের সাথে কথা বলুন।'],
+rejectedReg:['المشرف ما أكّد اختيارك — اختر اسمك الصحيح.',"The supervisor didn't confirm your choice — please pick your correct name.",'सुपरवाइज़र ने आपका चुनाव कन्फ़र्म नहीं किया — अपना सही नाम चुनें।','সুপারভাইজার আপনার পছন্দ নিশ্চিত করেননি — আপনার সঠিক নাম বেছে নিন।'],
+sentDone:['تم الإرسال','Sent','भेज दिया','পাঠানো হয়েছে'],
+todayMsg:['رسالة اليوم من المشرف',"Today's message from the supervisor",'सुपरवाइज़र का आज का संदेश','সুপারভাইজারের আজকের বার্তা'],
+autosaveNum:['كل رقم ينحفظ تلقائياً','Every number saves automatically','हर नंबर अपने आप सेव होता है','প্রতিটি সংখ্যা নিজে থেকে সেভ হয়']};
+const LI={ar:0,en:1,hi:2,bn:3};
+let lang='ar';
+const t_=k=>(UI[k]||[k])[LI[lang]]||UI[k][1];
+const pick=(ar,en,arr)=>lang==='ar'?ar:lang==='en'?en:(arr&&arr[LI[lang]-2])||en;
+const sheetName=s=>pick(s.ar,s.en,SHEETN[s.id]&&SHEETN[s.id].slice(1)) ;
+const roleName=id=>{const r=roleById[id];if(!r)return id;return pick(r.ar,ROLEN[id]?ROLEN[id][0]:r.ar,ROLEN[id]&&ROLEN[id].slice(1))};
+const shiftName=k=>pick(SHIFTS[k].ar,SHIFTN[k][0],SHIFTN[k].slice(1));
+const shiftHours=k=>lang==='ar'?SHIFTS[k].hours:SHIFTH[k];
+const secName=ar=>SEC[ar]?pick(ar,SEC[ar][0],SEC[ar].slice(1)):ar;
+function itemText(s,it){ if(it[3]!=null)return lang==='ar'?it[1]:it[0];
+  const main=pick(it[1],it[0],TR[it[0]]);const sub=lang==='en'?'':it[0];return sub&&sub!==main?[main,sub]:[main,'']}
+const loc=()=>LANGS[lang].loc;
+function applyLang(){const L=LANGS[lang]||LANGS.ar;document.documentElement.setAttribute('lang',lang);document.body.setAttribute('dir',L.dir);document.body.classList.toggle('ltr',L.dir==='ltr')}
+
+
+/* ======================= roster & plan ======================= */
+let roster=[],planT={},planD={};
+const rosterById=()=>Object.fromEntries(roster.map(p=>[p.id,p]));
+const pkey=(u,s)=>(s&&s.rid)||('u_'+u);
+/* a name is bound to one account only after the supervisor confirms it */
+function approval(){const p=staff&&staff.rid&&rosterById()[staff.rid];if(!p)return 'none';if(p.uid===uid)return 'ok';return p.uid?'taken':'pending'}
+async function bindName(u,rid){const list=JSON.parse(JSON.stringify(roster)).map(p=>{if(p.uid===u&&p.id!==rid)delete p.uid;if(p.id===rid)p.uid=u;return p});await db.doc('roster/list').set({people:list,ts:Date.now()});roster=list}
+function planFor(date,k){const o=planD[date];if(o&&o.assign)return o.assign[k]||null;const p=rosterById()[k];if(!p)return null;const d=dowOf(date),w=p.w&&p.w[d];return {st:(w?w.st:p.st)||[],sh:(w&&w.sh)||p.sh||'am',off:p.off!=null&&p.off!==''&&Number(p.off)===d}}
+function needFor(date,k,s){const a=planFor(date,k);if(!a){const r=roleById[(s||{}).role];return r&&!(s&&s.rid)?r.sheets:[]}if(a.off)return [];return [...new Set((a.st||[]).flatMap(r=>roleById[r]?roleById[r].sheets:[]))]}
+function shiftFor(date,k,s){const a=planFor(date,k);return (a&&a.sh)||shiftOf(s)||'am'}
+function ingestPlan(id,d){if(!d||id==='template')return;planD[id]=d}
+
+/* ======================= helpers ======================= */
+const $=s=>document.querySelector(s);
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const RFMT=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Riyadh',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+const riyadh=ms=>{const p={};RFMT.formatToParts(new Date(ms)).forEach(x=>{p[x.type]=x.value});return new Date(+p.year,+p.month-1,+p.day,(+p.hour)%24,+p.minute,+p.second)};
+/* safe merge-write: create the document only when it truly does not exist */
+async function upsert(ref,f){try{await ref.update(f)}catch(e1){let s=null;try{s=await ref.get()}catch(e2){}if(s&&!s.exists)await ref.set(f);else throw e1}}
+/* entries store checks/vals/slots as arrays so un-ticking replaces the old value */
+function packE(e){const o={...e};o.checks=Object.keys(e.checks||{}).map(Number);o.vals=Object.entries(e.vals||{}).map(([i,v])=>[+i,v]);if(e.slots)o.slots=Object.entries(e.slots).map(([i,x])=>[+i,x.o,x.s]);return o}
+function unpackE(e){if(!e||typeof e!=='object')return e;const o={...e};if(Array.isArray(e.checks)){o.checks={};e.checks.forEach(i=>{o.checks[i]=true})}if(Array.isArray(e.vals)){o.vals={};e.vals.forEach(([i,v])=>{o.vals[i]=v})}if(Array.isArray(e.slots)){o.slots={};e.slots.forEach(([i,a,b])=>{o.slots[i]={o:a,s:b}})}return o}
+function unpackDoc(d){const o={};for(const [k,v] of Object.entries(d||{}))o[k]=k.startsWith('d_')?unpackE(v):v;return o}
+const today=()=>ymd(riyadh(Date.now()-3*3600e3));
+const shiftDay=(d,k)=>{const t=new Date(d+'T12:00:00');t.setDate(t.getDate()+k);return ymd(t)};
+const hm=(ts,l)=>new Date(ts).toLocaleTimeString(l||'ar-SA',{hour:'numeric',minute:'2-digit',timeZone:'Asia/Riyadh'});
+const real=s=>s.items.filter(it=>it[0]!=='#').length;
+const first=n=>(n||'').trim().split(/\s+/)[0]||'';
+const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200)}
+const ss={get(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set(k,v){try{sessionStorage.setItem(k,v)}catch(e){}},del(k){try{sessionStorage.removeItem(k)}catch(e){}}};
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const rkey=(date,id)=>'r_'+date+'_'+id;
+const DEADLINE={am:'08:00',pm:'17:00'},DLAR={am:'8:00 ص',pm:'5:00 م'},DLEN={am:'8:00 AM',pm:'5:00 PM'};
+const dueTs=(date,sh)=>new Date(date+'T'+(DEADLINE[sh]||DEADLINE.am)+':00+03:00').getTime();
+const timed=id=>byId[id]&&!byId[id].auto&&!byId[id].nodue;
+/* minutes late for a sent entry (0 = on time), or null when not timed */
+function lateMin(e,date,sh){if(!e||!timed(e.sheet))return null;const f=e.firstTs||e.ts,d=dueTs(date,e.shift||sh);return f>d?Math.round((f-d)/60000):0}
+const fmtLate=mi=>mi>=60?Math.floor(mi/60)+' س '+(mi%60)+' د':mi+' د';
+function rstate(e,r){if(!e)return null;if(!r)return 'pending';if(r.ts<e.ts)return r.status==='followup'?'resubmitted':'pending';return r.status}
+const RS={pending:['p-warn','بانتظار المراجعة'],approved:['p-ok','✓ معتمد'],followup:['p-bad','⚠ إعادة متابعة'],resubmitted:['p-warn','↻ أُعيد الإرسال']};
+const io=('IntersectionObserver' in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12}):null;
+function reveal(root){root.querySelectorAll('.rv').forEach(el=>{if(rm||!io)el.classList.add('in');else io.observe(el)})}
+const personName=(p)=>p?(p.ar&&p.name?p.ar+' · '+p.name:(p.ar||p.name)):'';
+
+/* ======================= state ======================= */
+let homeSeqDone=false,ownerFlag=false,award=null,db=null,user=null,uid=null,isAdmin=false,me=null,staff=null,mine={},mineUnsub=null,openSheet=null,myKey='';
+
+async function init(){
+  lang=ls.get('samraa_lang')||'ar';if(!LANGS[lang])lang='ar';applyLang();
+  try{user=await claude.use('user')}catch(e){}
+  try{db=await claude.use('db')}catch(e){}
+  try{isAdmin=!!(user&&user.canEdit&&await user.canEdit());ownerFlag=!!(user&&user.isOwner&&await user.isOwner())}catch(e){isAdmin=false;ownerFlag=false}
+  try{me=user&&user.me?await user.me():null;uid=user&&user.id?await user.id():(me&&me.id)}catch(e){}
+  if(!db||!uid){
+    $('#main').innerHTML='<div class="msg rv">'+esc(t_('login'))+'</div>';reveal($('#main'));playHero();return}
+  try{const [s,r]=await Promise.all([db.doc('staff/'+uid).get(),db.doc('roster/list').get()]);
+    staff=s.exists?s.data():null;roster=r.exists?(r.data().people||[]):[];
+    const b=await db.doc('plan/'+today()).get();if(b.exists)ingestPlan(today(),b.data())}catch(e){}
+  if(staff&&staff.lang&&LANGS[staff.lang]){lang=staff.lang;ls.set('samraa_lang',lang);applyLang()}
+  myKey=staff?pkey(uid,staff):'';
+  if(staff&&staff.rid&&isOwnerF()&&approval()==='pending'){try{await bindName(uid,staff.rid)}catch(e){}}
+  if(isAdmin){try{const s=await db.doc('admin/managers').get();mgrMap=s.exists?(s.data()||{}):{}}catch(e){}meMgr=myMgr()}
+  try{const mo=today().slice(0,7),pm=(()=>{const [y,mm]=mo.split('-').map(Number);const t=new Date(y,mm-2,1);return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')})();const [a1,a2]=await Promise.all([db.doc('plan/award_'+mo).get(),db.doc('plan/award_'+pm).get()]);const A=[a1,a2].filter(x=>x.exists).map(x=>x.data()).sort((a,b)=>b.ts-a.ts)[0];if(A&&Date.now()-A.ts<12*864e5)award=A}catch(e){}
+  greet();
+  if(isAdmin&&pureMgr()){route();if(!location.hash||!['#manager','#idara'].includes(location.hash))go('home');toDashBtn();return}
+  if(staff&&staff.lang&&staff.rid){watchMine();watchPlan();tasks()}else if(staff)register(true);else showGate();
+  route();toDashBtn();
+}
+function playHero(){document.querySelectorAll('#hero .hl').forEach(e=>{e.classList.remove('go');void e.offsetWidth;e.classList.add('go')})}
+function greet(){setTimeout(playHero,30);setTitle();
+  const rp=staff&&staff.rid&&rosterById()[staff.rid];
+  const n=rp?first(lang==='ar'?(rp.ar||rp.name):(rp.name||rp.ar)):(first(staff&&staff.name)||first(me&&me.name));
+  $('#hi').innerHTML=esc(t_('hello'))+(n?' <em>'+esc(n)+'</em>':'')+' 👋';
+  if(!staff){$('#l2').textContent=t_('welcomeTeam');$('#l3').textContent=t_('regOnce');return}
+  const a=approval()==='ok'?myAssign():null;
+  if(a&&a.off){$('#l2').textContent=t_('offToday');$('#l3').textContent=t_('enjoy')}
+  else if(a&&(a.st||[]).length){$('#l2').innerHTML=esc(t_('yourAssign'))+' <b>'+esc(a.st.map(roleName).join(' + '))+'</b>';$('#l3').textContent=t_('ready')}
+  else{$('#l2').textContent=t_('howday');$('#l3').textContent=t_('ready')}
+}
+
+/* ======================= registration ======================= */
+/* entry screen: clear choice between staff and management */
+let previewNew=false;
+function showGate(){
+  $('#hi').innerHTML='أهلاً 👋';setTimeout(playHero,30);  $('#l2').textContent='حيّاك في سمراء · Welcome';$('#l3').textContent='اختر طريقة الدخول ↓';
+  $('#main').innerHTML=`<div class="gate rv in">
+    <button class="gbtn" id="gStaff"><span class="gi">👤</span><span class="gt"><b>دخول الموظفين</b><small>Staff login · स्टाफ़ · স্টাফ</small></span><span class="ga">←</span></button>
+    <button class="gbtn" id="gMgr"><span class="gi">🔑</span><span class="gt"><b>دخول الإدارة</b><small>Management</small></span><span class="ga">←</span></button>
+    <p class="sub" style="text-align:center;margin:4px 0 0">تختار مرة وحدة بس، وبعدها يفتح لك على طول.</p></div>`;
+  $('#gStaff').onclick=()=>{register(false);$('#main').scrollIntoView({behavior:rm?'auto':'smooth'})};
+  $('#gMgr').onclick=()=>{if(previewNew){dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);d.innerHTML=`<div class="pin card stack fade"><span class="pill p-warn" style="align-self:center">معاينة — هذا اللي يشوفه المدير الجديد</span><img src="${document.querySelector('.logo').src}" alt="" style="height:70px;margin:0 auto"><h2>بانتظار التفعيل</h2><p class="sub">وصل طلبك لصاحب الرابط. أول ما يفعّلك من لوحته تقدر تدخل.</p><button class="btn" id="pvb">رجوع لشاشة الدخول</button></div>`;$('#pvb').onclick=()=>{closeDash();showGate()};return}ensureMgr(()=>{closeDash();go('home')})};
+  if(previewNew)$('#main').insertAdjacentHTML('afterbegin','<div class="msg" style="text-align:center;margin-bottom:10px">👀 وضع المعاينة: هذي الشاشة اللي يشوفها أي شخص يفتح الرابط أول مرة. ما ينحفظ شي. <button class="link" id="pvx">خروج من المعاينة</button></div>'),$('#pvx').onclick=()=>{previewNew=false;go('home')};
+}
+function register(edit){
+  const s=previewNew?{}:(staff||{});let sel=s.rid||'';
+  const draw=()=>{
+  $('#main').innerHTML=`<form class="card stack rv in" id="reg" novalidate>
+   <div class="lbl">${esc(t_('lang'))}<div class="langs" id="f_lang">${Object.entries(LANGS).map(([k,v])=>`<button type="button" data-l="${k}" class="${k===lang?'on':''}">${esc(v.label)}</button>`).join('')}</div></div>
+   <h2>${esc(edit?t_('editMe'):t_('regTitle'))}</h2>
+   <p class="sub" style="margin-top:-6px">${esc(t_('regSub'))}</p>${s.rejected?`<div class="msg">${esc(t_('rejectedReg'))}</div>`:''}
+   <label class="lbl">${esc(t_('yourName'))}<select id="f_rid"><option value="">${esc(t_('choose'))}</option>${roster.filter(p=>!p.uid||p.uid===uid).map(p=>`<option value="${esc(p.id)}">${esc(lang==='ar'?(p.ar||p.name):(p.name||p.ar))}</option>`).join('')}</select></label>
+   <label class="lbl">${esc(t_('email'))}<input id="f_email" type="email" dir="ltr" autocomplete="email"></label>
+   <label class="lbl">${esc(t_('phone'))}<input id="f_phone" type="tel" dir="ltr" inputmode="tel" placeholder="05XXXXXXXX" autocomplete="tel"></label>
+   <div class="err" id="f_err"></div>
+   <button class="btn pri" id="f_go">${esc(edit?t_('save'):t_('start'))}</button>
+   ${edit&&s.lang?`<button type="button" class="link" id="f_cancel">${esc(t_('cancel'))}</button>`:(!staff||previewNew?`<button type="button" class="link" id="f_back">← رجوع / Back</button>`:'')}
+  </form>`;
+  $('#f_rid').value=sel;
+  $('#f_email').value=keep.email!=null?keep.email:(s.email||(me&&me.email)||'');$('#f_phone').value=keep.phone!=null?keep.phone:(s.phone||'');
+  $('#f_rid').onchange=e=>{sel=e.target.value};
+  $('#f_lang').onclick=e=>{const b=e.target.closest('[data-l]');if(!b)return;keep={email:$('#f_email').value,phone:$('#f_phone').value};lang=b.dataset.l;ls.set('samraa_lang',lang);applyLang();greet();draw()};
+  if($('#f_cancel'))$('#f_cancel').onclick=tasks;
+  if($('#f_back'))$('#f_back').onclick=showGate;
+  $('#reg').onsubmit=async e=>{
+    e.preventDefault();const err=$('#f_err');err.textContent='';
+    if(previewNew){err.textContent='وضع المعاينة — ما ينحفظ شي. هنا الموظف الحقيقي يضغط «ابدأ» ويطلع له «بانتظار تأكيد المشرف».';return}
+    const p=rosterById()[sel];
+    const v={rid:p?p.id:'',name:p?(p.name||p.ar):'',email:$('#f_email').value.trim(),phone:$('#f_phone').value.replace(/[\s-]/g,''),lang};
+    if(!p)return err.textContent=t_('errName');
+    if(!/^\S+@\S+\.\S+$/.test(v.email))return err.textContent=t_('errEmail');
+    if(!/^\+?\d{9,14}$/.test(v.phone))return err.textContent=t_('errPhone');
+    const b=$('#f_go');b.disabled=true;
+    try{const since=(staff&&staff.since)||Date.now();await db.doc('staff/'+uid).set({...v,since,ts:Date.now()});staff={...v,since};if(isOwnerF()){try{await bindName(uid,v.rid)}catch(e){}}myKey=pkey(uid,staff);greet();if(!mineUnsub){watchMine();watchPlan()}tasks();toast(t_('regSaved'));$('#main').scrollIntoView({behavior:rm?'auto':'smooth'})}
+    catch(x){b.disabled=false;err.textContent=t_('regErr')}
+  };};
+  let keep={};draw();reveal($('#main'));
+}
+
+/* ======================= employee tasks ======================= */
+const myAssign=()=>myKey?planFor(today(),myKey):null;
+const mySheets=()=>needFor(today(),myKey,staff);
+const myShift=()=>shiftFor(today(),myKey,staff);
+let shownSheets='';
+function watchPlan(){
+  const chk=()=>{const ap=approval();const k=ap!=='ok'?'ap:'+ap:mySheets().join(',')+'|'+myShift()+'|'+JSON.stringify(myAssign()||{});if(k!==shownSheets&&!$('#reg')){greet();tasks()}else teamView()};
+  try{db.doc('roster/list').onSnapshot(s=>{roster=s.exists?(s.data().people||[]):[];chk()},()=>{})}catch(e){}
+  const subDay=()=>{try{if(dayUnsub)dayUnsub();if(msgUnsub)msgUnsub();const d=today();dayUnsub=db.doc('plan/'+d).onSnapshot(s=>{if(s.exists)ingestPlan(d,s.data());else delete planD[d];chk()},()=>{});msgUnsub=db.doc('plan/msg_'+d).onSnapshot(s=>{staffMsg=s.exists?s.data():null;showMsg()},()=>{})}catch(e){}};
+  subDay();let curDay=today();
+  const tick=()=>{if(today()!==curDay){curDay=today();subDay();if(!$('#reg')){greet();tasks()}}else refreshPills()};
+  setInterval(tick,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()});
+  try{db.doc('staff/'+uid).onSnapshot(s=>{if(!s.exists)return;const n=s.data();if(JSON.stringify(n)===JSON.stringify(staff))return;staff=n;myKey=pkey(uid,staff);if($('#reg'))return;if(staff.rejected||!staff.rid)register(true);else tasks()},()=>{})}catch(e){}
+}
+let dayUnsub=null,msgUnsub=null,staffMsg=null;
+function showMsg(){const b=$('#staffMsg');if(!b)return;b.hidden=!(staffMsg&&staffMsg.text);if(staffMsg&&staffMsg.text)b.innerHTML=`<div class="smh">📢 ${esc(t_('todayMsg'))}</div><div class="smt">${esc(staffMsg.text)}</div>`}
+let mineLoaded=false;
+/* open the only checklist automatically, but never one that was already sent today */
+function autoOpen(){if(!mineLoaded)return;const list=$('#main').querySelectorAll('.task');if(list.length!==1)return;const id=list[0].id.slice(3);if(mine[key(id)]||list[0].classList.contains('open'))return;setTimeout(()=>{if(!mine[key(id)])toggle(id)},rm?0:400)}
+function watchMine(){
+  try{mineUnsub=db.doc('submissions/'+uid).onSnapshot(s=>{mine=s.exists?unpackDoc(s.data()):{};refreshPills();if(!mineLoaded){mineLoaded=true;autoOpen()}},()=>{mineLoaded=true})}catch(e){}
+}
+const key=id=>'d_'+today()+'_'+id;
+function pill(id){const e=mine[key(id)],sh=myShift(),dl=lang==='ar'?DLAR[sh]:DLEN[sh];
+  if(!e){if(!timed(id))return `<span class="pill p-warn">${esc(t_('notSent'))}</span>`;return Date.now()>dueTs(today(),sh)?`<span class="pill p-bad">⏰ ${esc(t_('late'))}</span>`:`<span class="pill p-warn">${esc(t_('due'))} ${esc(dl)}</span>`}
+  const lm=lateMin(e,today(),sh);if(lm)return `<span class="pill p-bad">✓ ${e.done}/${e.total} · ⏰ ${esc(t_('late'))}</span>`;return `<span class="pill ${e.done===e.total?'p-ok':'p-warn'}">✓ ${esc(t_('sentDone'))} · ${e.done}/${e.total}</span>`}
+function banner(id){const e=mine[key(id)],r=mine[rkey(today(),id)],st=rstate(e,r);
+  if(st==='approved')return `<div class="rban ok">${esc(t_('approved'))}${r.note?' — '+esc(r.note):''}</div>`;
+  if(st==='followup')return `<div class="rban bad"><b>${esc(t_('followup'))}</b>${r.note?'<br>'+esc(r.note):''}<br><small>${esc(t_('fixResend'))}</small></div>`;
+  if(st==='resubmitted')return `<div class="rban warn">${esc(t_('resub'))}</div>`;return ''}
+function refreshPills(){SHEETS.forEach(s=>{const el=document.getElementById('pl_'+s.id);if(el){el.innerHTML=pill(s.id);el.closest('.task').classList.toggle('sent',!!mine[key(s.id)]);const b=document.getElementById('rb_'+s.id);if(b)b.innerHTML=banner(s.id)}})}
+function tasks(){
+  const ap=approval();
+  if(ap!=='ok'){shownSheets='ap:'+ap;
+    $('#main').innerHTML=`<div class="card rv in" style="text-align:center"><div style="font-size:40px">${ap==='taken'?'⚠️':'⏳'}</div><p style="margin:8px 0">${esc(t_(ap==='taken'?'takenName':'pendingApp'))}</p>${ap==='taken'||ap==='none'?`<button class="btn" id="repick">${esc(t_('editMe'))}</button>`:''}</div>`;
+    if($('#repick'))$('#repick').onclick=()=>register(true);return}
+  const sh=myShift(),a=myAssign(),list=mySheets();
+  shownSheets=list.join(',')+'|'+sh+'|'+JSON.stringify(a||{});
+  const d=riyadh(Date.now()-3*3600e3).toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});
+  const chip=a&&a.off||!(list.length||(a&&(a.st||[]).length))?'':`<span class="shiftchip">${esc(shiftName(sh))} · ${esc(shiftHours(sh))}</span>`;
+  $('#main').innerHTML=`<div class="stack">
+   ${award&&award.winners&&award.winners[0]?`<div class="award rv">🏆 <div><small>${esc(t_('empMonth'))}</small><b>${esc((()=>{const w=award.winners[0],p=rosterById()[w.key];return p?(lang==='ar'?(p.ar||p.name):(p.name||p.ar)):w.name})())}</b></div>${award.winners[0].key===myKey?'<span>🎉</span>':''}</div>`:''}
+   <div class="staffmsg rv in" id="staffMsg" hidden></div>
+   <section id="secTasks" class="hsec"><div class="sech rv"><h2>📝 ${esc(t_('myChecklist'))}</h2><div class="sub">${esc(d)}</div>${chip}</div>
+   ${a&&a.off?`<div class="card rv" style="text-align:center"><div style="font-size:40px">🌴</div><h2>${esc(t_('offToday'))}</h2><p class="sub">${esc(t_('noTasksOff'))}</p></div>`:''}
+   ${!(a&&a.off)&&!list.length?(a&&(a.st||[]).length?`<div class="card rv" style="text-align:center"><div style="font-size:36px">🛎️</div><p class="sub" style="margin:6px 0 0">${esc(t_('noChecklist'))}</p></div>`:`<div class="msg rv">${esc(t_('noAssign'))}</div>`):''}
+   <div class="tasks">${list.map(id=>{const s=byId[id];const n2=lang==='en'?'':s.en;return `<div class="task rv" id="tk_${id}"><button class="top" data-id="${id}"><div class="t"><b>${esc(sheetName(s))}</b>${n2&&n2!==sheetName(s)?`<small>${esc(n2)}</small>`:''}</div><span id="pl_${id}">${pill(id)}</span></button><div id="rb_${id}">${banner(id)}</div><div class="body"><div><div class="inner" id="in_${id}"></div></div></div></div>`}).join('')}</div></section>
+   <section id="secTeam" class="hsec"><div class="sech rv"><h2>👥 ${esc(t_('team'))}</h2></div><div class="card rv" id="team"></div></section></div>`;
+  $('#main').querySelectorAll('.top').forEach(b=>b.onclick=()=>toggle(b.dataset.id));
+  if(!homeSeqDone){homeSeqDone=true;$('#secTasks').classList.add('seqin');$('#secTasks').style.animationDelay='2s';$('#secTeam').classList.add('seqin');$('#secTeam').style.animationDelay='2.5s';$('#main').querySelectorAll('.rv').forEach(x=>x.classList.add('in'))}
+  teamView();refreshPills();showMsg();reveal($('#main'));
+  autoOpen();
+}
+function teamView(){const box=$('#team');if(!box)return;const d=today(),nm=p=>lang==='ar'?(p.ar||p.name):(p.name||p.ar);let h='';
+  for(const k of ['am','pm']){const rows=roster.filter(p=>{const a=planFor(d,p.id);return a&&!a.off&&(a.st||[]).length&&(a.sh||'am')===k});if(!rows.length)continue;
+    h+=`<div class="sec">${esc(shiftName(k))} · ${esc(shiftHours(k))}</div>`+rows.map(p=>{const a=planFor(d,p.id);return `<div class="trow${p.id===myKey?' me':''}"><b>${esc(nm(p))}</b><span>${esc(a.st.map(roleName).join(' + '))}</span></div>`}).join('')}
+  const off=roster.filter(p=>{const a=planFor(d,p.id);return a&&a.off});if(off.length)h+=`<div class="sec">${esc(t_('offList'))} 🌴</div><div class="sub" style="padding:4px 2px">${off.map(p=>esc(nm(p))).join('، ')}</div>`;
+  box.innerHTML=h||`<p class="sub">${esc(t_('noAssign'))}</p>`}
+function toggle(id){
+  const t=document.getElementById('tk_'+id);if(!t)return;const open=!t.classList.contains('open');
+  document.querySelectorAll('.task.open').forEach(x=>x.classList.remove('open'));
+  if(open){form(id);t.classList.add('open');openSheet=id}else openSheet=null;
+}
+const num=v=>{const n=parseFloat(String(v||'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[০-৯]/g,d=>'০১২৩৪৫৬৭৮৯'.indexOf(d)).replace(/[०-९]/g,d=>'०१२३४५६७८९'.indexOf(d)).replace(/,/g,''));return isFinite(n)?n:null};
+const sar=n=>n==null?'—':n.toFixed(1);
+function avgCalc(slots,idxs){const out={};let po=0,ps=0;for(const i of idxs){const x=slots[i]||{},o=num(x.o),s=num(x.s);if(o&&s!=null){const io=o-po,is=s-ps;out[i]={avg:s/o,iavg:io>0?is/io:null};po=o;ps=s}}return out}
+function avgForm(id,box,prev){
+  const s=byId[id],sl=prev.slots||{},idxs=visIdx(s,myShift());
+  box.innerHTML=`<p class="sub" style="margin:0 0 6px">${esc(t_('avgHelp'))}</p>
+   <div class="avgsum"><div><b id="as_s">—</b>${esc(t_('salesTotal'))}</div><div><b id="as_o">—</b>${esc(t_('orders'))}</div><div><b id="as_d">—</b>${esc(t_('avgShift'))}</div><div><b id="as_l">—</b>${esc(t_('avgLast'))}</div></div>
+   <div class="avgrow hd"><span>${esc(t_('time'))}</span><span>${esc(t_('orders'))}</span><span>${esc(t_('sales'))}</span><span>${esc(t_('avg'))}</span></div>`
+   +idxs.map(i=>{const it=s.items[i];return `<div class="avgrow" data-slot="${i}"><span>${esc(lang==='ar'?it[1].replace('الساعة ',''):it[0])}</span><input inputmode="numeric" data-o placeholder="0" value="${esc((sl[i]||{}).o||'')}"><input inputmode="decimal" data-s placeholder="0" value="${esc((sl[i]||{}).s||'')}"><span class="a" data-a>—</span></div>`}).join('')
+   +`<label class="lbl" style="margin-top:12px">${esc(t_('avgNotes'))}<textarea data-notes>${esc(prev.notes||'')}</textarea></label><div class="err" data-err></div><button class="btn pri" data-send>${esc(t_('sendShort'))}</button><p class="sub" style="text-align:center;margin-top:6px">${esc(t_('autosaveNum'))}</p>`;
+  const calc=()=>{const r=avgCalc(readSlots(box),idxs);let last=null,lasti=null;
+    box.querySelectorAll('[data-slot]').forEach(row=>{const x=r[row.dataset.slot];row.querySelector('[data-a]').textContent=x?sar(x.avg):'—';if(x){last=x.avg;lasti=x.iavg}});
+    $('#as_d').textContent=sar(last);$('#as_l').textContent=sar(lasti);const ss_=readSlots(box);let lo=null,ls_=null;idxs.forEach(i=>{const x=ss_[i];if(x&&num(x.o)&&num(x.s)!=null){lo=num(x.o);ls_=num(x.s)}});$('#as_s').textContent=ls_==null?'—':Math.round(ls_).toLocaleString('en-US');$('#as_o').textContent=lo==null?'—':lo};calc();
+  let at=null;box.querySelectorAll('[data-o],[data-s]').forEach(x=>x.oninput=()=>{calc();clearTimeout(at);at=setTimeout(()=>save(id,box,true),1200)});
+  box.querySelector('[data-send]').onclick=()=>save(id,box,false);
+}
+function reportForm(id,box,prev){const r=prev.rep||{},ar=lang==='ar';
+  box.innerHTML=`<p class="sub" style="margin:0 0 8px">${ar?'يتعبّى نهاية كل يوم، ويوصل لمدير الفرع.':'Fill in at the end of each day — it goes to the branch manager.'}</p>`+REPSEC.map(([k,a,e,h,he,def])=>`<label class="lbl rsec"><span class="rh">${esc(ar?a:e)}</span>${h?`<small>${esc(ar?h:he)}</small>`:''}<textarea data-rk="${k}" maxlength="2000" placeholder="${esc(ar?'اكتب هنا…':'Write here…')}">${esc(r[k]!=null?r[k]:def)}</textarea></label>`).join('')
+   +`<div class="err" data-err></div><button class="btn pri" data-send>${esc(ar?'إرسال التقرير':'Send report')}</button>`;
+  box.querySelector('[data-send]').onclick=()=>save(id,box,false)}
+function readSlots(box){const o={};box.querySelectorAll('[data-slot]').forEach(r=>{const a=r.querySelector('[data-o]').value.trim(),b=r.querySelector('[data-s]').value.trim();if(a||b)o[r.dataset.slot]={o:a.slice(0,8),s:b.slice(0,12)}});return o}
+function form(id){
+  if(byId[id].type==='avg')return avgForm(id,document.getElementById('in_'+id),mine[key(id)]||{});
+  if(byId[id].type==='report')return reportForm(id,document.getElementById('in_'+id),mine[key(id)]||{});
+  const s=byId[id],sh=myShift(),prev=mine[key(id)]||{},pc=prev.checks||{},pv=prev.vals||{};let n=0;
+  const box=document.getElementById('in_'+id);
+  box.innerHTML=`<div class="prog"><i id="pg_${id}"></i></div>`+s.items.map((it,i)=>{if(it[0]==='#')return `<div class="sec">${esc(secName(it[1]))}</div>`;if(!inShift(it,sh))return '';n++;
+    const tx=itemText(s,it),main=Array.isArray(tx)?tx[0]:tx,sub=Array.isArray(tx)?tx[1]:'';
+    return `<div class="item"><input type="checkbox" id="c_${id}_${i}" data-i="${i}" ${pc[i]?'checked':''}><label for="c_${id}_${i}"><span class="ar">${s.auto?'':n+'. '}${esc(main)}</span>${sub?`<span class="en">${esc(sub)}</span>`:''}</label>${it[2]?`<input class="val" type="text" inputmode="decimal" data-v="${i}" placeholder="${esc(it[2])}" value="${esc(pv[i]||'')}">`:''}</div>`}).join('')
+   +`<label class="lbl" style="margin-top:12px">${esc(t_('notes'))}<textarea data-notes placeholder="${esc(t_('notesPh'))}">${esc(prev.notes||'')}</textarea></label>
+   <div class="err" data-err></div>
+   <button class="btn pri" data-send>${esc(s.auto?t_('saveLog'):t_('send'))}</button>
+   ${s.auto?`<p class="sub" style="text-align:center;margin-top:6px">${esc(t_('autosave'))}</p>`:''}`;
+  const upd=()=>{const all=box.querySelectorAll('[data-i]');const c=[...all].filter(x=>x.checked).length;document.getElementById('pg_'+id).style.width=(all.length?c/all.length*100:0)+'%'};upd();
+  let at=null;
+  box.querySelectorAll('[data-i]').forEach(c=>c.onchange=()=>{upd();if(s.auto){clearTimeout(at);at=setTimeout(()=>save(id,box,true),700)}});
+  box.querySelector('[data-send]').onclick=()=>save(id,box,false);
+}
+let saving=false,pendSave=null;
+async function save(id,box,silent){
+  if(saving){if(silent)pendSave=[id,box];return}saving=true;
+  const s=byId[id],sh=myShift(),b=box.querySelector('[data-send]'),er=box.querySelector('[data-err]');if(!silent)b.disabled=true;er.textContent='';
+  const checks={},vals={};let slots=null;
+  if(s.type==='avg'){slots=readSlots(box);Object.entries(slots).forEach(([i,x])=>{if(num(x.o)&&num(x.s)!=null)checks[i]=true})}
+  box.querySelectorAll('[data-i]').forEach(c=>{if(c.checked)checks[c.dataset.i]=true});
+  box.querySelectorAll('[data-v]').forEach(c=>{if(c.value.trim())vals[c.dataset.v]=c.value.trim().slice(0,20)});
+  let rp=null;if(s.type==='report'){rp={};box.querySelectorAll('[data-rk]').forEach((x,i)=>{rp[x.dataset.rk]=x.value.trim().slice(0,2000);if(rp[x.dataset.rk])checks[i]=true})}
+  const prevE=mine[key(id)];const entry={sheet:id,date:today(),firstTs:(prevE&&(prevE.firstTs||prevE.ts))||Date.now(),checks,vals,...(rp?{rep:rp}:{}),notes:((box.querySelector('[data-notes]')||{}).value||'').trim().slice(0,1000),done:Object.keys(checks).length,total:visIdx(s,sh).length,...(slots?{slots}:{}),by:uid,shift:sh,ts:Date.now()};
+  const ref=db.doc('submissions/'+uid),f={[key(id)]:packE(entry)};
+  try{await upsert(ref,f);
+    mine={...mine,[key(id)]:entry};refreshPills();
+    if(silent)toast(t_('savedToast'));else{toast(t_('sentToast'));toggle(id)}
+  }catch(e){er.textContent=t_('sendErr')}
+  finally{saving=false;if(b)b.disabled=false;if(pendSave){const [pi,pb]=pendSave;pendSave=null;save(pi,pb,true)}}
+}
+
+/* ======================= owner dashboard (Arabic) ======================= */
+function sha256js(str){const K=[],H=[];let n=2,c=0;const isP=x=>{for(let i=2;i*i<=x;i++)if(x%i==0)return false;return true};const fr=x=>(x-Math.floor(x))*4294967296|0;while(c<64){if(isP(n)){if(c<8)H[c]=fr(Math.pow(n,1/2));K[c]=fr(Math.pow(n,1/3));c++}n++}
+const b=[...new TextEncoder().encode(str)],l=b.length*8;b.push(0x80);while(b.length%64!=56)b.push(0);for(let i=7;i>=0;i--)b.push(i>3?0:(l>>>(i*8))&255);
+const r=(x,k)=>(x>>>k)|(x<<(32-k));for(let o=0;o<b.length;o+=64){const w=[];for(let i=0;i<16;i++)w[i]=(b[o+i*4]<<24)|(b[o+i*4+1]<<16)|(b[o+i*4+2]<<8)|b[o+i*4+3];for(let i=16;i<64;i++){const s0=r(w[i-15],7)^r(w[i-15],18)^(w[i-15]>>>3),s1=r(w[i-2],17)^r(w[i-2],19)^(w[i-2]>>>10);w[i]=(w[i-16]+s0+w[i-7]+s1)|0}
+let [a,bb,cc,d,e,f,g,h]=H;for(let i=0;i<64;i++){const S1=r(e,6)^r(e,11)^r(e,25),ch=(e&f)^(~e&g),t1=(h+S1+ch+K[i]+w[i])|0,S0=r(a,2)^r(a,13)^r(a,22),mj=(a&bb)^(a&cc)^(bb&cc),t2=(S0+mj)|0;h=g;g=f;f=e;e=(d+t1)|0;d=cc;cc=bb;bb=a;a=(t1+t2)|0}
+H[0]=(H[0]+a)|0;H[1]=(H[1]+bb)|0;H[2]=(H[2]+cc)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0}
+return H.map(x=>(x>>>0).toString(16).padStart(8,'0')).join('')}
+async function sha(t){const s='samraa:'+t;try{if(crypto.subtle){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}}catch(e){}return sha256js(s)}
+let fails=0,lockUntil=0;
+const MANAGERS=[
+ {id:'moath',ar:'معاذ',title:'المدير التنفيذي',home:'idara',nav:['m_day','m_month']},
+ {id:'bassam',ar:'بسام',title:'مدير الفرع',home:'idara',nav:['review','staff','month','reports','m_day','m_month','m_targets']},
+ {id:'hamad',ar:'حمد',title:'R&D',home:'idara',nav:['m_day','m_month']},
+ {id:'turki',ar:'تركي',title:'مشرف وردية',home:'manager',staffMgr:true,nav:['review','staff','plan','month','reports','staffmsg','m_day','m_month','m_targets','act']}];
+let forcePick=false,mgrMap={},meMgr=null,pvId=null;
+/* owner: identity is a local preview choice (default تركي); others: the mapping the owner confirmed */
+function myMgr(){if(isOwnerF())return mgrById('turki');return mgrById(mgrMap[uid])}
+const can=v=>!!(meMgr&&meMgr.nav.includes(v));
+const pureMgr=()=>!!(meMgr&&!meMgr.staffMgr);
+const mgrById=id=>MANAGERS.find(x=>x.id===id);
+function mgrName(u){const mm=mgrById(mgrMap[u]);return mm?mm.ar:who(u)}
+async function ensureMgr(next){
+  if(!db){dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;d.innerHTML=`<div class="pin card stack fade"><img src="${document.querySelector('.logo').src}" alt="" style="height:70px;margin:0 auto"><h2>هذي الصفحة للإدارة</h2><p class="sub">تفتح للي عندهم صلاحية تعديل على الرابط.</p><button class="btn" id="pback">رجوع</button></div>`;$('#pback').onclick=()=>{if(!staff&&!meMgr){closeDash();showGate()}else go('home')};return}
+  try{const s=await db.doc('admin/managers').get();mgrMap=s.exists?(s.data()||{}):{}}catch(e){}
+  meMgr=myMgr();if(meMgr&&!forcePick)return next();forcePick=false;
+  if(!isOwnerF()){dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);
+    try{await upsert(db.doc('admin/requests'),{[uid]:{ts:Date.now()}})}catch(e){}
+    d.innerHTML=`<div class="pin card stack fade"><img src="${document.querySelector('.logo').src}" alt="" style="height:70px;margin:0 auto"><h2>بانتظار التفعيل</h2><p class="sub">وصل طلبك لصاحب الرابط. أول ما يفعّلك من لوحته تقدر تدخل.</p><button class="btn" id="pback">رجوع</button></div>`;
+    $('#pback').onclick=()=>{if(!staff&&!meMgr){closeDash();showGate()}else go('home')};return}
+  dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);
+  d.innerHTML=`<div class="pin card stack fade"><img src="${document.querySelector('.logo').src}" alt="" style="height:70px;margin:0 auto"><h2>مين أنت؟</h2><p class="sub">${isOwnerF()?'تقدر ترجع هنا من القائمة وتعاين الصفحة بعين أي واحد منهم.':'تختار مرة وحدة بس — بعدها تدخل على طول.'}</p>${MANAGERS.map(x=>`<button class="btn mgrb" data-mg="${x.id}"><b>${esc(x.ar)}</b><small>${esc(x.title)}</small></button>`).join('')}<button class="link" id="pback">رجوع</button></div>`;
+  $('#pback').onclick=()=>{if(!staff&&!meMgr){closeDash();showGate()}else go('home')};
+  d.querySelectorAll('[data-mg]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{pvId=b.dataset.mg;ss.set('samraa_pv',pvId);meMgr=mgrById(pvId);next===openDash&&!can(dtab==='sheets'?'review':dtab)||next===openMgmt&&!can('m_'+mtab)?go('home'):next()}catch(e){b.disabled=false;toast('ما انحفظ')}});
+}
+const hello=()=>'<div id="reqs"></div>';
+let reqs={};
+async function renderReqs(){const box=$('#reqs');if(!box||!isOwnerF())return;
+  const ids=Object.keys(reqs).filter(u=>!mgrMap[u]&&!(reqs[u]&&reqs[u].rejected));
+  const R=rosterById(),pend=Object.entries(staffAll).filter(([u,s])=>s&&s.rid&&R[s.rid]&&R[s.rid].uid!==u&&!s.rejected&&!mgrMap[u]).map(([u,s])=>({u,s,p:R[s.rid]}));
+  if(!ids.length&&!pend.length){box.innerHTML='';return}
+  let ps={};try{ps=user.profiles?await user.profiles([...ids,...pend.map(x=>x.u)]):{}}catch(e){}
+  box.innerHTML=(pend.length?`<div class="card reqc"><b>🧾 تسجيلات موظفين بانتظار تأكيدك</b><p class="sub" style="margin:2px 0 6px">تأكد إن الحساب فعلاً حق هذا الموظف قبل ما تأكّد. بعد التأكيد ما يقدر أحد ثاني يسجّل بنفس الاسم.</p>${pend.map(x=>`<div class="reqr" data-su="${esc(x.u)}"><div>اختار اسم: <b class="nm"></b>${x.p.uid?' <span class="pill p-bad">الاسم مربوط بحساب ثاني</span>':''}<small class="ac"></small></div><div class="chips"><button data-sa="ok">✓ تأكيد</button><button data-sa="no" class="rej">رفض</button></div></div>`).join('')}</div>`:'')
+   +(ids.length?`<div class="card reqc"><b>🔑 طلبات دخول الإدارة</b><p class="sub" style="margin:2px 0 6px">حساب فتح رابط الإدارة. اختر مين هو، أو ارفض لو مو من الإدارة.</p>${ids.map(u=>`<div class="reqr" data-ru="${esc(u)}"><div><b></b><small></small></div><div class="chips">${MANAGERS.map(x=>`<button data-rm="${x.id}">${esc(x.ar)}</button>`).join('')}<button data-rm="__no" class="rej">رفض</button></div></div>`).join('')}</div>`:'');
+  pend.forEach(x=>{const r=box.querySelector(`[data-su="${CSS.escape(x.u)}"]`),p=ps[x.u]||{};r.querySelector('.nm').textContent=x.p.ar||x.p.name;r.querySelector('.ac').textContent='الحساب: '+(p.name||'بدون اسم')+(p.email?' · '+p.email:'')+(x.s.phone?' · '+x.s.phone:'')});
+  ids.forEach(u=>{const r=box.querySelector(`[data-ru="${CSS.escape(u)}"]`),p=ps[u]||{};r.querySelector('b').textContent=p.name||'حساب بدون اسم';r.querySelector('small').textContent=p.email||''});
+  box.onclick=async ev=>{
+    const sb=ev.target.closest('[data-sa]');
+    if(sb){const u=sb.closest('[data-su]').dataset.su,s=staffAll[u];sb.disabled=true;
+      try{if(sb.dataset.sa==='ok'){await bindName(u,s.rid);toast('تم تأكيد '+(R[s.rid].ar||R[s.rid].name)+' ✓')}else{await db.doc('staff/'+u).update({rid:'',rejected:true});staffAll[u]={...s,rid:'',rejected:true};toast('انرفض — بيطلب منه يختار اسمه من جديد')}renderReqs()}catch(e){sb.disabled=false;toast('ما انحفظ')}return}
+    const b=ev.target.closest('[data-rm]');if(!b)return;const u=b.closest('[data-ru]').dataset.ru;b.disabled=true;
+    try{if(b.dataset.rm==='__no'){await db.doc('admin/requests').update({[u]:{ts:Date.now(),rejected:true}});reqs[u]={rejected:true}}else{await upsert(db.doc('admin/managers'),{[u]:b.dataset.rm});mgrMap[u]=b.dataset.rm}toast('تم ✓');renderReqs()}catch(e){b.disabled=false;toast('ما انحفظ')}}}
+function route(){if(location.hash==='#manager')go('review');else if(location.hash==='#idara')go('m_day')}
+addEventListener('hashchange',route);
+function dashDir(){document.body.setAttribute('dir','rtl');document.body.classList.remove('ltr');const b=$('#toDash');if(b)b.hidden=true}
+async function pinScreen(){
+  if(!db){toast('لازم تسجيل الدخول أولاً');return}
+  let cfg=null;try{const s=await db.doc('admin/config').get();cfg=s.exists?s.data():null}catch(e){}
+  const setup=!cfg&&isAdmin;dashDir();
+  $('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);
+  d.innerHTML=`<form class="pin card stack fade" id="pinF"><img src="${document.querySelector('.logo').src}" alt="" style="height:70px;margin:0 auto"><h2>${setup?'عيّن رقم دخول للوحة':'لوحة المدير'}</h2>
+   <p class="sub">${setup?'اختر رقم من 4 إلى 8 أرقام — تحتاجه كل مرة تفتح اللوحة.':'أدخل رقم الدخول'}</p>
+   <input id="p1" type="password" inputmode="numeric" autocomplete="off" maxlength="8">${setup?'<input id="p2" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="أعد الرقم">':''}
+   <div class="err" id="pe"></div><button class="btn pri">${setup?'حفظ':'دخول'}</button><button type="button" class="link" id="pback">رجوع</button></form>`;
+  $('#pback').onclick=()=>{if(!staff&&!meMgr){closeDash();showGate()}else go('home')};$('#p1').focus();
+  $('#pinF').onsubmit=async e=>{e.preventDefault();const pe=$('#pe'),v=$('#p1').value.trim();
+    if(Date.now()<lockUntil)return pe.textContent='محاولات كثيرة — انتظر قليلاً';
+    if(!/^\d{4,8}$/.test(v))return pe.textContent='الرقم لازم يكون من 4 إلى 8 أرقام';
+    if(setup){if(v!==$('#p2').value.trim())return pe.textContent='الرقمين مو متطابقين';
+      try{await db.doc('admin/config').set({pinHash:await sha(v),ts:Date.now()});ss.set('samraa_dash','1');openDash()}catch(x){pe.textContent='ما انحفظ'}return}
+    if(cfg&&cfg.pinHash===await sha(v)){fails=0;ss.set('samraa_dash','1');openDash()}
+    else{fails++;if(fails>=5){lockUntil=Date.now()+30000;fails=0}pe.textContent='رقم الدخول غير صحيح';$('#p1').value=''}
+  };
+}
+function closeDash(){if(dashUnsub.length){dashUnsub.forEach(u=>u());dashUnsub=[]}$('#dash').hidden=true;$('#dash').innerHTML='';$('#emp').hidden=false;applyLang();toDashBtn()}
+function toDashBtn(){const b=$('#toDash');if(b){b.onclick=()=>ensureMgr(meMgr&&meMgr.home==='idara'?openMgmt:openDash);b.hidden=true}}
+let dashOK=false;
+let dashUnsub=[],subs={},staffAll={},boardDate=today(),boardMonth=today().slice(0,7),dtab='sheets',dashLoaded=false;
+function openDash(){
+  if(!['sheets','staff','plan','month','reports'].includes(dtab))dtab='sheets';dashOK=true;dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);
+  d.innerHTML=`<div class="fade">${hello()}
+   <div class="tabs"><button data-t="sheets">القوائم</button><button data-t="staff">الموظفين</button><button data-t="plan">التوزيع</button><button data-t="month">الشهر</button></div>
+   <div class="datebar" id="dayBar"><button class="btn" id="dprev" aria-label="اليوم السابق">→</button><input type="date" id="ddate"><button class="btn" id="dnext" aria-label="اليوم التالي">←</button><button class="btn" id="dtoday">اليوم</button></div>
+   <div class="datebar" id="monBar" hidden><button class="btn" id="mprev" aria-label="الشهر السابق">→</button><input type="month" id="dmonth"><button class="btn" id="mnext" aria-label="الشهر التالي">←</button></div>
+   <div class="tiles" id="tiles"></div>
+   <div id="dbody"><div class="msg">جاري التحميل…</div></div>
+   </div>`;
+  $('#ddate').value=boardDate;$('#dmonth').value=boardMonth;
+  const setD=v=>{boardDate=v;$('#ddate').value=v;renderDash()};
+  $('#dprev').onclick=()=>setD(shiftDay(boardDate,-1));$('#dnext').onclick=()=>setD(shiftDay(boardDate,1));$('#dtoday').onclick=()=>setD(today());
+  $('#ddate').onchange=e=>{if(e.target.value)setD(e.target.value)};
+  const setM=k=>{const [y,m]=boardMonth.split('-').map(Number);const t=new Date(y,m-1+k,1);boardMonth=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0');$('#dmonth').value=boardMonth;renderDash()};
+  $('#mprev').onclick=()=>setM(-1);$('#mnext').onclick=()=>setM(1);$('#dmonth').onchange=e=>{if(e.target.value){boardMonth=e.target.value;renderDash()}};
+  d.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{dtab=b.dataset.t;renderDash()});
+  $('#dbody').onclick=ev=>{if(ev.target.closest('[data-gomonth]')){dtab='month';boardMonth=today().slice(0,7);$('#dmonth').value=boardMonth;renderDash();return}if(ev.target.closest('[data-award]'))return announce(ev.target.closest('[data-award]'));if(dtab==='plan')planClick(ev);else reviewClick(ev)};
+  dashLoaded=false;const tm=setTimeout(()=>{if(!dashLoaded){const x=$('#dbody');if(x)x.innerHTML='<div class="msg">تعذر التحميل — اللوحة تفتح فقط لصاحب الرابط أو المحرر.</div>'}},10000);
+  const fail=()=>{clearTimeout(tm);const x=$('#dbody');if(x)x.innerHTML='<div class="msg">تعذر التحميل — اللوحة تفتح فقط لصاحب الرابط أو المحرر.</div>'};
+  try{
+    dashUnsub.push(db.collection('submissions').onSnapshot(s=>{clearTimeout(tm);dashLoaded=true;subs={};s.docs.forEach(x=>{subs[x.id]=unpackDoc(x.data())});renderDash()},fail));
+    dashUnsub.push(db.collection('plan').onSnapshot(s=>{planT={};planD={};s.docs.forEach(x=>ingestPlan(x.id,x.data()));renderDash()},()=>{}));
+    dashUnsub.push(db.collection('roster').onSnapshot(s=>{const x=s.docs.find(d=>d.id==='list');roster=x?(x.data().people||[]):[];renderDash()},()=>{}));
+    dashUnsub.push(db.doc('admin/managers').onSnapshot(s=>{mgrMap=s.exists?(s.data()||{}):{};renderDash();renderReqs()},()=>{}));
+    dashUnsub.push(db.doc('admin/requests').onSnapshot(s=>{reqs=s.exists?(s.data()||{}):{};renderReqs()},()=>{}));
+    dashUnsub.push(db.collection('staff').onSnapshot(s=>{staffAll={};s.docs.forEach(x=>{staffAll[x.id]=x.data()||{}});renderDash();renderReqs()},fail));
+  }catch(e){fail()}
+}
+/* people = roster entries + registered staff not linked to the roster */
+function people(){const R=rosterById(),byRid={};for(const [u,s] of Object.entries(staffAll)){if(s.rid&&R[s.rid]&&(!R[s.rid].uid||R[s.rid].uid===u))byRid[s.rid]=u}for(const p of roster){if(p.uid&&staffAll[p.uid])byRid[p.id]=p.uid}
+  const out=roster.map(p=>({key:p.id,name:p.ar||p.name,en:p.name,uid:byRid[p.id]||null,s:byRid[p.id]?staffAll[byRid[p.id]]:null}));
+  for(const [u,s] of Object.entries(staffAll)){if(!(s.rid&&R[s.rid]))out.push({key:'u_'+u,name:s.name||'—',en:'',uid:u,s})}return out}
+function entriesFor(date){const out={};for(const [u,doc] of Object.entries(subs)){for(const [k,v] of Object.entries(doc)){if(k.startsWith('d_'+date+'_')&&v&&byId[v.sheet]){(out[v.sheet]=out[v.sheet]||[]).push({...v,by:u,review:doc[rkey(date,v.sheet)]||null})}}}return out}
+function who(u){const s=staffAll[u];if(!s)return 'موظف غير مسجّل';const p=s.rid&&rosterById()[s.rid];return p?(p.ar||p.name):(s.name||'—')}
+function rpill(e){const st=rstate(e,e.review);const [c,t]=RS[st];return `<span class="pill ${c}">${t}</span>`}
+function reviewBox(e){const st=rstate(e,e.review),r=e.review;
+  return `<div class="rvbox" data-u="${esc(e.by)}" data-s="${esc(e.sheet)}">${rpill(e)}${r?`<div class="sub" style="margin-top:4px">${r.status==='approved'?'اعتمدها':'طلب الإعادة'}: ${esc(mgrName(r.by))} · ${hm(r.ts)}${r.note?' — '+esc(r.note):''}</div>`:''}
+   ${can('act')?'':'<!--'}<div class="rvbtns"><button class="btn sm okb" data-act="approve" ${st==='approved'?'disabled':''}>اعتماد ✓</button><button class="btn sm badb" data-act="follow">طلب إعادة متابعة</button></div>
+   <div class="rvf" hidden><textarea maxlength="300" placeholder="مثلاً: تابعت وطلع مو كويس — أعد تنظيف الدسبلاي"></textarea><button class="btn sm badb" data-act="sendf">إرسال الطلب للموظف</button></div>${can('act')?'':'-->'}</div>`}
+async function reviewClick(ev){if(!can('act'))return;
+  const b=ev.target.closest('[data-act]');if(!b)return;const box=b.closest('.rvbox'),u=box.dataset.u,s=box.dataset.s,act=b.dataset.act;
+  if(act==='follow'){const f=box.querySelector('.rvf');f.hidden=!f.hidden;if(!f.hidden)f.querySelector('textarea').focus();return}
+  const note=act==='sendf'?box.querySelector('textarea').value.trim():'';
+  if(act==='sendf'&&!note){toast('اكتب سبب طلب الإعادة');return}
+  b.disabled=true;
+  try{await db.doc('submissions/'+u).update({[rkey(boardDate,s)]:{status:act==='approve'?'approved':'followup',note:note.slice(0,300),ts:Date.now(),by:uid}});toast(act==='approve'?'تم الاعتماد ✓':'انرسل طلب الإعادة للموظف')}
+  catch(e){b.disabled=false;toast('ما انحفظ — جرب مرة ثانية')}
+}
+function keepOpen(fn){const open=[...document.querySelectorAll('#dbody details[open]')].map(d=>d.dataset.k);const typing=[...document.querySelectorAll('#dbody .rvf:not([hidden])')].map(f=>[f.closest('.rvbox').dataset.u+'|'+f.closest('.rvbox').dataset.s,f.querySelector('textarea').value]);
+  fn();open.forEach(k=>{const d=document.querySelector(`#dbody details[data-k="${CSS.escape(k)}"]`);if(d)d.open=true});
+  typing.forEach(([k,v])=>{const [u,s]=k.split('|');const bx=document.querySelector(`#dbody .rvbox[data-u="${CSS.escape(u)}"][data-s="${CSS.escape(s)}"]`);if(bx){const f=bx.querySelector('.rvf');f.hidden=false;f.querySelector('textarea').value=v}})}
+const LANGTAG={ar:'عربي',en:'English',hi:'هندي',bn:'بنقالي'};
+function renderDash(){
+  const body=$('#dbody');if(!body||!dashLoaded)return;
+  document.querySelectorAll('#dash .tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===dtab));
+  $('#dayBar').hidden=dtab==='month';$('#monBar').hidden=dtab!=='month';
+  if(dtab==='month')return keepOpen(renderMonth);
+  if(dtab==='plan')return renderPlan();
+  if(dtab==='reports')return renderReports();
+  const RSH=SHEETS.filter(s=>s.type!=='report');
+  const E=entriesFor(boardDate),isToday=boardDate===today(),sent=RSH.filter(s=>E[s.id]).length,P=people();
+  const pend=Object.values(E).flat().filter(e=>['pending','resubmitted'].includes(rstate(e,e.review))).length;
+  $('#tiles').innerHTML=`<div class="tile"><b style="color:var(--ok)">${sent}/${RSH.length}</b>قوائم أُرسلت</div><div class="tile"><b style="color:${pend?'var(--warn)':'var(--ok)'}">${pend}</b>بانتظار مراجعتك</div><div class="tile"><b>${P.filter(p=>p.uid).length}/${P.length}</b>سجّلوا</div>`;
+  const tdy=today(),[ty,tm]=tdy.split('-').map(Number),eom=Number(tdy.slice(8,10))>=new Date(ty,tm,0).getDate()-1;
+  keepOpen(()=>{
+  if(dtab==='sheets'){
+    body.innerHTML=(eom&&isToday?`<button class="award awbtn" data-gomonth="1">🏆 <div><small>نهاية الشهر</small><b>شوف موظف الشهر وأعلنه للموظفين</b></div><span>←</span></button>`:'')+RSH.map(s=>{const es=E[s.id];
+      if(!es){const asg=P.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id));const lateU=timed(s.id)&&asg.some(p=>Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s)));
+        return `<div class="row ${isToday&&!lateU?'':'miss'}"><div class="t"><b>${esc(s.ar)}</b><small>${asg.length?esc(asg.map(p=>first(p.name)).join('، ')):esc(s.en)}${timed(s.id)&&asg.length?' · آخر موعد '+DLAR[shiftFor(boardDate,asg[0].key,asg[0].s)]:''}</small></div><span class="pill ${lateU?'p-bad':isToday?'p-warn':'p-bad'}">${lateU?'⏰ متأخر – لم تُرسل':isToday?'بانتظار':'لم تُرسل'}</span></div>`}
+      let merged={},tot=real(s);es.forEach(e=>Object.keys(e.checks||{}).forEach(i=>merged[i]=true));const done=Object.keys(merged).length;
+      const last=Math.max(...es.map(e=>e.ts));
+      const sts=es.map(e=>rstate(e,e.review));const agg=sts.includes('followup')?'followup':sts.every(x=>x==='approved')?'approved':sts.includes('resubmitted')?'resubmitted':'pending';
+      const per=es.map(e=>{const sh=SHIFTS[e.shift]?' · '+SHIFTS[e.shift].short:'';
+        if(s.type==='avg'){const idxs=visIdx(s,e.shift);const r=avgCalc(e.slots||{},idxs);const rows=idxs.map(i=>r[i]?`<tr><td>${esc(s.items[i][1].replace('الساعة ',''))}</td><td>${esc(e.slots[i].o)}</td><td>${esc(e.slots[i].s)}</td><td><b>${sar(r[i].avg)}</b></td><td>${sar(r[i].iavg)}</td></tr>`:'').join('');
+          const SO=salesOf(e);
+          return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · ${hm(e.ts)}</div>${SO?`<div class="salesline">💰 المبيعات <b>${money(SO.s)}</b> ريال · ${SO.o} طلب · الأفرج <b>${(SO.s/SO.o).toFixed(1)}</b></div>`:''}${rows?`<div style="overflow-x:auto"><table class="avt"><tr><th>الوقت</th><th>طلبات</th><th>مبيعات</th><th>الأفرج</th><th>آخر ساعتين</th></tr>${rows}</table></div>`:''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}
+        const vals=Object.entries(e.vals||{}).map(([i,v])=>esc(s.items[i]?s.items[i][1]:'')+': <b class="copy">'+esc(v)+' '+esc(s.items[i]&&s.items[i][2]||'')+'</b>');
+        const unc=visIdx(s,e.shift).filter(i=>!(e.checks||{})[i]).map(i=>s.items[i][1]);
+        const lm=lateMin(e,boardDate);
+        return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · أُرسلت ${hm(e.firstTs||e.ts)} · ${e.done}/${e.total} ${lm?`<span class="pill p-bad">⏰ متأخر ${fmtLate(lm)}</span>`:lm===0?'<span class="pill p-ok">في الوقت</span>':''}</div>${unc.length?'<div class="x">غير مكتمل ('+unc.length+'):<br>• '+unc.slice(0,40).map(esc).join('<br>• ')+'</div>':'<div style="color:var(--ok)">كل البنود مكتملة ✓</div>'}${vals.length?'<div>'+vals.join('<br>')+'</div>':''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}).join('');
+      return `<details class="row" data-k="s_${s.id}"><summary><div class="t"><b>${esc(s.ar)}</b><small>${es.map(e=>esc(first(who(e.by)))).join('، ')} · آخر تحديث ${hm(last)}</small></div><div class="pills"><span class="pill ${done===tot?'p-ok':'p-warn'}">${done}/${tot}</span>${es.some(e=>lateMin(e,boardDate))?'<span class="pill p-bad">⏰ متأخر</span>':''}<span class="pill ${RS[agg][0]}">${RS[agg][1]}</span></div></summary><div class="det">${per}</div></details>`}).join('');
+  }else{
+    if(!P.length){body.innerHTML='<div class="msg">ما فيه موظفين للحين.</div>';return}
+    body.innerHTML=P.map(p=>{const s=p.s||{},sh=needFor(boardDate,p.key,s),shf=SHIFTS[shiftFor(boardDate,p.key,s)],pa=planFor(boardDate,p.key);
+      const stTxt=pa&&(pa.st||[]).length?pa.st.map(x=>roleById[x]?roleById[x].ar:x).join(' + '):'بدون توزيع';
+      if(pa&&pa.off)return `<div class="row"><div class="t"><b>${esc(p.name)}</b><small>${p.uid?'':'لم يسجّل بعد'}</small></div><span class="pill p-off">إجازة 🌴</span></div>`;
+      if(!p.uid)return `<div class="row"><div class="t"><b>${esc(p.name)}</b><small>${esc(stTxt)}${sh.length?' · '+esc(shf.short):''}</small></div><span class="pill p-warn">لم يسجّل بعد</span></div>`;
+      const u=p.uid,mineDone=sh.filter(id=>(E[id]||[]).some(e=>e.by===u)).length;const ok=sh.length&&mineDone===sh.length;
+      return `<details class="row ${!ok&&!isToday&&sh.length?'miss':''}" data-k="u_${esc(u)}"><summary><div class="t"><b>${esc(p.name)}</b><small>${esc(stTxt)}${sh.length?' · '+esc(shf.short):''}</small></div><span class="pill ${!sh.length?'':ok?'p-ok':isToday?'p-warn':'p-bad'}">${mineDone}/${sh.length}</span></summary><div class="det">📱 <span class="copy">${esc(s.phone||'')}</span><br>✉️ <span class="copy">${esc(s.email||'')}</span><br>🌐 ${esc(LANGTAG[s.lang]||'')}<br>${sh.map(id=>{const e=(E[id]||[]).find(x=>x.by===u);const lm=lateMin(e,boardDate);return esc(byId[id].ar)+': '+(e?'<span style="color:var(--ok)">✓ '+hm(e.firstTs||e.ts)+' ('+e.done+'/'+e.total+')</span> '+(lm?'<span class="pill p-bad">⏰ '+fmtLate(lm)+'</span> ':'')+rpill(e):(timed(id)&&Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,s))?'<span class="x">⏰ متأخر – لم تُرسل</span>':'<span class="x">لم تُرسل</span>'))}).join('<br>')}</div></details>`}).join('');
+  }});
+}
+function monthStats(p,boardMonth){
+  const [y,m]=boardMonth.split('-').map(Number),dim=new Date(y,m,0).getDate(),tdy=today(),curMon=tdy.slice(0,7)===boardMonth;
+  const lastDay=curMon?Number(tdy.slice(8,10)):(boardMonth<tdy.slice(0,7)?dim:0);
+  const u=p.uid,s=p.s||{},doc=subs[u]||{},start=(s.since||s.ts)?ymd(riyadh(s.since||s.ts)):'';
+  const ents=Object.entries(doc).filter(([k,v])=>k.startsWith('d_'+boardMonth+'-')&&v&&byId[v.sheet]).map(([k,v])=>v);
+  const E={};ents.forEach(e=>{E[e.date+'|'+e.sheet]=e});
+  let req=0,ontime=0,late=0,miss=0,offd=0,full=0;const cal=[];
+  for(let i=1;i<=dim;i++){const d=boardMonth+'-'+String(i).padStart(2,'0'),pa=planFor(d,p.key),nd=needFor(d,p.key,s),past=i<lastDay||(!curMon&&i<=lastDay),isT=curMon&&i===lastDay;
+    if(pa&&pa.off){offd++;cal.push('o');continue}
+    if(d<start||(!past&&!isT)||!nd.length){cal.push(nd.some(x=>E[d+'|'+x])?'f':'');continue}
+    let dl=0,dm=0,dok=0;
+    for(const x of nd){const e=E[d+'|'+x];if(!timed(x)){if(e)dok++;else if(past)dm++;continue}
+      const due=dueTs(d,shiftFor(d,p.key,s));if(!e){if(past||Date.now()>due){dm++;req++;miss++}continue}
+      req++;const lm=lateMin(e,d);if(lm){late++;dl++}else{ontime++;dok++}}
+    if(!dm&&!dl&&(dok||nd.length))full++;
+    cal.push(dm?(dok||dl?'p':'n'):dl?'l':'f')}
+  const pct=ents.length?Math.round(ents.reduce((a,e)=>a+(e.total?e.done/e.total:0),0)/ents.length*100):0;
+  const revs=Object.entries(doc).filter(([k,v])=>k.startsWith('r_'+boardMonth+'-')&&v).map(([k,v])=>v);
+  const ap=revs.filter(v=>v.status==='approved').length,fu=revs.filter(v=>v.status==='followup').length;
+  const rate=req?ontime/req:0,score=rate*100+pct*0.2+ap*0.5-fu*2;
+  return {ents:ents.length,req,ontime,late,miss,offd,full,pct,ap,fu,rate,score,cal}}
+let monthRank=[];
+function renderReports(){
+  const body=$('#dbody'),E=entriesFor(boardDate),es=E.dreport||[],P=people().filter(p=>needFor(boardDate,p.key,p.s).includes('dreport'));
+  $('#tiles').innerHTML=`<div class="tile"><b style="color:var(--ok)">${es.length}</b>تقارير وصلت</div><div class="tile"><b style="color:${P.length>es.length?'var(--warn)':'var(--ok)'}">${Math.max(0,P.length-es.filter(e=>P.some(p=>p.uid===e.by)).length)}</b>ما وصل</div><div class="tile"><b>${esc(dayLabel(boardDate).split(' ')[0])}</b>اليوم</div>`;
+  const card=e=>{const r=e.rep||{};return `<div class="card repcard"><div class="rch"><b>${esc(who(e.by))}</b><small>${esc((()=>{const s=staffAll[e.by];const pa=s&&planFor(boardDate,pkey(e.by,s));return pa&&pa.st?pa.st.map(x=>roleById[x]?roleById[x].ar:x).join(' + '):''})())} · ${hm(e.ts)}</small></div>${REPSEC.map(([k,a])=>`<div class="rsv"><span>${esc(a)}</span><div>${esc(r[k]||'—')}</div></div>`).join('')}</div>`};
+  const missing=P.filter(p=>!es.some(e=>e.by===p.uid));
+  body.innerHTML=(es.length?es.map(card).join(''):'')+missing.map(p=>`<div class="row"><div class="t"><b>${esc(p.name)}</b><small>${p.uid?'':'لم يسجّل بعد'}</small></div><span class="pill ${boardDate<today()?'p-bad':'p-warn'}">${boardDate<today()?'ما رفع التقرير':'بانتظار نهاية اليوم'}</span></div>`).join('')||'<div class="msg">ما فيه تقارير لهذا اليوم.</div>';
+}
+function renderMonth(){
+  const body=$('#dbody'),PP=people().filter(p=>p.uid);
+  const st=PP.map(p=>({p,m:monthStats(p,boardMonth)}));
+  monthRank=st.filter(x=>x.m.req>=1).sort((a,b)=>b.m.score-a.m.score||b.m.ontime-a.m.ontime).slice(0,3);
+  const T=st.reduce((a,x)=>({n:a.n+x.m.ents,late:a.late+x.m.late+x.m.miss,ap:a.ap+x.m.ap}),{n:0,late:0,ap:0});
+  $('#tiles').innerHTML=`<div class="tile"><b>${T.n}</b>قوائم الشهر</div><div class="tile"><b style="color:var(--bad)">${T.late}</b>تأخير / ما انرسل</div><div class="tile"><b style="color:var(--ok)">${T.ap}</b>معتمد</div>`;
+  const medal=['🥇','🥈','🥉'];
+  const best=monthRank.length?`<div class="card best"><div class="besth">🏆 أفضل موظف للشهر</div>${monthRank.map((x,i)=>`<div class="brow ${i?'':'top'}"><span>${medal[i]}</span><b>${esc(x.p.name)}</b><small>${Math.round(x.m.rate*100)}% في الوقت · ${x.m.ontime}/${x.m.req} قائمة · إنجاز ${x.m.pct}%</small></div>`).join('')}
+    ${can('act')?'<button class="btn" data-award="1">📣 إعلان «موظف الشهر» للموظفين</button>':''}<p class="sub" style="margin:0">الترتيب حسب: الإرسال في الوقت أولاً، ثم نسبة الإنجاز والاعتماد، ويخصم طلبات الإعادة.</p></div>`:'';
+  const rows=st.map(({p,m})=>`<details class="row" data-k="m_${esc(p.uid)}"><summary><div class="t"><b>${esc(p.name)}</b><small>${m.ontime}/${m.req} في الوقت${m.late?' · '+m.late+' متأخر':''}${m.miss?' · '+m.miss+' ما انرسل':''}</small></div><span class="pill ${m.late+m.miss?'p-warn':'p-ok'}">${m.req?Math.round(m.rate*100)+'%':'—'}</span></summary><div class="det">
+      <div class="mstats"><div><b style="color:var(--ok)">${m.ontime}</b>في الوقت</div><div><b style="color:var(--warn)">${m.late}</b>متأخر</div><div><b style="color:var(--bad)">${m.miss}</b>ما انرسل</div><div><b>${m.pct}%</b>متوسط الإنجاز</div><div><b style="color:var(--ok)">${m.ap}</b>معتمد</div><div><b style="color:var(--bad)">${m.fu}</b>إعادة متابعة</div><div><b>${m.full}</b>أيام كاملة</div><div><b>${m.offd}</b>أيام إجازة</div><div><b>${m.ents}</b>قائمة مرسلة</div></div>
+      <div class="cal">${m.cal.map((c,i)=>`<span class="${c}">${i+1}</span>`).join('')}</div><div class="legend"><span class="f">في الوقت</span><span class="l">متأخر</span><span class="p">ناقص</span><span class="n">ما أرسل</span><span class="o">إجازة</span></div></div></details>`).join('');
+  body.innerHTML=best+(rows||'<div class="msg">ما فيه بيانات لهذا الشهر.</div>');
+}
+async function announce(b){if(!can('act'))return;if(!monthRank.length)return;b.disabled=true;
+  try{await db.doc('plan/award_'+boardMonth).set({month:boardMonth,winners:monthRank.map(x=>({key:x.p.key,name:x.p.name})),ts:Date.now()});toast('انعلن موظف الشهر ✓ — يطلع للموظفين في صفحتهم')}catch(e){b.disabled=false;toast('ما انحفظ')}}
+
+/* ======================= assignment editor ======================= */
+let wsel='all',pmode='fixed',draft=null,draftDate='',draftR=null,dirtyR=false,pendDel='',addOpen=false;
+const clone=o=>JSON.parse(JSON.stringify(o||{}));
+const DOWORDER=[6,0,1,2,3,4,5];
+function effectiveAll(date){const o=planD[date];if(o&&o.assign)return clone(o.assign);const out={};roster.forEach(p=>{out[p.id]=planFor(date,p.id)});return clone(out)}
+function dayLabel(d){return DOW[dowOf(d)]+' '+new Date(d+'T12:00:00').toLocaleDateString('ar-SA',{day:'numeric',month:'long'})}
+function planText(date){const A=(pmode==='day'&&draftDate===date&&draft)?draft:effectiveAll(date),P=roster;let out='توزيع الموظفين – '+dayLabel(date)+'\n';
+  for(const k of ['am','pm']){const rows=P.filter(p=>A[p.id]&&!A[p.id].off&&(A[p.id].st||[]).length&&(A[p.id].sh||'am')===k);if(!rows.length)continue;
+    out+='\n'+SHIFTS[k].ar+' ('+SHIFTS[k].hours+'):\n'+rows.map(p=>'• '+(p.ar||p.name)+(p.name&&p.name!==p.ar?' ('+p.name+')':'')+': '+A[p.id].st.map(x=>roleById[x]?roleById[x].ar:x).join(' + ')).join('\n')+'\n'}
+  const off=P.filter(p=>A[p.id]&&A[p.id].off);if(off.length)out+='\nإجازة: '+off.map(p=>p.ar||p.name).join('، ')+'\n';return out.trim()}
+const offOpts=(v)=>`<option value="">بدون إجازة ثابتة</option>`+DOWORDER.map(d=>`<option value="${d}" ${String(v)===String(d)?'selected':''}>إجازته: ${DOW[d]}</option>`).join('');
+const chipsHTML=(st,dis)=>ROLES.map(r=>`<button data-st="${r.id}" class="${(st||[]).includes(r.id)?'on':''}" ${dis?'disabled':''}>${esc(r.ar)}</button>`).join('');
+function renderPlan(){
+  const body=$('#dbody');
+  $('#dayBar').hidden=pmode!=='day';
+  const head=`<div class="seg2"><button data-pm="fixed" class="${pmode==='fixed'?'on':''}">التوزيع الثابت</button><button data-pm="day" class="${pmode==='day'?'on':''}">تعديل يوم معيّن</button></div>`;
+  const reg={};Object.values(staffAll).forEach(s=>{if(s.rid)reg[s.rid]=1});
+  if(pmode==='fixed'){
+    if(!draftR||!dirtyR)draftR=clone(roster);
+    const withSt=draftR.filter(p=>(p.st||[]).length).length;
+    $('#tiles').innerHTML=`<div class="tile"><b>${draftR.length}</b>موظف</div><div class="tile"><b style="color:var(--ok)">${withSt}</b>موزّع</div><div class="tile"><b style="color:${draftR.length-withSt?'var(--warn)':'var(--ok)'}">${draftR.length-withSt}</b>بدون مكان</div>`;
+    const wtabs=`<div class="wtabs"><button data-w="all" class="${wsel==='all'?'on':''}">كل الأيام</button>${DOWORDER.map(d=>`<button data-w="${d}" class="${String(wsel)===String(d)?'on':''}">${DOW[d]}${draftR.some(p=>p.w&&p.w[d])?' •':''}</button>`).join('')}</div>`;
+    body.innerHTML=head+wtabs+`<p class="sub" style="margin:0 0 10px">${wsel==='all'?'التوزيع الأساسي اللي يتكرر كل يوم. لو يوم معيّن يختلف (مثلاً الخميس)، اختره من فوق وعدّله — ويتكرر كل أسبوع.':'توزيع يوم '+DOW[wsel]+' — يتكرر كل '+DOW[wsel]+'. اللي ما تعدّله ياخذ التوزيع الأساسي.'}</p>`
+     +draftR.map(p=>{const W=wsel==='all'?null:Number(wsel),isOff=W!=null&&p.off!=null&&p.off!==''&&Number(p.off)===W,ov=W!=null&&p.w&&p.w[W],cur=ov||{st:p.st,sh:p.sh};
+       if(isOff)return `<div class="prow isoff" data-k="${esc(p.id)}"><div class="ph"><b>${esc(p.ar||p.name)}</b><span class="pill p-off">إجازته 🌴</span></div></div>`;
+       return `<div class="prow ${ov?'ovr':''}" data-k="${esc(p.id)}"><div class="ph"><div><b>${esc(p.ar||p.name)}</b>${p.name&&p.name!==p.ar?` <span class="sub">${esc(p.name)}</span>`:''}${reg[p.id]?'':' <span class="pill p-warn" style="font-size:10px">لم يسجّل</span>'}</div><div class="seg3"><button data-sh="am" class="${(cur.sh||'am')==='am'?'on':''}">صباحي</button><button data-sh="pm" class="${cur.sh==='pm'?'on':''}">مسائي</button></div></div>
+       ${W==null?`<div class="pline"><select data-offsel>${offOpts(p.off)}</select>${pendDel===p.id?`<span class="delc">متأكد؟ <button class="btn sm badb" data-del="yes">حذف</button><button class="btn sm" data-del="no">لا</button></span>`:`<button class="link delb" data-del="ask">🗑 حذف</button>`}</div>`:(ov?`<div class="pline"><span class="sub">مختلف عن الأساسي</span><button class="link" data-wreset="1">↺ نفس الأساسي</button></div>`:'')}
+       <div class="chips">${chipsHTML(cur.st)}</div></div>`}).join('')
+     +`<div class="card stack" style="margin-top:10px;padding:12px">${addOpen?`<b>موظف جديد</b><div class="addrow"><input id="nn_ar" placeholder="الاسم بالعربي"><input id="nn_en" placeholder="Name in English" dir="ltr"></div><div class="addrow"><select id="nn_off">${offOpts('')}</select><select id="nn_sh"><option value="am">صباحي</option><option value="pm">مسائي</option></select></div><div style="display:flex;gap:8px"><button class="btn pri" data-pa="addsave">إضافة</button><button class="btn" data-pa="addcancel">إلغاء</button></div>`:`<button class="link" data-pa="add">+ إضافة موظف جديد</button>`}</div>`
+     +`<div class="psave card stack"><button class="btn pri" data-pa="savefixed" ${dirtyR?'':'disabled'}>${dirtyR?'حفظ التوزيع الثابت':'✓ التوزيع الثابت محفوظ'}</button><button class="btn" data-pa="copy">📋 نسخ توزيع اليوم للقروب</button><textarea id="ptext" readonly hidden></textarea></div>`;
+    return}
+  if(draftDate!==boardDate||!draft){draft=effectiveAll(boardDate);draftDate=boardDate}
+  const isOver=!!(planD[boardDate]&&planD[boardDate].assign);
+  const assigned=roster.filter(p=>draft[p.id]&&!draft[p.id].off&&(draft[p.id].st||[]).length).length,offs=roster.filter(p=>draft[p.id]&&draft[p.id].off).length;
+  $('#tiles').innerHTML=`<div class="tile"><b>${assigned}</b>موزّع</div><div class="tile"><b style="color:#3D6A8F">${offs}</b>إجازة</div><div class="tile"><b style="color:${roster.length-assigned-offs?'var(--warn)':'var(--ok)'}">${roster.length-assigned-offs}</b>بدون توزيع</div>`;
+  body.innerHTML=head+`<div class="card" style="padding:12px;margin-bottom:10px"><b>${esc(dayLabel(boardDate))}</b><div class="sub">${isOver?'تعديل خاص بهذا اليوم (يغطي على الثابت)':'نفس التوزيع الثابت — عدّل للتغطية أو الإجازة ثم احفظ'}</div></div>`
+   +roster.map(p=>{const a=draft[p.id]||{st:[],sh:'am'},off=!!a.off,sh=a.sh||'am';
+    return `<div class="prow ${off?'isoff':''}" data-k="${esc(p.id)}"><div class="ph"><div><b>${esc(p.ar||p.name)}</b></div><div class="seg3"><button data-sh="am" class="${!off&&sh==='am'?'on':''}">صباحي</button><button data-sh="pm" class="${!off&&sh==='pm'?'on':''}">مسائي</button><button data-off="1" class="${off?'on off':''}">إجازة</button></div></div>
+     <div class="chips">${chipsHTML(a.st,off)}</div></div>`}).join('')
+   +`<div class="psave card stack"><button class="btn pri" data-pa="day">حفظ لهذا اليوم</button>${isOver?'<button class="link" data-pa="reset">إلغاء التعديل والرجوع للثابت</button>':''}<button class="btn" data-pa="copy">📋 نسخ التوزيع للقروب</button><textarea id="ptext" readonly hidden></textarea></div>`;
+}
+async function saveRoster(list,msg){list=list.map(p=>{const r=roster.find(x=>x.id===p.id);const q={...p};if(r&&r.uid)q.uid=r.uid;else delete q.uid;return q});await db.doc('roster/list').set({people:list,ts:Date.now()});roster=clone(list);draftR=clone(list);dirtyR=false;if(msg)toast(msg)}
+async function planClick(ev){
+  const pm=ev.target.closest('[data-pm]');if(pm){pmode=pm.dataset.pm;renderPlan();return}
+  const wb=ev.target.closest('[data-w]');if(wb){wsel=wb.dataset.w;pendDel='';renderPlan();return}
+  const row=ev.target.closest('.prow'),b=ev.target.closest('button');
+  if(row&&pmode==='fixed'){const p=draftR.find(x=>x.id===row.dataset.k);if(!p)return;
+    if(b&&b.dataset.del){if(b.dataset.del==='ask'){pendDel=p.id;renderPlan()}else if(b.dataset.del==='no'){pendDel='';renderPlan()}else{const list=draftR.filter(x=>x.id!==p.id);pendDel='';try{await saveRoster(list,'انحذف '+(p.ar||p.name));renderPlan()}catch(e){toast('ما انحذف')}}return}
+    if(!b)return;
+    let tgt=p;if(wsel!=='all'){const W=Number(wsel);p.w=p.w||{};if(b.dataset.wreset){delete p.w[W];dirtyR=true;renderPlan();return}if(!p.w[W])p.w[W]={st:[...(p.st||[])],sh:p.sh||'am'};tgt=p.w[W]}
+    if(b.dataset.sh)tgt.sh=b.dataset.sh;
+    else if(b.dataset.st){const r=b.dataset.st,i=(tgt.st=tgt.st||[]).indexOf(r);if(i>=0)tgt.st.splice(i,1);else{tgt.st.push(r);const f=roleById[r].shift;if(f)tgt.sh=f}}
+    else return;
+    dirtyR=true;renderPlan();return}
+  if(row&&pmode==='day'){if(!b)return;const k=row.dataset.k,a=draft[k]=draft[k]||{st:[],sh:'am'};
+    if(b.dataset.sh){a.sh=b.dataset.sh;a.off=false}
+    else if(b.dataset.off){a.off=!a.off}
+    else if(b.dataset.st){const r=b.dataset.st,i=(a.st=a.st||[]).indexOf(r);if(i>=0)a.st.splice(i,1);else{a.st.push(r);const f=roleById[r].shift;if(f)a.sh=f}a.off=false}
+    renderPlan();return}
+  const p=ev.target.closest('[data-pa]');if(!p)return;const act=p.dataset.pa;
+  if(act==='add'){addOpen=true;renderPlan();$('#nn_ar').focus();return}
+  if(act==='addcancel'){addOpen=false;renderPlan();return}
+  if(act==='addsave'){const ar=$('#nn_ar').value.trim(),en=$('#nn_en').value.trim();if(!ar&&!en)return toast('اكتب الاسم');
+    const id=((en||'p').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'p')+'-'+Date.now().toString(36).slice(-4);
+    const offv=$('#nn_off').value;const list=[...draftR,{id,name:en||ar,ar:ar||en,sh:$('#nn_sh').value,off:offv===''?null:Number(offv),st:[]}];
+    try{await saveRoster(list,'تمت الإضافة ✓ — اختر مكانه');addOpen=false;renderPlan()}catch(e){toast('ما انحفظ')}return}
+  if(act==='savefixed'){p.disabled=true;try{await saveRoster(draftR,'انحفظ التوزيع الثابت ✓ — يطلع للموظفين كل يوم');renderPlan()}catch(e){p.disabled=false;toast('ما انحفظ')}return}
+  if(act==='copy'){const txt=planText(pmode==='day'?boardDate:today());try{await navigator.clipboard.writeText(txt);toast('انسخ — الصقه في القروب ✓')}catch(e){const ta=$('#ptext');ta.hidden=false;ta.value=txt;ta.style.minHeight='180px';ta.select();toast('حدد النص وانسخه')}return}
+  p.disabled=true;
+  try{
+    if(act==='day'){const clean={};for(const [k,a] of Object.entries(draft)){if(a)clean[k]={st:a.off?[]:(a.st||[]),sh:a.sh||'am',off:!!a.off}}await db.doc('plan/'+boardDate).set({assign:clean,ts:Date.now()});planD[boardDate]={assign:clean};toast('انحفظ تعديل اليوم ✓')}
+    else if(act==='reset'){await db.doc('plan/'+boardDate).delete();delete planD[boardDate];toast('رجع للتوزيع الثابت')}
+    draft=effectiveAll(boardDate);draftDate=boardDate;renderPlan();
+  }catch(e){toast('ما انحفظ — جرب مرة ثانية')}finally{p.disabled=false}
+}
+// offday select (change event)
+document.addEventListener('change',e=>{const s=e.target.closest('[data-offsel]');if(!s||pmode!=='fixed')return;const row=s.closest('.prow'),p=draftR&&draftR.find(x=>x.id===row.dataset.k);if(!p)return;p.off=s.value===''?null:Number(s.value);dirtyR=true;renderPlan()});
+
+/* ======================= management dashboard (#idara) ======================= */
+function salesOf(e){if(!e||!e.slots)return null;const s=byId.avg,idxs=visIdx(s,e.shift);let o=null,v=null;for(const i of idxs){const x=e.slots[i];if(x&&num(x.o)&&num(x.s)!=null){o=num(x.o);v=num(x.s)}}return o==null?null:{o,s:v}}
+function daySales(date){let o=0,s=0,n=0;for(const doc of Object.values(subs)){const r=salesOf(doc['d_'+date+'_avg']);if(r){o+=r.o;s+=r.s;n++}}return {o,s,avg:o?s/o:null,n}}
+const shiftEnd=(date,sh)=>sh==='pm'?new Date(shiftDay(date,1)+'T00:00:00+03:00').getTime():new Date(date+'T15:00:00+03:00').getTime();
+/* supervisor follow-up status of one submitted entry */
+function revStat(e){const r=e.review,f=e.firstTs||e.ts,end=Math.max(shiftEnd(e.date,e.shift),f+3600e3);
+  if(r&&r.ts>=f)return {st:r.ts<=end?'ontime':'late',r,mins:r.ts>end?Math.round((r.ts-end)/60000):0};
+  return {st:Date.now()>end?'missed':'pending',r:null}}
+const money=n=>n==null?'—':Math.round(n).toLocaleString('en-US');
+function prog(v,t){if(!t)return '';const p=Math.min(100,Math.round(v/t*100));return `<div class="tprog"><i style="width:${p}%;background:${p>=100?'var(--ok)':p>=70?'var(--gold)':'var(--bad)'}"></i></div><small>${p}% من الهدف ${money(t)}</small>`}
+let reports={},targets={},mtab='day',mgUnsub=[];
+async function mgmtPin(){
+  if(!db){toast('لازم تسجيل الدخول أولاً');return}
+  let cfg=null;try{const s=await db.doc('admin/mgmt').get();cfg=s.exists?s.data():null}catch(e){}
+  const setup=!cfg&&isAdmin;dashDir();
+  $('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);
+  d.innerHTML=`<form class="pin card stack fade" id="pinF"><img src="${document.querySelector('.logo').src}" alt="" style="height:70px;margin:0 auto"><h2>${setup?'عيّن رقم دخول لوحة الإدارة':'لوحة الإدارة'}</h2>
+   <p class="sub">${setup?'رقم مختلف عن رقم المشرف — تعطيه للإدارة بس.':'أدخل رقم الدخول'}</p>
+   <input id="p1" type="password" inputmode="numeric" autocomplete="off" maxlength="8">${setup?'<input id="p2" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="أعد الرقم">':''}
+   <div class="err" id="pe"></div><button class="btn pri">${setup?'حفظ':'دخول'}</button><button type="button" class="link" id="pback">رجوع</button></form>`;
+  $('#pback').onclick=()=>{if(!staff&&!meMgr){closeDash();showGate()}else go('home')};$('#p1').focus();
+  $('#pinF').onsubmit=async e=>{e.preventDefault();const pe=$('#pe'),v=$('#p1').value.trim();
+    if(Date.now()<lockUntil)return pe.textContent='محاولات كثيرة — انتظر قليلاً';
+    if(!/^\d{4,8}$/.test(v))return pe.textContent='الرقم لازم يكون من 4 إلى 8 أرقام';
+    if(setup){if(v!==$('#p2').value.trim())return pe.textContent='الرقمين مو متطابقين';
+      try{await db.doc('admin/mgmt').set({pinHash:await sha('mgmt:'+v),ts:Date.now()});ss.set('samraa_mgmt','1');openMgmt()}catch(x){pe.textContent='ما انحفظ'}return}
+    if(cfg&&cfg.pinHash===await sha('mgmt:'+v)){fails=0;ss.set('samraa_mgmt','1');openMgmt()}
+    else{fails++;if(fails>=5){lockUntil=Date.now()+30000;fails=0}pe.textContent='رقم الدخول غير صحيح';$('#p1').value=''}
+  };
+}
+function openMgmt(){
+  dashDir();const greetM=pureMgr()?`<div class="mhello"><span>أهلاً <b>${esc(meMgr.ar)}</b> 👋</span><small>${esc(meMgr.title)}</small></div>`:'';$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);dtab='mgmt';if(!['day','month','targets'].includes(mtab))mtab='day';
+  d.innerHTML=`<div class="fade">${greetM}${hello()}
+   <div class="tabs"><button data-m="day">اليوم</button><button data-m="month">الشهر</button><button data-m="targets">الأهداف</button></div>
+   <div class="datebar" id="mdBar"><button class="btn" id="mdprev">→</button><input type="date" id="mddate"><button class="btn" id="mdnext">←</button><button class="btn" id="mdtoday">اليوم</button></div>
+   <div class="datebar" id="mmBar" hidden><button class="btn" id="mmprev">→</button><input type="month" id="mmonth"><button class="btn" id="mmnext">←</button></div>
+   <div id="mbody"><div class="msg">جاري التحميل…</div></div></div>`;
+  $('#mddate').value=boardDate;$('#mmonth').value=boardMonth;
+
+  const setD=v=>{boardDate=v;$('#mddate').value=v;renderMgmt()};
+  $('#mdprev').onclick=()=>setD(shiftDay(boardDate,-1));$('#mdnext').onclick=()=>setD(shiftDay(boardDate,1));$('#mdtoday').onclick=()=>setD(today());
+  $('#mddate').onchange=e=>{if(e.target.value)setD(e.target.value)};
+  const setM=k=>{const [y,m]=boardMonth.split('-').map(Number);const t=new Date(y,m-1+k,1);boardMonth=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0');$('#mmonth').value=boardMonth;renderMgmt()};
+  $('#mmprev').onclick=()=>setM(-1);$('#mmnext').onclick=()=>setM(1);$('#mmonth').onchange=e=>{if(e.target.value){boardMonth=e.target.value;renderMgmt()}};
+  d.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mtab=b.dataset.m;renderMgmt()});
+  $('#mbody').onclick=async ev=>{if(ev.target.closest('[data-goreports]')){go('reports');return}const b=ev.target.closest('[data-savet]');if(!b)return;const v=k=>{const x=num($('#t_'+k).value);return x==null?null:x};
+    const T={daySales:v('day'),monthSales:v('month'),avg:v('avg'),ts:Date.now()};b.disabled=true;try{await db.doc('admin/targets').set(T);targets=T;toast('انحفظت الأهداف ✓');renderMgmt()}catch(e){b.disabled=false;toast('ما انحفظ')}};
+  dashLoaded=false;const tm=setTimeout(()=>{if(!dashLoaded){const x=$('#mbody');if(x)x.innerHTML='<div class="msg">تعذر التحميل — لوحة الإدارة تفتح لصاحب الرابط أو من عنده صلاحية تعديل.</div>'}},10000);
+  const fail=()=>{clearTimeout(tm);const x=$('#mbody');if(x)x.innerHTML='<div class="msg">تعذر التحميل — لوحة الإدارة تفتح لصاحب الرابط أو من عنده صلاحية تعديل.</div>'};
+  try{
+    dashUnsub.push(db.collection('submissions').onSnapshot(s=>{clearTimeout(tm);dashLoaded=true;subs={};s.docs.forEach(x=>{subs[x.id]=unpackDoc(x.data())});renderMgmt()},fail));
+    dashUnsub.push(db.collection('plan').onSnapshot(s=>{planD={};s.docs.forEach(x=>ingestPlan(x.id,x.data()));renderMgmt()},()=>{}));
+    dashUnsub.push(db.collection('roster').onSnapshot(s=>{const x=s.docs.find(d=>d.id==='list');roster=x?(x.data().people||[]):[];renderMgmt()},()=>{}));
+    dashUnsub.push(db.doc('admin/managers').onSnapshot(s=>{mgrMap=s.exists?(s.data()||{}):{};renderMgmt();renderReqs()},()=>{}));
+    dashUnsub.push(db.doc('admin/requests').onSnapshot(s=>{reqs=s.exists?(s.data()||{}):{};renderReqs()},()=>{}));
+    dashUnsub.push(db.collection('staff').onSnapshot(s=>{staffAll={};s.docs.forEach(x=>{staffAll[x.id]=x.data()||{}});renderMgmt();renderReqs()},fail));
+    dashUnsub.push(db.doc('admin/targets').onSnapshot(s=>{targets=s.exists?(s.data()||{}):{};renderMgmt()},()=>{}));
+    dashUnsub.push(db.collection('admin').onSnapshot(s=>{reports={};s.docs.forEach(x=>{if(x.id.startsWith('report_'))reports[x.id.slice(7)]=x.data()});renderMgmt()},()=>{}));
+  }catch(e){fail()}
+}
+/* compliance + follow-up for one day */
+function dayCheck(date){const P=people(),E=entriesFor(date);let req=0,ontime=0,late=0,miss=0,pend=0;const missing=[];
+  for(const p of P){const s=p.s||{};for(const x of needFor(date,p.key,s)){if(!timed(x))continue;const due=dueTs(date,shiftFor(date,p.key,s));const e=p.uid&&(E[x]||[]).find(y=>y.by===p.uid);
+    if(!e){if(Date.now()>due){req++;miss++;missing.push(p.name+' – '+byId[x].ar)}else pend++;continue}req++;if(lateMin(e,date))late++;else ontime++}}
+  const all=Object.values(E).flat().filter(e=>e.sheet!=='supervisor'&&timed(e.sheet));const R={ontime:0,late:0,missed:0,pending:0};const notRev=[];
+  const byRev={};all.forEach(e=>{const r=revStat(e);R[r.st]++;if(r.r){const n=mgrName(r.r.by);byRev[n]=(byRev[n]||0)+1}if(r.st==='missed')notRev.push(who(e.by)+' – '+byId[e.sheet].ar)});
+  const supE=(E.supervisor||[])[0],needSup=P.some(p=>needFor(date,p.key,p.s).includes('supervisor'));
+  return {byRev,needSup,req,ontime,late,miss,pend,missing,R,notRev,total:all.length,supE}}
+function renderMgmt(){
+  const body=$('#mbody');if(!body||!dashLoaded)return;
+  document.querySelectorAll('#dash [data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===mtab));
+  $('#mdBar').hidden=mtab!=='day';$('#mmBar').hidden=mtab!=='month';
+  if(mtab==='targets'&&!can('m_targets')){mtab='day'}
+  if(mtab==='targets'){body.innerHTML=`<div class="card stack"><h2>الأهداف</h2><p class="sub" style="margin-top:-6px">تطلع كنسبة إنجاز في لوحة الإدارة.</p>
+    <label class="lbl">هدف المبيعات اليومي (ريال)<input id="t_day" inputmode="decimal" dir="ltr" value="${targets.daySales??''}"></label>
+    <label class="lbl">هدف المبيعات الشهري (ريال)<input id="t_month" inputmode="decimal" dir="ltr" value="${targets.monthSales??''}"></label>
+    <label class="lbl">هدف الأفرج (متوسط الفاتورة)<input id="t_avg" inputmode="decimal" dir="ltr" value="${targets.avg??''}"></label>
+    <button class="btn pri" data-savet="1">حفظ الأهداف</button></div>`;return}
+  if(mtab==='day'){
+    const S=daySales(boardDate),C=dayCheck(boardDate),R=C.R,revDone=R.ontime+R.late,revDue=revDone+R.missed;
+    const supName=C.supE?who(C.supE.by):'';const supLate=C.supE?lateMin(C.supE,boardDate):null;
+    const DR=(entriesFor(boardDate).dreport||[]);
+    body.innerHTML=(can('reports')?`<button class="card repc awbtn2" data-goreports="1"><div class="mh">📋 التقارير اليومية</div><div class="sub">${DR.length?DR.map(e=>esc(first(who(e.by)))+' ✓').join(' · '):'ما وصل تقرير لهذا اليوم'}</div><span>←</span></button>`:'')+`<div class="kpis"><div class="kpi"><small>المبيعات</small><b>${money(S.s)} <i>ريال</i></b>${prog(S.s,targets.daySales)}</div>
+      <div class="kpi"><small>الأفرج</small><b>${S.avg==null?'—':S.avg.toFixed(1)} <i>ريال</i></b>${targets.avg&&S.avg!=null?`<small style="color:${S.avg>=targets.avg?'var(--ok)':'var(--bad)'}">${S.avg>=targets.avg?'فوق':'تحت'} الهدف ${targets.avg}</small>`:''}</div>
+      <div class="kpi"><small>عدد الطلبات</small><b>${money(S.o)}</b><small>${S.n?S.n+' وردية مسجلة':'ما انسجل بيع'}</small></div></div>
+     <div class="card mcard"><div class="mh">📋 تشيك ليست الموظفين</div><div class="mstats"><div><b style="color:var(--ok)">${C.ontime}</b>في الوقت</div><div><b style="color:var(--warn)">${C.late}</b>متأخر</div><div><b style="color:var(--bad)">${C.miss}</b>ما انرسل</div></div>
+      ${C.req?`<div class="tprog"><i style="width:${Math.round(C.ontime/C.req*100)}%;background:var(--ok)"></i></div><small class="sub">${Math.round(C.ontime/C.req*100)}% انرسلت في الوقت${C.pend?' · '+C.pend+' لسا وقتها ما خلص':''}</small>`:'<p class="sub">ما فيه قوائم مستحقة لهذا اليوم حتى الآن.</p>'}
+      ${C.missing.length?`<div class="x" style="margin-top:6px">ما انرسل:<br>• ${C.missing.map(esc).join('<br>• ')}</div>`:''}</div>
+     <div class="card mcard"><div class="mh">👁️ متابعة المشرف</div>
+      <div class="sub">قائمة المشرف: ${!C.needSup&&!C.supE?'ما فيه مشرف في توزيع هذا اليوم':C.supE?`أرسلها ${esc(supName)} ${hm(C.supE.firstTs||C.supE.ts)} ${supLate?`<span class="pill p-bad">⏰ متأخر ${fmtLate(supLate)}</span>`:'<span class="pill p-ok">في الوقت</span>'}`:'<span class="pill p-bad">ما انرسلت</span>'}</div>
+      <div class="mstats" style="margin-top:8px"><div><b style="color:var(--ok)">${R.ontime}</b>راجعها في الوقت</div><div><b style="color:var(--warn)">${R.late}</b>راجعها متأخر</div><div><b style="color:var(--bad)">${R.missed}</b>ما راجعها</div></div>
+      ${revDue?`<div class="tprog"><i style="width:${Math.round(R.ontime/revDue*100)}%;background:var(--ok)"></i></div><small class="sub">${Math.round(revDone/revDue*100)}% من القوائم انراجعت${R.pending?' · '+R.pending+' بانتظار المراجعة (الوقت ما خلص)':''}</small>`:'<p class="sub">ما فيه قوائم مستحقة المراجعة.</p>'}
+      ${Object.keys(C.byRev).length?`<div class="sub" style="margin-top:6px">راجعها: ${Object.entries(C.byRev).map(([n,c])=>esc(n)+' ('+c+')').join('، ')}</div>`:''}
+      ${C.notRev.length?`<div class="x" style="margin-top:6px">ما انراجعت:<br>• ${C.notRev.map(esc).join('<br>• ')}</div>`:''}
+      <p class="sub" style="margin:8px 0 0;font-size:12px">المراجعة «في الوقت» إذا اعتمدها أو طلب إعادتها قبل نهاية الوردية (الصباح 3:00 م، المساء 12:00 ص).</p></div>`;
+    return}
+  // month
+  const [y,m]=boardMonth.split('-').map(Number),dim=new Date(y,m,0).getDate(),tdy=today();
+  let tot=0,ord=0;const days=[];let Rm={ontime:0,late:0,missed:0},Cm={req:0,ontime:0,late:0,miss:0},supSent=0,supLate=0,supDays=0;
+  for(let i=1;i<=dim;i++){const d=boardMonth+'-'+String(i).padStart(2,'0');if(d>tdy)break;const S=daySales(d);tot+=S.s;ord+=S.o;days.push([i,S.s]);
+    const C=dayCheck(d);['ontime','late','missed'].forEach(k=>Rm[k]+=C.R[k]);['req','ontime','late','miss'].forEach(k=>Cm[k]+=C[k]);
+    const needSup=people().some(p=>needFor(d,p.key,p.s).includes('supervisor'));if(needSup){supDays++;if(C.supE){supSent++;if(lateMin(C.supE,d))supLate++}}}
+  const mx=Math.max(1,...days.map(x=>x[1]),targets.daySales||0);const revDue=Rm.ontime+Rm.late+Rm.missed;
+  const PP=people().filter(p=>p.uid),rank=PP.map(p=>({p,m:monthStats(p,boardMonth)})).filter(x=>x.m.req>=1).sort((a,b)=>b.m.score-a.m.score).slice(0,3);
+  body.innerHTML=`<div class="kpis"><div class="kpi"><small>مبيعات الشهر</small><b>${money(tot)} <i>ريال</i></b>${prog(tot,targets.monthSales)}</div>
+     <div class="kpi"><small>أفرج الشهر</small><b>${ord?(tot/ord).toFixed(1):'—'} <i>ريال</i></b>${targets.avg&&ord?`<small style="color:${tot/ord>=targets.avg?'var(--ok)':'var(--bad)'}">الهدف ${targets.avg}</small>`:''}</div>
+     <div class="kpi"><small>التزام الموظفين</small><b>${Cm.req?Math.round(Cm.ontime/Cm.req*100):0}%</b><small>${Cm.late} متأخر · ${Cm.miss} ما انرسل</small></div></div>
+   <div class="card mcard"><div class="mh">📈 المبيعات اليومية</div><div class="bars">${days.map(([i,v])=>`<div class="bar" title="${money(v)}"><i style="height:${Math.round(v/mx*100)}%;${targets.daySales&&v>=targets.daySales?'background:var(--ok)':''}"></i><span>${i}</span></div>`).join('')}</div>${targets.daySales?'<small class="sub">الأخضر = حقق الهدف اليومي</small>':''}</div>
+   <div class="card mcard"><div class="mh">👁️ متابعة المشرف خلال الشهر</div><div class="mstats"><div><b style="color:var(--ok)">${revDue?Math.round(Rm.ontime/revDue*100):0}%</b>مراجعة في الوقت</div><div><b style="color:var(--warn)">${Rm.late}</b>مراجعة متأخرة</div><div><b style="color:var(--bad)">${Rm.missed}</b>ما انراجعت</div><div><b>${supSent}/${supDays}</b>قائمة المشرف</div><div><b style="color:var(--warn)">${supLate}</b>قائمة المشرف متأخرة</div><div><b>${Cm.req}</b>قوائم مستحقة</div></div></div>
+   ${rank.length?`<div class="card best"><div class="besth">🏆 أفضل موظف للشهر</div>${rank.map((x,i)=>`<div class="brow ${i?'':'top'}"><span>${['🥇','🥈','🥉'][i]}</span><b>${esc(x.p.name)}</b><small>${Math.round(x.m.rate*100)}% في الوقت · إنجاز ${x.m.pct}%</small></div>`).join('')}</div>`:''}`;
+}
+
+/* ======================= daily supervisor message ======================= */
+async function openReport(){
+  closeDash();dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();
+  const day=today();let cur=null,recent=[];
+  d.innerHTML='<div class="msg">جاري التحميل…</div>';
+  try{const s=await db.doc('plan/msg_'+day).get();cur=s.exists?s.data():null}catch(e){}
+  try{const ss_=await Promise.all([1,2,3,4,5,6].map(k=>db.doc('plan/msg_'+shiftDay(day,-k)).get()));ss_.forEach((s,k)=>{if(s.exists)recent.push([shiftDay(day,-(k+1)),s.data()])})}catch(e){}
+  if(view!=='staffmsg')return;
+  d.innerHTML=`<div class="fade stack"><div class="card stack"><h2>📢 رسالة اليوم للموظفين</h2><p class="sub" style="margin-top:-6px">${esc(dayLabel(day))} — تطلع لكل الموظفين أعلى صفحتهم اليوم. اختيارية.</p>
+    <textarea id="rep_t" maxlength="2000" style="min-height:160px" placeholder="مثلاً: اليوم عندنا حجز 20 شخص الساعة 8، الكل يجهز بدري. عرض الكيكة الجديدة يبدأ اليوم.">${esc(cur?cur.text:'')}</textarea>
+    <div class="err" id="rep_e"></div><button class="btn pri" id="rep_s">${cur?'تحديث الرسالة':'إرسال الرسالة'}</button>${cur?`<p class="sub" style="margin:0">آخر تحديث ${hm(cur.ts)}</p>`:''}</div>
+    ${recent.length?`<div class="card"><b>آخر الرسائل</b>${recent.map(([dd,r])=>`<div class="repold"><small>${esc(dayLabel(dd))}</small><div>${esc(r.text)}</div></div>`).join('')}</div>`:''}</div>`;
+  $('#rep_s').onclick=async()=>{const tx=$('#rep_t').value.trim();if(!tx){$('#rep_e').textContent='اكتب الرسالة';return}const b=$('#rep_s');b.disabled=true;
+    try{await db.doc('plan/msg_'+day).set({text:tx,by:uid,ts:Date.now()});toast('انرسلت للموظفين ✓');b.disabled=false;b.textContent='تحديث الرسالة'}catch(e){b.disabled=false;$('#rep_e').textContent='ما انرسلت — جرب مرة ثانية'}};
+}
+/* ======================= app shell: ☰ menu ======================= */
+const isOwnerF=()=>ownerFlag;
+const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
+const TITLES={staffmsg:'رسالة اليوم للموظفين',reports:'التقارير اليومية',review:'مراجعة القوائم',staff:'الموظفين اليوم',plan:'التوزيع',month:'ملخص الموظفين الشهري',m_day:'المبيعات واليوم',m_month:'أداء الشهر',m_targets:'الأهداف'};
+let view='home';
+function setTitle(){const t=$('#tbTitle');if(!t)return;t.textContent=TITLES[view]||({home:t_('home'),checklist:t_('myChecklist'),team:t_('team'),me:t_('myDetails')}[view])||''}
+function renderDrawer(){
+  const p=$('#dpanel'),showAdmin=isAdmin&&db;const who_=meMgr?`<div class="dwho"><b>${esc(meMgr.ar)}</b><small>${esc(meMgr.title)}</small></div>`:(staff&&staff.rid&&rosterById()[staff.rid]?`<div class="dwho"><b>${esc(lang==='ar'?rosterById()[staff.rid].ar:rosterById()[staff.rid].name)}</b></div>`:'');
+  const item=(v,ic,l)=>`<button class="ditem ${view===v?'on':''}" data-go="${v}"><span>${ic}</span>${esc(l)}</button>`;
+  p.innerHTML=`<div class="dtopp"><img src="${document.querySelector('.logo').src}" alt="سمراء"><button class="dclose" data-go="__close" aria-label="إغلاق">✕</button></div>${who_}
+   <div class="dgrp">${item('home','🏠',t_('home'))}${staff&&staff.rid&&!pureMgr()?item('checklist','📝',t_('myChecklist'))+item('team','👥',t_('team')):''}${staff&&!pureMgr()?item('me','👤',t_('myDetails')):''}</div>
+   ${showAdmin&&meMgr?ADMIN_NAV.map(([g,items])=>{const its=items.filter(x=>can(x[0]));return its.length?`<div class="dgl">${g}</div><div class="dgrp" dir="rtl">${its.map(x=>item(...x)).join('')}</div>`:''}).join(''):''}
+   ${window.__logout?`<div class="dgrp" style="margin-top:10px">${item('__logout','🚪',lang==='ar'||!staff?'تسجيل خروج':(lang==='hi'?'लॉग आउट':lang==='bn'?'লগ আউট':'Log out'))}</div>`:''}
+   ${isOwnerF()?`<div class="dgl">صاحب الرابط</div><div class="dgrp" dir="rtl">${item('__gate','🚪','معاينة شاشة الدخول (كأنك شخص جديد)')}</div>`:''}`;
+  p.onclick=e=>{const b=e.target.closest('[data-go]');if(!b)return;if(b.dataset.go==='__close')return closeDrawer();go(b.dataset.go)};
+}
+function openDrawer(){renderDrawer();const d=$('#drawer');document.documentElement.classList.add('noscroll');d.hidden=false;requestAnimationFrame(()=>d.classList.add('on'))}
+function closeDrawer(){const d=$('#drawer');d.classList.remove('on');document.documentElement.classList.remove('noscroll');setTimeout(()=>{d.hidden=true},rm?0:260)}
+function go(v){closeDrawer();
+  if(v==='__pick'){forcePick=true;previewNew=false;ensureMgr(()=>{closeDash();go('home')});return}
+  if(v==='__logout'){if(window.__logout)window.__logout();return}
+  if(v==='__gate'){previewNew=true;view='home';closeDash();setTitle();showGate();scrollTo(0,0);return}
+  previewNew=false;
+  if(!['home','checklist','team','me'].includes(v)&&meMgr&&!can(v)){toast('هذا القسم مو ضمن صلاحيتك');v='home'}
+  if(v==='home'&&isAdmin&&pureMgr()){v='m_day'}
+  if(['checklist','team','me'].includes(v)&&pureMgr())v=meMgr&&can('m_day')?'m_day':'home';
+  view=v;
+  if(v==='staffmsg'){ensureMgr(openReport);return}
+  if(['home','checklist','team','me'].includes(v)){try{if(location.hash)history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+    closeDash();setTitle();
+    if(v==='me'){register(true);scrollTo(0,0);return}
+    if(staff&&staff.lang&&staff.rid&&!$('#secTasks'))tasks();
+    if(!staff&&!meMgr&&v==='home'){showGate();scrollTo(0,0);return}
+    if(v==='home'){scrollTo({top:0,behavior:rm?'auto':'smooth'});greet();return}
+    const el=$(v==='checklist'?'#secTasks':'#secTeam');if(el)el.scrollIntoView({behavior:rm?'auto':'smooth',block:'start'});return}
+  if(v.startsWith('m_')){mtab=v.slice(2);ensureMgr(()=>{if(!can(v)&&meMgr){go('home');return}if(!$('#dash').hidden&&$('#mbody')){renderMgmt();setTitle();scrollTo(0,0);return}closeDash();openMgmt();setTitle()});return}
+  dtab=v==='review'?'sheets':v;ensureMgr(()=>{if(!$('#dash').hidden&&dtab!=='mgmt'&&$('#dbody')){renderDash();setTitle();scrollTo(0,0);return}closeDash();openDash();setTitle()});
+}
+$('#menuBtn').onclick=openDrawer;$('#dback').onclick=closeDrawer;
+$('#dback').addEventListener('touchmove',e=>e.preventDefault(),{passive:false});$('#dback').addEventListener('wheel',e=>e.preventDefault(),{passive:false});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#drawer').hidden)closeDrawer()});
+setTimeout(()=>document.body.classList.add('ready'),2500);
+init();
+</script>
+
+</body>
+</html>
