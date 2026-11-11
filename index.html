@@ -715,10 +715,13 @@ async function init(){
   if(staff&&staff.lang&&staff.rid){watchMine();watchPlan();tasks()}else if(staff)register(true);else showGate();
   route();restoreView();toDashBtn();
 }
-async function migrateSched(){const mt=await db.doc('plan/meta').get();if(mt.exists&&(mt.data()||{}).sched1)return;
+async function migrateSched(){const mt=await db.doc('plan/meta').get(),M=mt.exists?(mt.data()||{}):{};
+  if(M.sched1&&!M.sched2){/* fix: Sunny works Turki's hours on Friday */const list=clone(roster);const s=list.find(p=>String(p.name||'').toLowerCase()==='sunny');
+    if(s){s.w=s.w||{};const b=s.w[5]||{st:[...(s.st||[])],sh:'pm'};s.w[5]={...b,sh:'pm',tm:'17:00-01:30'};await saveRoster(list)}await db.doc('plan/meta').set({...M,sched2:Date.now()});return}
+  if(M.sched1)return;
   const P='15:30-00:00',L='16:00-00:30',A='06:30-15:00';
   const S={tauquir:{off:6,tm:L},azzam:{off:2,tm:P,d:{4:'17:00-01:30',5:L}},alamin:{off:2,tm:P},fahad:{off:3,tm:P,d:{4:L,5:L}},
-    youssef:{off:1,tm:P,d:{0:'18:00-00:30',2:'18:00-00:30',4:L,5:L}},turki:{off:6,tm:P,d:{5:'17:00-01:30'}},sunny:{off:0,tm:P,d:{5:'13:30-22:00'}},
+    youssef:{off:1,tm:P,d:{0:'18:00-00:30',2:'18:00-00:30',4:L,5:L}},turki:{off:6,tm:P,d:{5:'17:00-01:30'}},sunny:{off:0,tm:P,d:{5:'17:00-01:30'}},
     arafat:{off:1,tm:P},chanchal:{off:5,tm:A},mukaram:{off:5,tm:A},juned:{off:5,tm:P},bader:{tm:A,d:{5:{sh:'pm',tm:'13:00-21:30'}}}};
   const shOf=tm=>startMin(tm)<720?'am':'pm';
   const list=clone(roster).filter(p=>!/^saleh$/i.test(String(p.name||'').trim())&&String(p.ar||'').trim()!=='صالح');
@@ -726,7 +729,7 @@ async function migrateSched(){const mt=await db.doc('plan/meta').get();if(mt.exi
     if(x.off!==undefined)p.off=x.off;p.tm=x.tm;p.sh=shOf(x.tm);
     if(p.w)for(const k of Object.keys(p.w))if(p.w[k]&&!x.d?.[k])p.w[k].sh=p.sh;
     for(const [d,v] of Object.entries(x.d||{})){const o=typeof v==='string'?{tm:v}:v;p.w=p.w||{};const b=p.w[d]||{st:[...(p.st||[])],sh:p.sh};p.w[d]={...b,tm:o.tm,sh:o.sh||shOf(o.tm)}}}
-  await saveRoster(list);await db.doc('plan/meta').set({sched1:Date.now()});toast('تحدّث جدول الدوام ✓')}
+  await saveRoster(list);await db.doc('plan/meta').set({sched1:Date.now(),sched2:Date.now()});toast('تحدّث جدول الدوام ✓')}
 function playHero(){document.querySelectorAll('#hero .hl').forEach(e=>{e.classList.remove('go');void e.offsetWidth;e.classList.add('go')})}
 function greet(){setTimeout(playHero,30);setTitle();
   const rp=staff&&staff.rid&&rosterById()[staff.rid];
