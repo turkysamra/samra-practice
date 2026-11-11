@@ -268,7 +268,7 @@ body.ltr .dpanel{transform:translateX(-100%)}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v26</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v27</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -695,8 +695,10 @@ const timed=id=>byId[id]&&!byId[id].auto&&!byId[id].nodue;
 /* minutes late for a sent entry (0 = on time), or null when not timed */
 function lateMin(e,date,sh){if(!e||!timed(e.sheet))return null;const f=e.firstTs||e.ts,d=e.due||dueTs(date,e.shift||sh,e.sheet,e.tm);return f>d?Math.round((f-d)/60000):0}
 const fmtLate=mi=>mi>=60?Math.floor(mi/60)+' س '+(mi%60)+' د':mi+' د';
-function rstate(e,r){if(!e)return null;if(!r)return 'pending';if(r.ts<e.ts)return r.status==='followup'?'resubmitted':'pending';return r.status}
-const RS={pending:['p-warn','بانتظار المراجعة'],approved:['p-ok','✓ معتمد'],followup:['p-bad','⚠ إعادة متابعة'],resubmitted:['p-warn','↻ أُعيد الإرسال']};
+/* the owner's own lists need no approval — he is the only one who could approve them */
+const isSelfE=e=>{const o=(roster.find(p=>p.id==='turki')||{}).uid;return !!(e&&o&&e.by===o)};
+function rstate(e,r){if(!e)return null;if(isSelfE(e))return 'self';if(!r)return 'pending';if(r.ts<e.ts)return r.status==='followup'?'resubmitted':'pending';return r.status}
+const RS={pending:['p-warn','بانتظار المراجعة'],approved:['p-ok','✓ معتمد'],followup:['p-bad','⚠ إعادة متابعة'],resubmitted:['p-warn','↻ أُعيد الإرسال'],self:['p-ok','✓ قائمتك — بدون اعتماد']};
 const io=('IntersectionObserver' in window)?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12}):null;
 function reveal(root){root.querySelectorAll('.rv').forEach(el=>{if(rm||!io)el.classList.add('in');else io.observe(el)})}
 const personName=(p)=>p?(p.ar&&p.name?p.ar+' · '+p.name:(p.ar||p.name)):'';
@@ -1059,6 +1061,7 @@ function rpill(e){const st=rstate(e,e.review);const [c,t]=RS[st];return `<span c
 /* sales & average: approval opens only once the shift's last reading is in */
 function avgLast(e){const s=byId[e.sheet];if(!s||s.type!=='avg')return null;const ix=visIdx(s,e.shift);const li=ix[ix.length-1];if(li==null)return null;const x=(e.slots||{})[li];return {done:!!(x&&num(x.a)!=null),at:s.items[li][1].replace('الساعة ','')}}
 function reviewBox(e){const st=rstate(e,e.review),r=e.review,al=avgLast(e);
+  if(st==='self')return `<div class="rvbox">${rpill(e)}</div>`;
   if(al&&!al.done&&st!=='approved')return `<div class="rvbox" data-u="${esc(e.by)}" data-s="${esc(e.sheet)}">${rpill(e)}<div class="sub" style="margin-top:6px">🔒 الاعتماد يفتح بعد آخر أفرج (${esc(al.at)})</div></div>`;
   return `<div class="rvbox" data-u="${esc(e.by)}" data-s="${esc(e.sheet)}">${rpill(e)}${r?`<div class="sub" style="margin-top:4px">${r.status==='approved'?'اعتمدها':'طلب الإعادة'}: ${esc(mgrName(r.by))} · ${hm(r.ts)}${r.note?' — '+esc(r.note):''}</div>`:''}
    ${can('act')?'':'<!--'}<div class="rvbtns"><button class="btn sm okb" data-act="approve" ${st==='approved'?'disabled':''}>اعتماد ✓</button><button class="btn sm badb" data-act="follow">طلب إعادة متابعة</button></div>
@@ -1096,7 +1099,7 @@ function renderDash(){
       const miss_=P.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id)&&!es.some(e=>e.by===p.uid));
       let merged={},tot=real(s);es.forEach(e=>Object.keys(e.checks||{}).forEach(i=>merged[i]=true));const done=Object.keys(merged).length;
       const last=Math.max(...es.map(e=>e.ts));
-      const sts=es.map(e=>rstate(e,e.review));const agg=sts.includes('followup')?'followup':sts.every(x=>x==='approved')?'approved':sts.includes('resubmitted')?'resubmitted':'pending';
+      const sts=es.map(e=>rstate(e,e.review));const agg=sts.includes('followup')?'followup':sts.every(x=>x==='approved'||x==='self')?'approved':sts.includes('resubmitted')?'resubmitted':'pending';
       const per=es.map(e=>{const sh=SHIFTS[e.shift]?' · '+SHIFTS[e.shift].short:'';
         if(s.type==='avg'){const idxs=visIdx(s,e.shift);const rows=idxs.map(i=>{const x=(e.slots||{})[i];return x?`<tr><td>${esc(s.items[i][1].replace('الساعة ',''))}</td><td>${esc(x.o||'—')}</td><td>${esc(x.s||'—')}</td><td><b>${esc(x.a||'—')}</b></td></tr>`:''}).join('');
           const SO=salesOf(e);
@@ -1314,7 +1317,7 @@ function openMgmt(){
 function dayCheck(date){const P=people(),E=entriesFor(date);let req=0,ontime=0,late=0,miss=0,pend=0;const missing=[];
   for(const p of P){const s=p.s||{};for(const x of needFor(date,p.key,s)){if(!timed(x))continue;const due=dueTs(date,shiftFor(date,p.key,s),x,tmFor(date,p.key));const e=p.uid&&(E[x]||[]).find(y=>y.by===p.uid);
     if(!e){if(Date.now()>due){req++;miss++;missing.push(p.name+' – '+byId[x].ar)}else pend++;continue}req++;if(lateMin(e,date))late++;else ontime++}}
-  const all=Object.values(E).flat().filter(e=>e.sheet!=='supervisor'&&timed(e.sheet));const R={ontime:0,late:0,missed:0,pending:0};const notRev=[];
+  const all=Object.values(E).flat().filter(e=>e.sheet!=='supervisor'&&timed(e.sheet)&&byId[e.sheet].type!=='report'&&!isSelfE(e));const R={ontime:0,late:0,missed:0,pending:0};const notRev=[];
   const byRev={};all.forEach(e=>{const r=revStat(e);R[r.st]++;if(r.r){const n=mgrName(r.r.by);byRev[n]=(byRev[n]||0)+1}if(r.st==='missed')notRev.push(who(e.by)+' – '+byId[e.sheet].ar)});
   const supE=(E.supervisor||[])[0],needSup=P.some(p=>needFor(date,p.key,p.s).includes('supervisor'));
   return {byRev,needSup,req,ontime,late,miss,pend,missing,R,notRev,total:all.length,supE}}
