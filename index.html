@@ -246,6 +246,9 @@ body.ltr .dpanel{transform:translateX(-100%)}
 .wk td.wdf{background:color-mix(in srgb,var(--gold) 18%,transparent)}
 .wk .wt{outline:2px solid var(--gold);outline-offset:-2px}
 .wk tr.wme th,.wk tr.wme td{font-weight:700}.wk tr.wme th{color:var(--gold)}
+/*../patch23.css*/.rsec .rfl{display:flex;align-items:center;gap:8px;margin-top:4px}.rsec .rfl span{flex:0 0 42%;font-size:13.5px;color:var(--fg)}.rsec .rfl input{flex:1;min-width:0;min-height:40px}
+.vipmsg{background:linear-gradient(135deg,#EAF3EC,#D6E9DA);border-color:#A9CDB2}.vipi bdi{unicode-bidi:isolate}.vipi{padding:6px 0;border-top:1px dashed rgba(0,0,0,.12)}.vipi:first-of-type{border-top:0}.vipt{margin-inline-start:8px;font-size:12.5px;color:var(--mut)}
+.vipe .vh{display:flex;justify-content:space-between;align-items:center}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -265,7 +268,7 @@ body.ltr .dpanel{transform:translateX(-100%)}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v25</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v26</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -810,12 +813,15 @@ function watchPlan(){
   const chk=()=>{const ap=approval();const k=ap!=='ok'?'ap:'+ap:mySheets().join(',')+'|'+myShift()+'|'+JSON.stringify(myAssign()||{});if(k!==shownSheets&&!$('#reg')){greet();tasks()}else teamView()};
   try{db.doc('roster/list').onSnapshot(s=>{roster=s.exists?(s.data().people||[]):[];chk()},()=>{})}catch(e){}
   const subDay=()=>{try{if(dayUnsub)dayUnsub();if(msgUnsub)msgUnsub();const d=today();dayUnsub=db.doc('plan/'+d).onSnapshot(s=>{if(s.exists)ingestPlan(d,s.data());else delete planD[d];chk()},()=>{});msgUnsub=db.doc('plan/msg_'+d).onSnapshot(s=>{staffMsg=s.exists?s.data():null;showMsg()},()=>{})}catch(e){}};
+  try{db.doc('vip/'+uid).onSnapshot(s=>{vipMsg=s.exists?s.data():null;showVip()},()=>{})}catch(e){}
   subDay();let curDay=today();
   const tick=()=>{if(today()!==curDay){curDay=today();subDay();if(!$('#reg')){greet();tasks()}}else refreshPills()};
   setInterval(tick,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()});
   try{db.doc('staff/'+uid).onSnapshot(s=>{if(!s.exists)return;const n=s.data();if(JSON.stringify(n)===JSON.stringify(staff))return;staff=n;myKey=pkey(uid,staff);if($('#reg'))return;if(staff.rejected||!staff.rid)register(true);else tasks()},()=>{})}catch(e){}
 }
-let dayUnsub=null,msgUnsub=null,staffMsg=null;
+let dayUnsub=null,msgUnsub=null,staffMsg=null,vipMsg=null;
+function showVip(){const b=$('#vipMsg');if(!b)return;const v=vipMsg,ok=v&&v.date===today()&&((v.items||[]).length||v.note);b.hidden=!ok;if(!ok)return;
+  b.innerHTML=`<div class="smh">📣 معلنين اليوم</div>${(v.items||[]).map(x=>`<div class="vipi"><b><bdi>${esc(x.n)}</bdi></b>${x.t?` <span class="vipt">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}${x.p?`<div class="smt">${esc(x.p)}</div>`:''}</div>`).join('')}${v.note?`<div class="smt" style="margin-top:6px">${esc(v.note)}</div>`:''}`}
 function showMsg(){const b=$('#staffMsg');if(!b)return;b.hidden=!(staffMsg&&staffMsg.text);if(staffMsg&&staffMsg.text)b.innerHTML=`<div class="smh">📢 ${esc(t_('todayMsg'))}</div><div class="smt">${esc(staffMsg.text)}</div>`}
 let mineLoaded=false;
 /* open the only checklist automatically, but never one that was already sent today */
@@ -844,6 +850,7 @@ function tasks(){
   $('#main').innerHTML=`<div class="stack">
    ${award&&award.winners&&award.winners[0]?`<div class="award rv">🏆 <div><small>${esc(t_('empMonth'))}</small><b>${esc((()=>{const w=award.winners[0],p=rosterById()[w.key];return p?(lang==='ar'?(p.ar||p.name):(p.name||p.ar)):w.name})())}</b></div>${award.winners[0].key===myKey?'<span>🎉</span>':''}</div>`:''}
    <div class="staffmsg rv in" id="staffMsg" hidden></div>
+   <div class="staffmsg vipmsg rv in" id="vipMsg" hidden></div>
    <section id="secTasks" class="hsec"><div class="sech rv"><h2>📝 ${esc(t_('myChecklist'))}</h2><div class="sub">${esc(d)}</div>${chip}</div>
    ${a&&a.off?`<div class="card rv" style="text-align:center"><div style="font-size:40px">🌴</div><h2>${esc(t_('offToday'))}</h2><p class="sub">${esc(t_('noTasksOff'))}</p></div>`:''}
    ${!(a&&a.off)&&!list.length?(a&&(a.st||[]).length?`<div class="card rv" style="text-align:center"><div style="font-size:36px">🛎️</div><p class="sub" style="margin:6px 0 0">${esc(t_('noChecklist'))}</p></div>`:`<div class="msg rv">${esc(t_('noAssign'))}</div>`):''}
@@ -851,7 +858,7 @@ function tasks(){
    <section id="secTeam" class="hsec"><div class="sech rv"><h2>👥 ${esc(t_('team'))}</h2></div><div class="card rv" id="team"></div></section></div>`;
   $('#main').querySelectorAll('.top').forEach(b=>b.onclick=()=>toggle(b.dataset.id));
   if(!homeSeqDone){homeSeqDone=true;$('#secTasks').classList.add('seqin');$('#secTasks').style.animationDelay='1.1s';$('#secTeam').classList.add('seqin');$('#secTeam').style.animationDelay='1.35s';$('#main').querySelectorAll('.rv').forEach(x=>x.classList.add('in'))}
-  teamView();refreshPills();showMsg();reveal($('#main'));
+  teamView();refreshPills();showMsg();showVip();reveal($('#main'));
   autoOpen();
 }
 function teamView(){const box=$('#team');if(!box)return;const d=today(),nm=p=>lang==='ar'?(p.ar||p.name):(p.name||p.ar);let h='';
@@ -948,7 +955,7 @@ const MANAGERS=[
  {id:'moath',ar:'معاذ',title:'المدير التنفيذي',home:'idara',nav:['m_day','m_month']},
  {id:'bassam',ar:'بسام',title:'مدير الفرع',home:'idara',nav:['review','staff','plan','sheets','month','reports','m_day','m_month','m_targets']},
  {id:'hamad',ar:'حمد',title:'R&D',home:'idara',nav:['m_day','m_month']},
- {id:'turki',ar:'تركي',title:'مشرف وردية',home:'manager',staffMgr:true,nav:['review','staff','plan','month','reports','staffmsg','sheets','m_day','m_month','m_targets','act']}];
+ {id:'turki',ar:'تركي',title:'مشرف وردية',home:'manager',staffMgr:true,nav:['review','staff','plan','month','reports','staffmsg','vipmsg','sheets','m_day','m_month','m_targets','act']}];
 let forcePick=false,mgrMap={},meMgr=null,pvId=null;
 /* owner: identity is a local preview choice (default تركي); others: the mapping the owner confirmed */
 function myMgr(){if(isOwnerF())return mgrById('turki');return mgrById(mgrMap[uid])}
@@ -1370,6 +1377,36 @@ async function openReport(){
   $('#rep_s').onclick=async()=>{const tx=$('#rep_t').value.trim();if(!tx){$('#rep_e').textContent='اكتب الرسالة';return}const b=$('#rep_s');b.disabled=true;
     try{await db.doc('plan/msg_'+day).set({text:tx,by:uid,ts:Date.now()});toast('انرسلت للموظفين ✓');b.disabled=false;b.textContent='تحديث الرسالة'}catch(e){b.disabled=false;$('#rep_e').textContent='ما انرسلت — جرب مرة ثانية'}};
 }
+/* ======================= today's advertisers — private to chosen staff ======================= */
+const VIPDEF=['youssef','fahad','azzam'];let vipD=null;
+async function openVip(){closeDash();dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();d.innerHTML='<div class="msg">جاري التحميل…</div>';
+  let M=null;try{const s=await db.doc('admin/vipday').get();M=s.exists?s.data():null}catch(e){}if(view!=='vipmsg')return;
+  const day=today();vipD={date:day,to:(M&&M.to)||VIPDEF.filter(id=>roster.some(p=>p.id===id)),items:M&&M.date===day?(M.items||[]):[],note:M&&M.date===day?(M.note||''):'',prevTo:(M&&M.to)||[],sent:!!(M&&M.date===day&&M.ts),ts:M&&M.ts};
+  if(!vipD.items.length)vipD.items=[{n:'',t:'',p:''}];drawVip()}
+function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=vipD;
+  d.innerHTML=`<div class="fade stack"><div class="card stack"><h2>📣 معلنين اليوم</h2><p class="sub" style="margin-top:-6px">${esc(dayLabel(V.date))} — تطلع بس للي تختارهم تحت، أعلى صفحتهم اليوم.</p>
+    <div class="sub">يوصل لـ:</div><div class="edchips">${roster.map(p=>`<button class="edchip ${V.to.includes(p.id)?'on':''}" data-vto="${esc(p.id)}">${esc(p.ar||p.name)}${p.uid?'':' ·  ما سجّل'}</button>`).join('')}</div></div>
+   ${V.items.map((x,i)=>`<div class="card stack vipe"><div class="vh"><b>معلن ${i+1}</b>${V.items.length>1?`<button class="btn sm badb" data-vdel="${i}">🗑</button>`:''}</div>
+     <label class="lbl">اسم المعلن<input data-vf="n" data-vi="${i}" maxlength="80" value="${esc(x.n)}" placeholder="مثلاً: @name"></label>
+     <label class="lbl">الوقت (اختياري)<input data-vf="t" data-vi="${i}" maxlength="40" value="${esc(x.t)}" placeholder="مثلاً: 9:00 م"></label>
+     <label class="lbl">المنتجات<textarea data-vf="p" data-vi="${i}" maxlength="1000" placeholder="مثلاً: لاتيه بارد + كيكة التمر + سبانش">${esc(x.p)}</textarea></label></div>`).join('')}
+   <button class="btn" id="vip_add">＋ معلن ثاني</button>
+   <div class="card stack"><label class="lbl">ملاحظة (اختياري)<textarea id="vip_note" maxlength="1000" placeholder="مثلاً: جهزوا الطاولة اللي جنب الشباك">${esc(V.note)}</textarea></label>
+    <div class="err" id="vip_e"></div><button class="btn pri" id="vip_s">${V.sent?'تحديث':'إرسال'}</button>${V.sent?`<button class="link" id="vip_c">مسح رسالة اليوم</button><p class="sub" style="margin:0">آخر تحديث ${hm(V.ts)}</p>`:''}</div></div>`;
+  d.oninput=e=>{const t=e.target;if(t.dataset.vf){V.items[+t.dataset.vi][t.dataset.vf]=t.value}if(t.id==='vip_note')V.note=t.value};
+  d.onclick=async e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.vto){const id=b.dataset.vto,i=V.to.indexOf(id);if(i>=0)V.to.splice(i,1);else V.to.push(id);drawVip();return}
+    if(b.dataset.vdel!=null){V.items.splice(+b.dataset.vdel,1);drawVip();return}
+    if(b.id==='vip_add'){V.items.push({n:'',t:'',p:''});drawVip();const ins=d.querySelectorAll('[data-vf=n]');ins[ins.length-1].focus();return}
+    if(b.id==='vip_s'||b.id==='vip_c'){const clear=b.id==='vip_c';const items=clear?[]:V.items.map(x=>({n:x.n.trim(),t:x.t.trim(),p:x.p.trim()})).filter(x=>x.n||x.p);const note=clear?'':V.note.trim();
+      if(!clear&&!items.length&&!note){$('#vip_e').textContent='اكتب معلن واحد على الأقل';return}if(!clear&&!V.to.length){$('#vip_e').textContent='اختر مين يوصله';return}
+      b.disabled=true;const ts=Date.now(),msg={date:V.date,items,note,by:uid,ts};
+      try{const send=roster.filter(p=>V.to.includes(p.id)&&p.uid),drop=roster.filter(p=>!V.to.includes(p.id)&&p.uid&&V.prevTo.includes(p.id));
+        await Promise.all([...send.map(p=>db.doc('vip/'+p.uid).set(clear?{date:'',items:[],ts}:msg)),...drop.map(p=>db.doc('vip/'+p.uid).set({date:'',items:[],ts}))]);
+        await db.doc('admin/vipday').set({...msg,to:[...V.to]});V.prevTo=[...V.to];V.sent=!clear;V.ts=ts;if(clear){V.items=[{n:'',t:'',p:''}];V.note=''}
+        const miss=roster.filter(p=>V.to.includes(p.id)&&!p.uid).map(p=>p.ar||p.name);
+        toast(clear?'انمسحت ✓':'انرسلت لـ '+send.map(p=>p.ar||p.name).join('، ')+' ✓'+(miss.length?' — '+miss.join('، ')+' ما سجّل بعد':''));drawVip()}
+      catch(x){b.disabled=false;$('#vip_e').textContent='ما انرسلت — جرب مرة ثانية'}}}}
 /* ======================= weekly schedule (everyone) ======================= */
 function openWeek(){closeDash();if(lang==='ar'||isAdmin)dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();
   const ar=lang==='ar'||isAdmin,DN=ar?DOW:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],tdow=dowOf(today());
@@ -1420,8 +1457,8 @@ function drawSheets(){const d=$('#dash');if(view!=='sheets')return;let n=0;
   }}
 /* ======================= app shell: ☰ menu ======================= */
 const isOwnerF=()=>ownerFlag;
-const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين'],['sheets','📝','القوائم والمهام']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
-const TITLES={sheets:'القوائم والمهام',staffmsg:'رسالة اليوم للموظفين',reports:'التقارير اليومية',review:'مراجعة القوائم',staff:'الموظفين اليوم',plan:'التوزيع',month:'ملخص الموظفين الشهري',m_day:'المبيعات واليوم',m_month:'أداء الشهر',m_targets:'الأهداف'};
+const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين'],['vipmsg','📣','معلنين اليوم (السعوديين)'],['sheets','📝','القوائم والمهام']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
+const TITLES={vipmsg:'معلنين اليوم',sheets:'القوائم والمهام',staffmsg:'رسالة اليوم للموظفين',reports:'التقارير اليومية',review:'مراجعة القوائم',staff:'الموظفين اليوم',plan:'التوزيع',month:'ملخص الموظفين الشهري',m_day:'المبيعات واليوم',m_month:'أداء الشهر',m_targets:'الأهداف'};
 let view='home';
 function setTitle(){const t=$('#tbTitle');if(!t)return;t.textContent=TITLES[view]||({week:t_('weekSched'),home:t_('home'),checklist:t_('myChecklist'),team:t_('team'),me:t_('myDetails')}[view])||''}
 function renderDrawer(){
@@ -1447,6 +1484,7 @@ function go(v){closeDrawer();
   view=v;
   if(v==='staffmsg'){ensureMgr(openReport);return}
   if(v==='sheets'){ensureMgr(openSheets);return}
+  if(v==='vipmsg'){ensureMgr(openVip);return}
   if(v==='week'){openWeek();return}
   if(['home','checklist','team','me'].includes(v)){try{if(location.hash)history.replaceState(null,'',location.pathname+location.search)}catch(e){}
     closeDash();setTitle();
