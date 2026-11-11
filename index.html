@@ -249,6 +249,15 @@ body.ltr .dpanel{transform:translateX(-100%)}
 /*../patch23.css*/.rsec .rfl{display:flex;align-items:center;gap:8px;margin-top:4px}.rsec .rfl span{flex:0 0 42%;font-size:13.5px;color:var(--fg)}.rsec .rfl input{flex:1;min-width:0;min-height:40px}
 .vipmsg{background:linear-gradient(135deg,#EAF3EC,#D6E9DA);border-color:#A9CDB2}.vipi bdi{unicode-bidi:isolate}.vipi{padding:6px 0;border-top:1px dashed rgba(0,0,0,.12)}.vipi:first-of-type{border-top:0}.vipt{margin-inline-start:8px;font-size:12.5px;color:var(--mut)}
 .vipe .vh{display:flex;justify-content:space-between;align-items:center}
+/*../patch24.css*/.rvfil{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 10px}
+.rvsec{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.rvh{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;color:var(--brown);padding:2px 2px}
+.rvh span{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:0 9px;font-size:12.5px;color:var(--fg);font-weight:700}
+.rv-need .rvh{color:#9A6A00}.rv-need .rvh span{background:#FFF3D6;border-color:#EBCB86}
+.rv-miss .rvh{color:var(--bad)}
+details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::-webkit-details-marker{display:none}details.rv-done>summary::after{content:'▾';margin-inline-start:auto;color:var(--mut)}details.rv-done[open]>summary::after{content:'▴'}
+.rv-done .rvh{color:var(--ok)}
+.rvsec>.row,.rvsec>details.row{margin:0}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -268,7 +277,7 @@ body.ltr .dpanel{transform:translateX(-100%)}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v27</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v28</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1039,7 +1048,7 @@ function openDash(){
   const setM=k=>{const [y,m]=boardMonth.split('-').map(Number);const t=new Date(y,m-1+k,1);boardMonth=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0');$('#dmonth').value=boardMonth;renderDash()};
   $('#mprev').onclick=()=>setM(-1);$('#mnext').onclick=()=>setM(1);$('#dmonth').onchange=e=>{if(e.target.value){boardMonth=e.target.value;renderDash()}};
   d.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{dtab=b.dataset.t;renderDash()});
-  $('#dbody').onclick=ev=>{if(ev.target.closest('[data-gomonth]')){dtab='month';boardMonth=today().slice(0,7);$('#dmonth').value=boardMonth;renderDash();return}if(ev.target.closest('[data-award]'))return announce(ev.target.closest('[data-award]'));if(dtab==='plan')planClick(ev);else reviewClick(ev)};
+  $('#dbody').onclick=ev=>{const rf=ev.target.closest('[data-rvsh]');if(rf){rvSh=rf.dataset.rvsh;renderDash();return}if(ev.target.closest('[data-gomonth]')){dtab='month';boardMonth=today().slice(0,7);$('#dmonth').value=boardMonth;renderDash();return}if(ev.target.closest('[data-award]'))return announce(ev.target.closest('[data-award]'));if(dtab==='plan')planClick(ev);else reviewClick(ev)};
   dashLoaded=false;const tm=setTimeout(()=>{if(!dashLoaded){const x=$('#dbody');if(x)x.innerHTML='<div class="msg">تعذر التحميل — اللوحة تفتح فقط لصاحب الرابط أو المحرر.</div>'}},10000);
   const fail=()=>{clearTimeout(tm);const x=$('#dbody');if(x)x.innerHTML='<div class="msg">تعذر التحميل — اللوحة تفتح فقط لصاحب الرابط أو المحرر.</div>'};
   try{
@@ -1075,6 +1084,7 @@ async function reviewClick(ev){if(!can('act'))return;
   try{await db.doc('submissions/'+u).update({[rkey(boardDate,s)]:{status:act==='approve'?'approved':'followup',note:note.slice(0,300),ts:Date.now(),by:uid}});toast(act==='approve'?'تم الاعتماد ✓':'انرسل طلب الإعادة للموظف')}
   catch(e){b.disabled=false;toast('ما انحفظ — جرب مرة ثانية')}
 }
+let rvSh='all';
 function keepOpen(fn){const open=[...document.querySelectorAll('#dbody details[open]')].map(d=>d.dataset.k);const typing=[...document.querySelectorAll('#dbody .rvf:not([hidden])')].map(f=>[f.closest('.rvbox').dataset.u+'|'+f.closest('.rvbox').dataset.s,f.querySelector('textarea').value]);
   fn();open.forEach(k=>{const d=document.querySelector(`#dbody details[data-k="${CSS.escape(k)}"]`);if(d)d.open=true});
   typing.forEach(([k,v])=>{const [u,s]=k.split('|');const bx=document.querySelector(`#dbody .rvbox[data-u="${CSS.escape(u)}"][data-s="${CSS.escape(s)}"]`);if(bx){const f=bx.querySelector('.rvf');f.hidden=false;f.querySelector('textarea').value=v}})}
@@ -1093,10 +1103,13 @@ function renderDash(){
   const tdy=today(),[ty,tm]=tdy.split('-').map(Number),eom=Number(tdy.slice(8,10))>=new Date(ty,tm,0).getDate()-1;
   keepOpen(()=>{
   if(dtab==='sheets'){
-    body.innerHTML=(eom&&isToday?`<button class="award awbtn" data-gomonth="1">🏆 <div><small>نهاية الشهر</small><b>شوف موظف الشهر وأعلنه للموظفين</b></div><span>←</span></button>`:'')+RSH.map(s=>{const es=E[s.id];
-      if(!es){const asg=P.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id));const lateU=timed(s.id)&&asg.some(p=>Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id,tmFor(boardDate,p.key)));
-        return `<div class="row ${isToday&&!lateU?'':'miss'}"><div class="t"><b>${esc(s.ar)}</b><small>${asg.length?asg.map(p=>{const sh=shiftFor(boardDate,p.key,p.s);if(!timed(s.id))return esc(first(p.name));const tm_=tmFor(boardDate,p.key),lt=Date.now()>dueTs(boardDate,sh,s.id,tm_);return esc(first(p.name))+' <span class="dlx '+(lt?'bad':'')+'">('+esc((SHIFTS[sh]||SHIFTS.am).short)+' · '+esc(dlAr(sh,s.id,tm_))+(lt?' ⏰':'')+')</span>'}).join('، '):esc(s.en)}</small></div><span class="pill ${lateU?'p-bad':isToday?'p-warn':'p-bad'}">${lateU?'⏰ متأخر – لم تُرسل':isToday?'بانتظار':'لم تُرسل'}</span></div>`}
-      const miss_=P.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id)&&!es.some(e=>e.by===p.uid));
+    const Es=rvSh==='all'?E:Object.fromEntries(Object.entries(E).map(([k,v])=>[k,v.filter(e=>(e.shift||'am')===rvSh)]).filter(([k,v])=>v.length));
+    const Pf=rvSh==='all'?P:P.filter(p=>shiftFor(boardDate,p.key,p.s)===rvSh);
+    const items=RSH.map(s=>{const es=Es[s.id];
+      if(!es){const asg=Pf.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id));const lateU=timed(s.id)&&asg.some(p=>Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id,tmFor(boardDate,p.key)));
+        if(!asg.length)return null;
+        return {cat:'miss',late:lateU,h:`<div class="row ${isToday&&!lateU?'':'miss'}"><div class="t"><b>${esc(s.ar)}</b><small>${asg.length?asg.map(p=>{const sh=shiftFor(boardDate,p.key,p.s);if(!timed(s.id))return esc(first(p.name));const tm_=tmFor(boardDate,p.key),lt=Date.now()>dueTs(boardDate,sh,s.id,tm_);return esc(first(p.name))+' <span class="dlx '+(lt?'bad':'')+'">('+esc((SHIFTS[sh]||SHIFTS.am).short)+' · '+esc(dlAr(sh,s.id,tm_))+(lt?' ⏰':'')+')</span>'}).join('، '):esc(s.en)}</small></div><span class="pill ${lateU?'p-bad':isToday?'p-warn':'p-bad'}">${lateU?'⏰ متأخر – لم تُرسل':isToday?'بانتظار':'لم تُرسل'}</span></div>`}}
+      const miss_=Pf.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id)&&!es.some(e=>e.by===p.uid));
       let merged={},tot=real(s);es.forEach(e=>Object.keys(e.checks||{}).forEach(i=>merged[i]=true));const done=Object.keys(merged).length;
       const last=Math.max(...es.map(e=>e.ts));
       const sts=es.map(e=>rstate(e,e.review));const agg=sts.includes('followup')?'followup':sts.every(x=>x==='approved'||x==='self')?'approved':sts.includes('resubmitted')?'resubmitted':'pending';
@@ -1110,7 +1123,15 @@ function renderDash(){
         const unc=(Array.isArray(e.lab)?e.lab.map((x,i)=>i).filter(i=>e.lab[i]!=='#'):visIdx(s,e.shift)).filter(i=>!(e.checks||{})[i]&&XS[i]==null).map(L);
         const lm=lateMin(e,boardDate);
         return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · أُرسلت ${hm(e.firstTs||e.ts)} · ${e.done}/${e.total} ${lm?`<span class="pill p-bad">⏰ متأخر ${fmtLate(lm)}</span>`:lm===0?'<span class="pill p-ok">في الوقت</span>':''}</div>${unc.length?'<div class="x">غير مكتمل ('+unc.length+'):<br>• '+unc.slice(0,40).map(esc).join('<br>• ')+'</div>':xl.length?'':'<div style="color:var(--ok)">كل البنود مكتملة ✓</div>'}${xl.length?'<div class="xlist">✗ ما انعمل ('+xl.length+'):<br>• '+xl.join('<br>• ')+'</div>':''}${vals.length?'<div>'+vals.join('<br>')+'</div>':''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}).join('');
-      return `<details class="row" data-k="s_${s.id}"><summary><div class="t"><b>${esc(s.ar)}</b><small>${es.map(e=>esc(first(who(e.by)))).join('، ')} · آخر تحديث ${hm(last)}${miss_.length?' · <span class="dlx '+(miss_.some(p=>timed(s.id)&&Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id,tmFor(boardDate,p.key)))?'bad':'')+'">ما أرسل: '+miss_.map(p=>esc(first(p.name))+' ('+esc((SHIFTS[shiftFor(boardDate,p.key,p.s)]||SHIFTS.am).short)+')').join('، ')+'</span>':''}</small></div><div class="pills"><span class="pill ${done===tot?'p-ok':'p-warn'}">${done}/${tot}</span>${es.some(e=>lateMin(e,boardDate))?'<span class="pill p-bad">⏰ متأخر</span>':''}<span class="pill ${RS[agg][0]}">${RS[agg][1]}</span></div></summary><div class="det">${per}</div></details>`}).join('');
+      const lateAny=es.some(e=>lateMin(e,boardDate)),cat=sts.some(x=>x==='pending'||x==='resubmitted')?'need':miss_.length?'miss':agg==='followup'?'fu':'done';
+      return {cat,late:lateAny,h:`<details class="row" data-k="s_${s.id}"><summary><div class="t"><b>${esc(s.ar)}</b><small>${es.map(e=>esc(first(who(e.by)))).join('، ')} · آخر تحديث ${hm(last)}${miss_.length?' · <span class="dlx '+(miss_.some(p=>timed(s.id)&&Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id,tmFor(boardDate,p.key)))?'bad':'')+'">ما أرسل: '+miss_.map(p=>esc(first(p.name))+' ('+esc((SHIFTS[shiftFor(boardDate,p.key,p.s)]||SHIFTS.am).short)+')').join('، ')+'</span>':''}</small></div><div class="pills"><span class="pill ${done===tot?'p-ok':'p-warn'}">${done}/${tot}</span>${es.some(e=>lateMin(e,boardDate))?'<span class="pill p-bad">⏰ متأخر</span>':''}<span class="pill ${RS[agg][0]}">${RS[agg][1]}</span></div></summary><div class="det">${per}</div></details>`}}).filter(Boolean);
+    const sec=(cat,title,cls)=>{const L=items.filter(x=>x.cat===cat).sort((a,b)=>(b.late?1:0)-(a.late?1:0));if(!L.length)return '';return `<div class="rvsec ${cls}"><div class="rvh">${title}<span>${L.length}</span></div>${L.map(x=>x.h).join('')}</div>`};
+    const doneL=items.filter(x=>x.cat==='done');
+    body.innerHTML=(eom&&isToday?`<button class="award awbtn" data-gomonth="1">🏆 <div><small>نهاية الشهر</small><b>شوف موظف الشهر وأعلنه للموظفين</b></div><span>←</span></button>`:'')
+      +`<div class="rvfil">${[['all','الكل'],['am','☀️ الصباحي'],['pm','🌙 المسائي']].map(([k,t])=>`<button class="edchip ${rvSh===k?'on':''}" data-rvsh="${k}">${t}</button>`).join('')}</div>`
+      +sec('need','🔔 تحتاج مراجعتك','rv-need')+sec('miss','⏳ ما وصلت أو ناقصة','rv-miss')+sec('fu','↻ رجعتها للموظف','rv-fu')
+      +(doneL.length?`<details class="rvsec rv-done" data-k="sec_done"><summary class="rvh">✓ خلصت<span>${doneL.length}</span></summary>${doneL.map(x=>x.h).join('')}</details>`:'')
+      +(items.length?'':'<div class="msg">ما فيه قوائم لهذي الوردية.</div>');
   }else{
     if(!P.length){body.innerHTML='<div class="msg">ما فيه موظفين للحين.</div>';return}
     body.innerHTML=P.map(p=>{const s=p.s||{},sh=needFor(boardDate,p.key,s),shf=SHIFTS[shiftFor(boardDate,p.key,s)],pa=planFor(boardDate,p.key);
