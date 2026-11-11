@@ -265,7 +265,7 @@ body.ltr .dpanel{transform:translateX(-100%)}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v23</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v25</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -878,8 +878,21 @@ function avgForm(id,box,prev){
   let at=null;box.querySelectorAll('[data-o],[data-s],[data-av]').forEach(x=>x.oninput=()=>{calc();clearTimeout(at);at=setTimeout(()=>save(id,box,true),1200)});
   box.querySelector('[data-send]').onclick=()=>save(id,box,false);
 }
-function reportForm(id,box,prev){const r=prev.rep||{},ar=lang==='ar';
-  box.innerHTML=`<p class="sub" style="margin:0 0 8px">${ar?'يُرفع نهاية اليوم من 12 الليل إلى 2 الليل، وبعدها يُسجّل تأخير. يوصل لمدير الفرع.':'Send it at the end of the day, 12–2 AM. After 2 AM it counts as late. It goes to the branch manager.'}</p>`+REPSEC.map(([k,a,e,h,he,def])=>`<label class="lbl rsec"><span class="rh">${esc(ar?a:e)}</span>${h?`<small>${esc(ar?h:he)}</small>`:''}<textarea data-rk="${k}" maxlength="2000" placeholder="${esc(ar?'اكتب هنا…':'Write here…')}">${esc(r[k]!=null?r[k]:def)}</textarea></label>`).join('')
+/* bar supervisor's own daily report layout; others use REPSEC */
+const BARSEC=[['op','حالة التشغيل','Operation',[['bar','حالة البار','Bar status',''],['press','مستوى ضغط العمل','Workload','']]],
+ ['coffee','جودة القهوة','Coffee quality',[['extr','جودة الاستخلاص','Extraction quality',''],['drinks','جودة المشروبات','Drinks quality',''],['grind','معايرة الطواحين','Grinder calibration','']]],
+ ['team','أداء فريق البار','Bar team performance',[['att','الحضور والانصراف','Attendance',''],['perf','مستوى الأداء','Performance','']]],
+ ['equip','المعدات والأدوات','Equipment & tools',[['eqst','حالة المعدات','Equipment status','طبيعية'],['eqprob','المشكلة','Problem','']]],
+ ['stock','المخزون','Stock',[['stock','','','',1]]],
+ ['custn','ملاحظات العملاء','Customer notes',[['custn','','','',1]]]];
+const repSecs=v=>v==='bar'?BARSEC.map(([k,a,e,f])=>({k,a,e,h:'',he:'',f})):REPSEC.map(([k,a,e,h,he,def])=>({k,a,e,h,he,f:[[k,'','',def,1]]}));
+const repFlat=v=>repSecs(v).flatMap(S=>S.f.map(([k,a])=>[k,S.a+(a?' · '+a:'')]));
+const myRepV=()=>{const a=myAssign(),st=(a&&a.st)||[];return st.includes('bar_sup')&&!st.includes('supervisor')?'bar':''};
+function reportForm(id,box,prev){const r=prev.rep||{},ar=lang==='ar',v=r.__v!==undefined?r.__v:myRepV();box.dataset.rv=v;
+  box.innerHTML=`<p class="sub" style="margin:0 0 8px">${ar?'يُرفع نهاية اليوم من 12 الليل إلى 2 الليل، وبعدها يُسجّل تأخير. يوصل لمدير الفرع.':'Send it at the end of the day, 12–2 AM. After 2 AM it counts as late. It goes to the branch manager.'}</p>`
+   +repSecs(v).map((S,si)=>`<div class="lbl rsec"><span class="rh">${esc(ar?S.a:S.e)}</span>${S.h?`<small>${esc(ar?S.h:S.he)}</small>`:''}${S.f.map(([k,a,e,def,multi])=>multi
+     ?`<textarea data-rk="${k}" data-si="${si}" maxlength="2000" placeholder="${esc(ar?'اكتب هنا…':'Write here…')}">${esc(r[k]!=null?r[k]:def)}</textarea>`
+     :`<label class="rfl"><span>${esc(ar?a:e)}</span><input data-rk="${k}" data-si="${si}" maxlength="300" value="${esc(r[k]!=null?r[k]:def)}" placeholder="—"></label>`).join('')}</div>`).join('')
    +`<div class="err" data-err></div><button class="btn pri" data-send>${esc(ar?'إرسال التقرير':'Send report')}</button>`;
   box.querySelector('[data-send]').onclick=()=>save(id,box,false)}
 function readSlots(box){const o={};box.querySelectorAll('[data-slot]').forEach(r=>{const a=r.querySelector('[data-o]').value.trim(),b=r.querySelector('[data-s]').value.trim(),c=r.querySelector('[data-av]').value.trim();if(a||b||c)o[r.dataset.slot]={o:a.slice(0,8),s:b.slice(0,12),a:c.slice(0,10)}});return o}
@@ -912,8 +925,8 @@ async function save(id,box,silent){
   box.querySelectorAll('[data-v]').forEach(c=>{if(c.value.trim())vals[c.dataset.v]=c.value.trim().slice(0,20)});
   const xs={};let xmiss=null;box.querySelectorAll('.item.isx [data-xr]').forEach(r=>{const v=r.value.trim().slice(0,200);if(!v&&!xmiss)xmiss=r;xs[r.dataset.xr]=v});
   if(xmiss&&!silent){er.textContent=t_('xNeed');xmiss.focus();saving=false;b.disabled=false;return}
-  let rp=null;if(s.type==='report'){rp={};box.querySelectorAll('[data-rk]').forEach((x,i)=>{rp[x.dataset.rk]=x.value.trim().slice(0,2000);if(rp[x.dataset.rk])checks[i]=true})}
-  const prevE=mine[key(id)];const entry={sheet:id,date:today(),firstTs:(prevE&&(prevE.firstTs||prevE.ts))||Date.now(),checks,vals,...(timed(id)?{tm:tmFor(today(),myKey),due:dueTs(today(),myShift(),id,tmFor(today(),myKey))}:{}),...(Object.keys(xs).length?{xs}:{}),...(!s.type&&!s.auto?{lab:s.items.map(it=>it[0]==='#'?'#':it[1])}:{}),...(rp?{rep:rp}:{}),notes:((box.querySelector('[data-notes]')||{}).value||'').trim().slice(0,1000),done:Object.keys(checks).length,total:visIdx(s,sh).length,...(slots?{slots}:{}),by:uid,shift:sh,ts:Date.now()};
+  let rp=null;if(s.type==='report'){rp={__v:box.dataset.rv||''};box.querySelectorAll('[data-rk]').forEach(x=>{rp[x.dataset.rk]=x.value.trim().slice(0,2000);if(rp[x.dataset.rk])checks[+x.dataset.si]=true})}
+  const prevE=mine[key(id)];const entry={sheet:id,date:today(),firstTs:(prevE&&(prevE.firstTs||prevE.ts))||Date.now(),checks,vals,...(timed(id)?{tm:tmFor(today(),myKey),due:dueTs(today(),myShift(),id,tmFor(today(),myKey))}:{}),...(Object.keys(xs).length?{xs}:{}),...(!s.type&&!s.auto?{lab:s.items.map(it=>it[0]==='#'?'#':it[1])}:{}),...(rp?{rep:rp}:{}),notes:((box.querySelector('[data-notes]')||{}).value||'').trim().slice(0,1000),done:Object.keys(checks).length,total:rp?repSecs(rp.__v).length:visIdx(s,sh).length,...(slots?{slots}:{}),by:uid,shift:sh,ts:Date.now()};
   const ref=db.doc('submissions/'+uid),f={[key(id)]:packE(entry)};
   try{await upsert(ref,f);
     mine={...mine,[key(id)]:entry};refreshPills();
@@ -1098,11 +1111,13 @@ function renderDash(){
       return `<details class="row ${!ok&&!isToday&&sh.length?'miss':''}" data-k="u_${esc(u)}"><summary><div class="t"><b>${esc(p.name)}</b><small>${esc(stTxt)}${sh.length?' · '+esc(shf.short):''}</small></div><span class="pill ${!sh.length?'':ok?'p-ok':isToday?'p-warn':'p-bad'}">${mineDone}/${sh.length}</span></summary><div class="det">📱 <span class="copy">${esc(s.phone||'')}</span><br>✉️ <span class="copy">${esc(s.email||'')}</span><br>🌐 ${esc(LANGTAG[s.lang]||'')}<br>${sh.map(id=>{const e=(E[id]||[]).find(x=>x.by===u);const lm=lateMin(e,boardDate);return esc(byId[id].ar)+': '+(e?'<span style="color:var(--ok)">✓ '+hm(e.firstTs||e.ts)+' ('+e.done+'/'+e.total+')</span> '+(lm?'<span class="pill p-bad">⏰ '+fmtLate(lm)+'</span> ':'')+rpill(e):(timed(id)&&Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,s),id,tmFor(boardDate,p.key))?'<span class="x">⏰ متأخر – لم تُرسل</span>':'<span class="x">لم تُرسل</span>'))}).join('<br>')}</div></details>`}).join('');
   }});
 }
+/* official start: training days before this date are ignored in all scores */
+const LIVE='2026-11-12';
 function monthStats(p,boardMonth){
   const [y,m]=boardMonth.split('-').map(Number),dim=new Date(y,m,0).getDate(),tdy=today(),curMon=tdy.slice(0,7)===boardMonth;
   const lastDay=curMon?Number(tdy.slice(8,10)):(boardMonth<tdy.slice(0,7)?dim:0);
-  const u=p.uid,s=p.s||{},doc=subs[u]||{},start=(s.since||s.ts)?ymd(riyadh(s.since||s.ts)):'';
-  const ents=Object.entries(doc).filter(([k,v])=>k.startsWith('d_'+boardMonth+'-')&&v&&byId[v.sheet]).map(([k,v])=>v);
+  const u=p.uid,s=p.s||{},doc=subs[u]||{},start0=(s.since||s.ts)?ymd(riyadh(s.since||s.ts)):'',start=start0>LIVE?start0:LIVE;
+  const ents=Object.entries(doc).filter(([k,v])=>k.startsWith('d_'+boardMonth+'-')&&v&&byId[v.sheet]&&String(v.date||'')>=LIVE).map(([k,v])=>v);
   const E={};ents.forEach(e=>{E[e.date+'|'+e.sheet]=e});
   let req=0,ontime=0,late=0,miss=0,offd=0,full=0;const cal=[];
   for(let i=1;i<=dim;i++){const d=boardMonth+'-'+String(i).padStart(2,'0'),pa=planFor(d,p.key),nd=needFor(d,p.key,s),past=i<lastDay||(!curMon&&i<=lastDay),isT=curMon&&i===lastDay;
@@ -1123,7 +1138,7 @@ let monthRank=[];
 function renderReports(){
   const body=$('#dbody'),E=entriesFor(boardDate),es=E.dreport||[],P=people().filter(p=>needFor(boardDate,p.key,p.s).includes('dreport'));
   $('#tiles').innerHTML=`<div class="tile"><b style="color:var(--ok)">${es.length}</b>تقارير وصلت</div><div class="tile"><b style="color:${P.length>es.length?'var(--warn)':'var(--ok)'}">${Math.max(0,P.length-es.filter(e=>P.some(p=>p.uid===e.by)).length)}</b>ما وصل</div><div class="tile"><b>${esc(dayLabel(boardDate).split(' ')[0])}</b>اليوم</div>`;
-  const card=e=>{const r=e.rep||{};return `<div class="card repcard"><div class="rch"><b>${esc(who(e.by))}</b><small>${(()=>{const lm=lateMin(e,boardDate);return lm?`<span class="pill p-bad">⏰ متأخر ${fmtLate(lm)}</span> `:lm===0?'<span class="pill p-ok">في الوقت</span> ':''})()}${esc((()=>{const s=staffAll[e.by];const pa=s&&planFor(boardDate,pkey(e.by,s));return pa&&pa.st?pa.st.map(x=>roleById[x]?roleById[x].ar:x).join(' + '):''})())} · ${hm(e.ts)}</small></div>${REPSEC.map(([k,a])=>`<div class="rsv"><span>${esc(a)}</span><div>${esc(r[k]||'—')}</div></div>`).join('')}</div>`};
+  const card=e=>{const r=e.rep||{};return `<div class="card repcard"><div class="rch"><b>${esc(who(e.by))}</b><small>${(()=>{const lm=lateMin(e,boardDate);return lm?`<span class="pill p-bad">⏰ متأخر ${fmtLate(lm)}</span> `:lm===0?'<span class="pill p-ok">في الوقت</span> ':''})()}${esc((()=>{const s=staffAll[e.by];const pa=s&&planFor(boardDate,pkey(e.by,s));return pa&&pa.st?pa.st.map(x=>roleById[x]?roleById[x].ar:x).join(' + '):''})())} · ${hm(e.ts)}</small></div>${repFlat(r.__v).map(([k,a])=>`<div class="rsv"><span>${esc(a)}</span><div>${esc(r[k]||'—')}</div></div>`).join('')}</div>`};
   const missing=P.filter(p=>!es.some(e=>e.by===p.uid));
   body.innerHTML=(es.length?es.map(card).join(''):'')+missing.map(p=>`<div class="row"><div class="t"><b>${esc(p.name)}</b><small>${p.uid?'':'لم يسجّل بعد'}</small></div><span class="pill ${Date.now()>dueTs(boardDate,'pm','dreport')?'p-bad':'p-warn'}">${Date.now()>dueTs(boardDate,'pm','dreport')?'⏰ متأخر – ما رفع التقرير':'بانتظار (12 – 2 الليل)'}</span></div>`).join('')||'<div class="msg">ما فيه تقارير لهذا اليوم.</div>';
 }
@@ -1327,7 +1342,7 @@ function renderMgmt(){
   // month
   const [y,m]=boardMonth.split('-').map(Number),dim=new Date(y,m,0).getDate(),tdy=today();
   let tot=0,ord=0,maw=0,mao=0;const days=[];let Rm={ontime:0,late:0,missed:0},Cm={req:0,ontime:0,late:0,miss:0},supSent=0,supLate=0,supDays=0;
-  for(let i=1;i<=dim;i++){const d=boardMonth+'-'+String(i).padStart(2,'0');if(d>tdy)break;const S=daySales(d);tot+=S.s;ord+=S.o;if(S.avg!=null&&S.o){maw+=S.avg*S.o;mao+=S.o}days.push([i,S.o]);
+  for(let i=1;i<=dim;i++){const d=boardMonth+'-'+String(i).padStart(2,'0');if(d>tdy)break;if(d<LIVE)continue;const S=daySales(d);tot+=S.s;ord+=S.o;if(S.avg!=null&&S.o){maw+=S.avg*S.o;mao+=S.o}days.push([i,S.o]);
     const C=dayCheck(d);['ontime','late','missed'].forEach(k=>Rm[k]+=C.R[k]);['req','ontime','late','miss'].forEach(k=>Cm[k]+=C[k]);
     const needSup=people().some(p=>needFor(d,p.key,p.s).includes('supervisor'));if(needSup){supDays++;if(C.supE){supSent++;if(lateMin(C.supE,d))supLate++}}}
   const mx=Math.max(1,...days.map(x=>x[1]),targets.dayOrders||0);const revDue=Rm.ontime+Rm.late+Rm.missed;
