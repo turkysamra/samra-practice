@@ -236,6 +236,16 @@ body.ltr .dpanel{transform:translateX(-100%)}
 /*../patch20.css*/.hl.go{animation-duration:.7s}.drop.go{animation-duration:.75s}.seqin{animation-duration:.75s}
 /*../patch21.css*/.ptm{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 0;font-size:13px;color:var(--mut)}.ptm input{min-height:36px;padding:4px 8px;width:auto;direction:ltr}
 .trow small.tmh{display:block;color:var(--mut);font-size:11.5px}
+/*../patch22.css*/.wkc{padding:8px}.wkx{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.wk{border-collapse:separate;border-spacing:0;font-size:12px;min-width:640px;width:100%}
+.wk th,.wk td{padding:7px 5px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+.wk thead th{background:var(--head);color:var(--brown);font-weight:700}
+.wk tbody th{position:sticky;inset-inline-start:0;background:var(--card);text-align:start;font-weight:700;z-index:1;box-shadow:-1px 0 0 var(--line) inset}
+.wk td span{display:block;line-height:1.35}.wk td span+span{color:var(--mut)}
+.wk td.wo{color:var(--mut);font-weight:700;background:var(--soft)}
+.wk td.wdf{background:color-mix(in srgb,var(--gold) 18%,transparent)}
+.wk .wt{outline:2px solid var(--gold);outline-offset:-2px}
+.wk tr.wme th,.wk tr.wme td{font-weight:700}.wk tr.wme th{color:var(--gold)}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -255,7 +265,7 @@ body.ltr .dpanel{transform:translateX(-100%)}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v22</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v23</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -597,6 +607,7 @@ avgNotes:['ملاحظات (عروض، اقتراحات بيع إضافي…)','N
 sendShort:['إرسال','Send','भेजें','পাঠান'],
 team:['توزيع الموظفين',"Today's staff assignment",'आज की स्टाफ़ ड्यूटी','আজকের স্টাফ দায়িত্ব'],
 offList:['إجازة','Day off','छुट्टी','ছুটি'],
+weekSched:['جدول الدوام','Work schedule','काम का समय','কাজের সময়সূচি'],
 hide:['إخفاء','Hide','छिपाएँ','লুকান'],
 due:['آخر موعد','Due by','अंतिम समय','শেষ সময়'],
 late:['متأخر','Late','देर','দেরি'],
@@ -1344,6 +1355,19 @@ async function openReport(){
   $('#rep_s').onclick=async()=>{const tx=$('#rep_t').value.trim();if(!tx){$('#rep_e').textContent='اكتب الرسالة';return}const b=$('#rep_s');b.disabled=true;
     try{await db.doc('plan/msg_'+day).set({text:tx,by:uid,ts:Date.now()});toast('انرسلت للموظفين ✓');b.disabled=false;b.textContent='تحديث الرسالة'}catch(e){b.disabled=false;$('#rep_e').textContent='ما انرسلت — جرب مرة ثانية'}};
 }
+/* ======================= weekly schedule (everyone) ======================= */
+function openWeek(){closeDash();if(lang==='ar'||isAdmin)dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();
+  const ar=lang==='ar'||isAdmin,DN=ar?DOW:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],tdow=dowOf(today());
+  const nm=p=>ar?(p.ar||p.name):(p.name||p.ar);
+  const cell=(p,dw)=>{if(p.off!=null&&p.off!==''&&Number(p.off)===dw)return `<td class="wo">${esc(ar?'إجازة':'OFF')}</td>`;
+    const w=p.w&&p.w[dw],sh=(w&&w.sh)||p.sh||'am',tm=(w&&w.tm)||p.tm||SHDEF[sh],[a,b]=tm.split('-'),l=ar?'ar':'en';
+    return `<td class="${sh==='am'?'wam':'wpm'}${tm!==(p.tm||SHDEF[p.sh||'am'])?' wdf':''}"><span>${esc(fmtMin(toMin(a),l))}</span><span>${esc(fmtMin(toMin(b),l))}</span></td>`};
+  const rows=[...roster].sort((x,y)=>((x.sh||'am')==='am'?0:1)-((y.sh||'am')==='am'?0:1));
+  d.innerHTML=`<div class="fade stack"><div class="card stack"><h2>📅 ${esc(ar?'جدول الدوام':t_('weekSched'))}</h2><p class="sub" style="margin-top:-6px">${esc(ar?'دوام كل موظف خلال الأسبوع. اللون الذهبي = يوم مختلف عن دوامه المعتاد.':'Each person\'s hours for the week. Gold = different from their usual hours.')}</p></div>
+   <div class="card wkc"><div class="wkx"><table class="wk"><thead><tr><th>${esc(ar?'الموظف':'Name')}</th>${DOWORDER.map(dw=>`<th class="${dw===tdow?'wt':''}">${esc(DN[dw])}</th>`).join('')}</tr></thead>
+   <tbody>${rows.map(p=>`<tr class="${p.id===myKey?'wme':''}"><th>${esc(nm(p))}</th>${DOWORDER.map(dw=>cell(p,dw).replace('<td class="','<td class="'+(dw===tdow?'wt ':''))).join('')}</tr>`).join('')}</tbody></table></div></div>
+   ${can('plan')?`<button class="btn" id="wkedit">${esc('✏️ تعديل الجدول')}</button>`:''}</div>`;
+  const e=$('#wkedit');if(e)e.onclick=()=>go('plan')}
 /* ======================= checklist editor (owner) ======================= */
 let edSel=null,edItems=[],edDirty=false,edArm=null;
 const rolesUsing=id=>ROLES.filter(r=>r.sheets.includes(id)).map(r=>r.ar).join('، ');
@@ -1384,12 +1408,12 @@ const isOwnerF=()=>ownerFlag;
 const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين'],['sheets','📝','القوائم والمهام']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
 const TITLES={sheets:'القوائم والمهام',staffmsg:'رسالة اليوم للموظفين',reports:'التقارير اليومية',review:'مراجعة القوائم',staff:'الموظفين اليوم',plan:'التوزيع',month:'ملخص الموظفين الشهري',m_day:'المبيعات واليوم',m_month:'أداء الشهر',m_targets:'الأهداف'};
 let view='home';
-function setTitle(){const t=$('#tbTitle');if(!t)return;t.textContent=TITLES[view]||({home:t_('home'),checklist:t_('myChecklist'),team:t_('team'),me:t_('myDetails')}[view])||''}
+function setTitle(){const t=$('#tbTitle');if(!t)return;t.textContent=TITLES[view]||({week:t_('weekSched'),home:t_('home'),checklist:t_('myChecklist'),team:t_('team'),me:t_('myDetails')}[view])||''}
 function renderDrawer(){
   const p=$('#dpanel'),showAdmin=isAdmin&&db;const who_=meMgr?`<div class="dwho"><b>${esc(meMgr.ar)}</b><small>${esc(meMgr.title)}</small></div>`:(staff&&staff.rid&&rosterById()[staff.rid]?`<div class="dwho"><b>${esc(lang==='ar'?rosterById()[staff.rid].ar:rosterById()[staff.rid].name)}</b></div>`:'');
   const item=(v,ic,l)=>`<button class="ditem ${view===v?'on':''}" data-go="${v}"><span>${ic}</span>${esc(l)}</button>`;
   p.innerHTML=`<div class="dtopp"><img src="${document.querySelector('.logo').src}" alt="سمراء"><button class="dclose" data-go="__close" aria-label="إغلاق">✕</button></div>${who_}
-   <div class="dgrp">${item('home','🏠',t_('home'))}${staff&&staff.rid&&!pureMgr()?item('checklist','📝',t_('myChecklist'))+item('team','👥',t_('team')):''}${staff&&!pureMgr()?item('me','👤',t_('myDetails')):''}</div>
+   <div class="dgrp">${item('home','🏠',t_('home'))}${staff&&staff.rid&&!pureMgr()?item('checklist','📝',t_('myChecklist'))+item('team','👥',t_('team')):''}${item('week','📅',t_('weekSched'))}${staff&&!pureMgr()?item('me','👤',t_('myDetails')):''}</div>
    ${showAdmin&&meMgr?ADMIN_NAV.map(([g,items])=>{const its=items.filter(x=>can(x[0]));return its.length?`<div class="dgl">${g}</div><div class="dgrp" dir="rtl">${its.map(x=>item(...x)).join('')}</div>`:''}).join(''):''}
    ${window.__logout?`<div class="dgrp" style="margin-top:10px">${item('__logout','🚪',lang==='ar'||!staff?'تسجيل خروج':(lang==='hi'?'लॉग आउट':lang==='bn'?'লগ আউট':'Log out'))}</div>`:''}
    ${isOwnerF()?`<div class="dgl">صاحب الرابط</div><div class="dgrp" dir="rtl">${item('__gate','🚪','معاينة شاشة الدخول (كأنك شخص جديد)')}</div>`:''}`;
@@ -1402,12 +1426,13 @@ function go(v){closeDrawer();
   if(v==='__logout'){if(window.__logout)window.__logout();return}
   if(v==='__gate'){previewNew=true;view='home';closeDash();setTitle();showGate();scrollTo(0,0);return}
   previewNew=false;ss.set('samraa_view',v);
-  if(!['home','checklist','team','me'].includes(v)&&meMgr&&!can(v)){toast('هذا القسم مو ضمن صلاحيتك');v='home'}
+  if(!['home','checklist','team','me','week'].includes(v)&&meMgr&&!can(v)){toast('هذا القسم مو ضمن صلاحيتك');v='home'}
   if(v==='home'&&isAdmin&&pureMgr()){v='m_day'}
   if(['checklist','team','me'].includes(v)&&pureMgr())v=meMgr&&can('m_day')?'m_day':'home';
   view=v;
   if(v==='staffmsg'){ensureMgr(openReport);return}
   if(v==='sheets'){ensureMgr(openSheets);return}
+  if(v==='week'){openWeek();return}
   if(['home','checklist','team','me'].includes(v)){try{if(location.hash)history.replaceState(null,'',location.pathname+location.search)}catch(e){}
     closeDash();setTitle();
     if(v==='me'){register(true);scrollTo(0,0);return}
