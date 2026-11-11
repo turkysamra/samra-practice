@@ -267,6 +267,20 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
 .vptm{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:13px;color:var(--fg);white-space:nowrap}
 .vpcs{display:flex;flex-wrap:wrap;gap:6px}.vpc{background:#EEF6F0;color:#2F5F3A;border-radius:10px;padding:4px 10px;font-size:13.5px}
 .vpnote{font-size:13.5px;color:var(--mut);border-top:1px dashed var(--line);padding-top:8px;white-space:pre-wrap}
+/*../patch26.css*/#hero{gap:8px;padding-block:calc(18px + env(safe-area-inset-top,0px)) 16px}
+#hero .logo{height:clamp(46px,12vw,58px);margin-bottom:2px}
+#hero .big{font-size:clamp(26px,7.2vw,34px)}
+.hchips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.hchip{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:500;color:var(--fg);white-space:nowrap}
+.hchip.hc-role{background:#F6EBD3;border-color:#E6CF9C;color:var(--brown);font-weight:700}
+.hchip.hc-off{background:#E3F0E6;border-color:#B9D8C1;color:#2F5F3A;font-weight:700}
+.inbox{background:var(--card);border:1px solid var(--line);border-inline-start:4px solid var(--gold);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+.inbox .staffmsg,.inbox .staffmsg.vipmsg{background:none;border:0;border-radius:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.inbox #staffMsg:not([hidden])+#vipMsg{border-top:1px solid var(--line);padding-top:12px}
+.inbox .smh{margin:0;font-size:14px}.inbox .vph{color:#3F7A4C;font-size:14px}
+.sechrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tprog{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:2px 12px;font-weight:700;font-size:14px;color:var(--mut)}
+.tprog.done{background:#E3F0E6;border-color:#B9D8C1;color:#2F5F3A}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -286,7 +300,7 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v29</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v30</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -771,9 +785,11 @@ function greet(){setTimeout(playHero,30);setTitle();
   $('#hi').innerHTML=esc(t_('hello'))+(n?' <em>'+esc(n)+'</em>':'')+' 👋';
   if(!staff){$('#l2').textContent=t_('welcomeTeam');$('#l3').textContent=t_('regOnce');return}
   const a=approval()==='ok'?myAssign():null;
-  if(a&&a.off){$('#l2').textContent=t_('offToday');$('#l3').textContent=t_('enjoy')}
-  else if(a&&(a.st||[]).length){$('#l2').innerHTML=esc(t_('yourAssign'))+' <b>'+esc(a.st.map(roleName).join(' + '))+'</b>';$('#l3').textContent=t_('ready')}
-  else{$('#l2').textContent=t_('howday');$('#l3').textContent=t_('ready')}
+  const l3=$('#l3');l3.textContent='';l3.hidden=true;
+  const dd=riyadh(Date.now()-3*3600e3).toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});
+  if(a&&a.off){$('#l2').innerHTML=`<span class="hchips"><span class="hchip hc-off">🌴 ${esc(t_('offToday'))}</span><span class="hchip">${esc(dd)}</span></span>`}
+  else if(a&&(a.st||[]).length){const sh=myShift();$('#l2').innerHTML=`<span class="hchips"><span class="hchip hc-role">${esc(a.st.map(roleName).join(' + '))}</span><span class="hchip">🕒 ${esc(hoursOf(a,sh,lang))}</span><span class="hchip">${esc(dd)}</span></span>`}
+  else{$('#l2').innerHTML=`<span class="hchips"><span class="hchip">${esc(dd)}</span></span>`}
 }
 
 /* ======================= registration ======================= */
@@ -840,12 +856,13 @@ function watchPlan(){
   try{db.doc('staff/'+uid).onSnapshot(s=>{if(!s.exists)return;const n=s.data();if(JSON.stringify(n)===JSON.stringify(staff))return;staff=n;myKey=pkey(uid,staff);if($('#reg'))return;if(staff.rejected||!staff.rid)register(true);else tasks()},()=>{})}catch(e){}
 }
 let dayUnsub=null,msgUnsub=null,staffMsg=null,vipMsg=null;
-function showVip(){const b=$('#vipMsg');if(!b)return;const v=vipMsg,ok=v&&v.date===today()&&((v.items||[]).length||v.note);b.hidden=!ok;if(!ok)return;
+const inboxSync=()=>{const ib=$('#inbox');if(ib)ib.hidden=$('#staffMsg').hidden&&$('#vipMsg').hidden};
+function showVip(){const b=$('#vipMsg');if(!b)return;setTimeout(inboxSync,0);const v=vipMsg,ok=v&&v.date===today()&&((v.items||[]).length||v.note);b.hidden=!ok;if(!ok)return;
   const its=v.items||[],chips=t=>String(t||'').split(/\s*[+،,\n]\s*/).filter(Boolean).map(x=>`<span class="vpc">${esc(x)}</span>`).join('');
   b.innerHTML=`<div class="vph"><span>📣 معلنين اليوم</span>${its.length>1?`<span class="vpn">${its.length}</span>`:''}</div>`
    +its.map(x=>`<div class="vpi"><div class="vpt"><b><bdi>${esc(x.n||'—')}</bdi></b>${x.t?`<span class="vptm">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}</div>${x.p?`<div class="vpcs">${chips(x.p)}</div>`:''}</div>`).join('')
    +(v.note?`<div class="vpnote">📝 ${esc(v.note)}</div>`:'')}
-function showMsg(){const b=$('#staffMsg');if(!b)return;b.hidden=!(staffMsg&&staffMsg.text);if(staffMsg&&staffMsg.text)b.innerHTML=`<div class="smh">📢 ${esc(t_('todayMsg'))}</div><div class="smt">${esc(staffMsg.text)}</div>`}
+function showMsg(){const b=$('#staffMsg');if(!b)return;setTimeout(inboxSync,0);b.hidden=!(staffMsg&&staffMsg.text);if(staffMsg&&staffMsg.text)b.innerHTML=`<div class="smh">📢 ${esc(t_('todayMsg'))}</div><div class="smt">${esc(staffMsg.text)}</div>`}
 let mineLoaded=false;
 /* open the only checklist automatically, but never one that was already sent today */
 function autoOpen(){if(!mineLoaded)return;const list=$('#main').querySelectorAll('.task');if(list.length!==1)return;const id=list[0].id.slice(3);if(mine[key(id)]||list[0].classList.contains('open'))return;setTimeout(()=>{if(!mine[key(id)])toggle(id)},rm?0:400)}
@@ -860,7 +877,7 @@ function banner(id){const e=mine[key(id)],r=mine[rkey(today(),id)],st=rstate(e,r
   if(st==='approved')return `<div class="rban ok">${esc(t_('approved'))}${r.note?' — '+esc(r.note):''}</div>`;
   if(st==='followup')return `<div class="rban bad"><b>${esc(t_('followup'))}</b>${r.note?'<br>'+esc(r.note):''}<br><small>${esc(t_('fixResend'))}</small></div>`;
   if(st==='resubmitted')return `<div class="rban warn">${esc(t_('resub'))}</div>`;return ''}
-function refreshPills(){SHEETS.forEach(s=>{const el=document.getElementById('pl_'+s.id);if(el){el.innerHTML=pill(s.id);el.closest('.task').classList.toggle('sent',!!mine[key(s.id)]);const b=document.getElementById('rb_'+s.id);if(b)b.innerHTML=banner(s.id)}})}
+function refreshPills(){const tp=$('#tprog');if(tp){const L=mySheets(),n=L.filter(id=>mine[key(id)]).length;tp.hidden=!L.length;tp.className='tprog'+(L.length&&n===L.length?' done':'');tp.textContent=n+'/'+L.length+(L.length&&n===L.length?' ✓':'')}SHEETS.forEach(s=>{const el=document.getElementById('pl_'+s.id);if(el){el.innerHTML=pill(s.id);el.closest('.task').classList.toggle('sent',!!mine[key(s.id)]);const b=document.getElementById('rb_'+s.id);if(b)b.innerHTML=banner(s.id)}})}
 function tasks(){
   const ap=approval();
   if(ap!=='ok'){shownSheets='ap:'+ap;
@@ -872,9 +889,8 @@ function tasks(){
   const chip=a&&a.off||!(list.length||(a&&(a.st||[]).length))?'':`<span class="shiftchip">${esc(shiftName(sh))} · ${esc(hoursOf(a,sh,lang))}</span>`;
   $('#main').innerHTML=`<div class="stack">
    ${award&&award.winners&&award.winners[0]?`<div class="award rv">🏆 <div><small>${esc(t_('empMonth'))}</small><b>${esc((()=>{const w=award.winners[0],p=rosterById()[w.key];return p?(lang==='ar'?(p.ar||p.name):(p.name||p.ar)):w.name})())}</b></div>${award.winners[0].key===myKey?'<span>🎉</span>':''}</div>`:''}
-   <div class="staffmsg rv in" id="staffMsg" hidden></div>
-   <div class="staffmsg vipmsg rv in" id="vipMsg" hidden></div>
-   <section id="secTasks" class="hsec"><div class="sech rv"><h2>📝 ${esc(t_('myChecklist'))}</h2><div class="sub">${esc(d)}</div>${chip}</div>
+   <div class="inbox rv in" id="inbox" hidden><div class="staffmsg" id="staffMsg" hidden></div><div class="staffmsg vipmsg" id="vipMsg" hidden></div></div>
+   <section id="secTasks" class="hsec"><div class="sech sechrow rv"><h2>📝 ${esc(t_('myChecklist'))}</h2><span class="tprog" id="tprog" hidden></span></div>
    ${a&&a.off?`<div class="card rv" style="text-align:center"><div style="font-size:40px">🌴</div><h2>${esc(t_('offToday'))}</h2><p class="sub">${esc(t_('noTasksOff'))}</p></div>`:''}
    ${!(a&&a.off)&&!list.length?(a&&(a.st||[]).length?`<div class="card rv" style="text-align:center"><div style="font-size:36px">🛎️</div><p class="sub" style="margin:6px 0 0">${esc(t_('noChecklist'))}</p></div>`:`<div class="msg rv">${esc(t_('noAssign'))}</div>`):''}
    <div class="tasks">${list.map(id=>{const s=byId[id];const n2=lang==='en'?'':s.en;return `<div class="task rv" id="tk_${id}"><button class="top" data-id="${id}"><div class="t"><b>${esc(sheetName(s))}</b>${n2&&n2!==sheetName(s)?`<small>${esc(n2)}</small>`:''}</div><span id="pl_${id}">${pill(id)}</span></button><div id="rb_${id}">${banner(id)}</div><div class="body"><div><div class="inner" id="in_${id}"></div></div></div></div>`}).join('')}</div></section>
