@@ -216,6 +216,23 @@ body.ltr .dpanel{transform:translateX(-100%)}
 .rsv{padding:8px 0;border-bottom:1px dashed var(--line)}.rsv:last-child{border:0}.rsv span{display:block;font-size:12px;color:var(--brown);font-weight:700}.rsv div{white-space:pre-wrap}
 .awbtn2{display:block;width:100%;text-align:start;cursor:pointer;font:inherit;position:relative}.awbtn2>span{position:absolute;inset-inline-end:14px;top:14px;color:var(--gold)}
 /*../patch15.css*/.staffmsg{background:linear-gradient(135deg,#FBF3E2,#F3E3C3);border:1px solid #E7CF9E;border-radius:16px;padding:12px 14px}.smh{font-weight:700;color:var(--brown);margin-bottom:4px}.smt{white-space:pre-wrap}
+/*../patch16.css*/.xbtn{flex:none;width:32px;height:32px;min-height:0;padding:0;border-radius:8px;border:2px solid var(--line);background:var(--soft);color:var(--mut);font-weight:700;font-size:15px;cursor:pointer;line-height:1}
+.item{flex-wrap:wrap}.item .xr{display:none;flex-basis:100%;min-height:40px;margin-top:2px}
+.item.isx .xr{display:block}.item.isx .xbtn{background:var(--bad,#b3412e);border-color:var(--bad,#b3412e);color:#fff}.item.isx label .ar{text-decoration:line-through;text-decoration-color:var(--bad,#b3412e)}
+.xlist{color:var(--bad,#b3412e);margin-top:6px}
+/*../patch17.css*/.edchips{display:flex;flex-wrap:wrap;gap:8px}
+.edchip{border:1px solid var(--line);background:var(--soft);color:var(--fg);border-radius:999px;padding:7px 13px;font:inherit;font-size:14px;cursor:pointer;min-height:0}
+.edchip.on{background:var(--gold);border-color:var(--gold);color:var(--onacc);font-weight:700}
+.edrow{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.edrow .edn{flex:none;width:34px;text-align:center;color:var(--mut);font-size:13px}
+.edrow .edin{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.edrow .edin input{min-height:40px;padding:7px 10px}.edrow .edin input[dir=ltr]{font-size:13px;color:var(--mut)}
+.edsec{background:var(--head);border-radius:10px;padding:8px 6px;border:0;margin-top:6px}.edsec input{font-weight:700;color:var(--brown)}
+.edb{flex:none;display:flex;gap:4px}.edb .btn{min-width:36px;min-height:36px;padding:0 6px}
+.edadd{display:flex;gap:8px;flex-wrap:wrap;padding-top:6px}
+.edbar{display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:460px){.edrow{flex-wrap:wrap}.edb{width:100%;justify-content:flex-end}}
+/*../patch18.css*/.dlx{color:var(--mut)}.dlx.bad{color:var(--bad);font-weight:700}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -363,13 +380,20 @@ SHEETS.push({id:'clean_pm1',ar:'كلينر المساء – القسم 1',en:'Cl
 SHEETS.push({id:'clean_pm2',ar:'كلينر المساء – القسم 2',en:'Cleaner – Evening S2 (11–19)',items:[...C2,['#','الزجاج'],['External glass cleaning','تنظيف وتلميع الزجاج من الخارج']]});
 SHEETS.push({id:'supervisor',ar:'مشرف الوردية',en:'Shift Supervisor',items:[
 ['Front & Back Line Readiness','جاهزية ونظافة الخط الأمامي والخلفي'],['Staff Attendance & Uniform','حضور الموظفين والالتزام بالزي الكامل'],['Station & Task Assignment','توزيع الموظفين على أماكنهم'],['Checklists Completion','متابعة إتمام التشيك ليست'],['Facility & Equipment Check','التأكد من سلامة الأجهزة وعدم وجود أعطال'],['Influencer & Event Readiness','جاهزية المكان لاستقبال المعلنين'],['Upselling & Average Check','توجيه الكاشير لرفع الفاتورة والبيع الإضافي'],['Google Maps Reviews','حث الزبائن على التقييم في قوقل ماب'],['Customer Complaints & Feedback','حل ومتابعة شكاوى وملاحظات العملاء'],['Branch Phone & Calls Follow-up','متابعة والرد على جوال الفرع'],['Shift Closure & Handover','مطابقة الكاش وتسليم الوردية']]});
-SHEETS.push({id:'dreport',type:'report',nodue:true,ar:'التقرير اليومي',en:'Daily report',items:[['Staff','الموظفون'],['Customers','العملاء'],['Products','المنتجات'],['General notes','ملاحظات عامة']]});
+SHEETS.push({id:'bar_sup',ar:'مشرف البار',en:'Bar Supervisor',items:[['#','قبل الافتتاح'],['Bar Readiness & Cleanliness','جاهزية البار ونظافته قبل الافتتاح'],['Espresso Dial-in & Tasting','ضبط الإسبريسو (الطحنة، الوزن، الوقت) وتذوقه'],['Grinders & Espresso Machine Check','فحص المطاحن ومكينة الإسبريسو (الضغط والحرارة)'],['Fridge Temperatures (0–5°C)','حرارة الثلاجات (من 0 إلى 5 درجات)'],['Milk & Dairy: Stock and Expiry','الحليب والألبان: الكمية وتاريخ الصلاحية'],['Beans, Syrups & Sauces Stock','مخزون البن والسيرب والصوصات'],['Prep Labeled & Dated (FIFO)','التحضيرات مغلّفة ومكتوب عليها التاريخ (الأقدم أولاً)'],['#','أثناء الوردية'],['Baristas Attendance, Hygiene & Uniform','حضور الباريستا ونظافتهم والزي والقفازات'],['Recipes & Measurements Followed','الالتزام بالوصفات والمقادير'],['Drink Quality & Presentation Check','تذوق عينات والتأكد من جودة المشروبات وطريقة التقديم'],['Order Speed — No Delays','سرعة تجهيز الطلبات وعدم التأخير'],['Bar Kept Clean During Service','نظافة البار والأدوات أثناء الشغل'],['Waste & Returned Drinks Logged','تسجيل الهدر والمشروبات المرتجعة'],['#','عند الإغلاق'],['Machine Backflush & Grinder Cleaning','تنظيف المكينة (Backflush) والمطاحن'],['Ice Machine & Water Filter Check','نظافة مكينة الثلج وفحص فلتر الماء'],['Bar Restock List for Next Order','رفع احتياج البار للطلبية القادمة']]});
+SHEETS.push({id:'dreport',type:'report',dueMin:1560,dueAr:'2:00 ص (بعد منتصف الليل)',dueEn:'2:00 AM',ar:'التقرير اليومي',en:'Daily report',items:[['Staff','الموظفون'],['Customers','العملاء'],['Products','المنتجات'],['General notes','ملاحظات عامة']]});
 const REPSEC=[['staff','الموظفون','Staff','حضور - انصراف - نظافة شخصية - أداء - انضباط','Attendance - leaving - personal hygiene - performance - discipline',''],['cust','العملاء','Customers','شكوى - رضا - اقتراح - تعويضات','Complaints - satisfaction - suggestions - compensation','لا يوجد'],['prod','المنتجات','Products','نظافة الطبق - حرارته - مذاقه - ملاحظة - تأخير','Plate cleanliness - temperature - taste - notes - delays',''],['notes','ملاحظات عامة','General notes','','','']];
 (function(){const s=[];for(let m=420;m<=1440;m+=30){const h=Math.floor(m/60)%24,mi=String(m%60).padStart(2,'0'),h12=h%12||12,am=(m<720||m===1440);s.push([h12+':'+mi+' '+(am?'AM':'PM'),'الساعة '+h12+':'+mi+(am?' ص':' م'),null,m]);}
 SHEETS.push({id:'restroom',ar:'سجل دورة المياه',en:'Restroom Log · every 30 min',auto:true,items:s});})();
 (function(){const s=[];for(const m of [540,660,780,900,1020,1140,1260,1380,1440]){const h=Math.floor(m/60)%24,h12=h%12||12,am=(m<720||m===1440);s.push([h12+':00 '+(am?'AM':'PM'),'الساعة '+h12+':00'+(am?' ص':' م'),null,m]);}
 SHEETS.push({id:'avg',type:'avg',auto:true,ar:'المبيعات والأفرج (كل ساعتين)',en:'Sales & average · every 2 hours',items:s});})();
 const byId=Object.fromEntries(SHEETS.map(s=>[s.id,s]));
+/* checklists the owner can edit from the site (stored in plan/sheets) */
+const EDITABLE=SHEETS.filter(s=>!s.auto&&!s.type).map(s=>s.id);
+const DEFI=Object.fromEntries(EDITABLE.map(id=>[id,JSON.parse(JSON.stringify(byId[id].items))]));
+let sheetOV={};
+function applySheets(ov){sheetOV=(ov&&typeof ov==='object')?ov:{};EDITABLE.forEach(id=>{const o=sheetOV[id];
+  byId[id].items=(o&&Array.isArray(o.items)&&o.items.some(x=>x&&x.e!=='#'))?o.items.map(x=>[String(x.e||x.a||''),String(x.a||x.e||''),x.p||null]):JSON.parse(JSON.stringify(DEFI[id]))})}
 const SHIFTS={am:{ar:'الوردية الصباحية',short:'صباحي',hours:'7:00 ص – 3:00 م',from:420,to:900},pm:{ar:'الوردية المسائية',short:'مسائي',hours:'3:00 م – 12:00 ص',from:901,to:1440}};
 const ROLES=[
 {id:'supervisor',ar:'مشرف وردية',sheets:['supervisor','dreport']},
@@ -381,7 +405,7 @@ const ROLES=[
 {id:'clean_am',ar:'كلينر – الصباح',sheets:['clean_am','restroom'],shift:'am'},
 {id:'clean_pm1',ar:'كلينر – المساء القسم 1',sheets:['clean_pm1','restroom'],shift:'pm'},
 {id:'clean_pm2',ar:'كلينر – المساء القسم 2',sheets:['clean_pm2'],shift:'pm'},
-{id:'bar_sup',ar:'مشرف البار',sheets:['dreport']},
+{id:'bar_sup',ar:'مشرف البار',sheets:['bar_sup','dreport']},
 {id:'service',ar:'سيرفس (تنزيل طلبات)',sheets:[]}];
 const roleById=Object.fromEntries(ROLES.map(r=>[r.id,r]));
 const shiftOf=s=>(s&&(s.shift||(roleById[s.role]&&roleById[s.role].shift)))||'';
@@ -393,6 +417,22 @@ const dowOf=d=>new Date(d+'T12:00:00').getDay();
 const LANGS={ar:{label:'عربي',dir:'rtl',loc:'ar-SA'},en:{label:'English',dir:'ltr',loc:'en-GB'},hi:{label:'हिन्दी',dir:'ltr',loc:'hi-IN'},bn:{label:'বাংলা',dir:'ltr',loc:'bn-BD'}};
 /* item translations: English → [Hindi, Bengali] */
 const TR={
+"Bar Readiness & Cleanliness":["खुलने से पहले बार की तैयारी और सफ़ाई", "খোলার আগে বারের প্রস্তুতি ও পরিচ্ছন্নতা"],
+"Espresso Dial-in & Tasting":["एस्प्रेसो सेटिंग (ग्राइंड, वज़न, समय) और चखना", "এসপ্রেসো সেটিং (গ্রাইন্ড, ওজন, সময়) ও স্বাদ পরীক্ষা"],
+"Grinders & Espresso Machine Check":["ग्राइंडर और एस्प्रेसो मशीन की जाँच (प्रेशर और तापमान)", "গ্রাইন্ডার ও এসপ্রেসো মেশিন পরীক্ষা (চাপ ও তাপমাত্রা)"],
+"Fridge Temperatures (0\u20135\u00b0C)":["फ्रिज का तापमान (0 से 5 डिग्री)", "ফ্রিজের তাপমাত্রা (০ থেকে ৫ ডিগ্রি)"],
+"Milk & Dairy: Stock and Expiry":["दूध और डेयरी: मात्रा और एक्सपायरी", "দুধ ও ডেইরি: পরিমাণ ও মেয়াদ"],
+"Beans, Syrups & Sauces Stock":["कॉफ़ी बीन्स, सिरप और सॉस का स्टॉक", "কফি বিন, সিরাপ ও সসের স্টক"],
+"Prep Labeled & Dated (FIFO)":["तैयारी पर लेबल और तारीख (पुराना पहले)", "প্রস্তুতিতে লেবেল ও তারিখ (পুরনোটা আগে)"],
+"Baristas Attendance, Hygiene & Uniform":["बरिस्ता की हाज़िरी, सफ़ाई, वर्दी और दस्ताने", "বারিস্তাদের উপস্থিতি, পরিচ্ছন্নতা, ইউনিফর্ম ও গ্লাভস"],
+"Recipes & Measurements Followed":["रेसिपी और माप का पालन", "রেসিপি ও মাপ মেনে চলা"],
+"Drink Quality & Presentation Check":["ड्रिंक्स की क्वालिटी और प्रस्तुति की जाँच", "ড্রিংকের মান ও পরিবেশন পরীক্ষা"],
+"Order Speed \u2014 No Delays":["ऑर्डर जल्दी तैयार करना — देरी नहीं", "দ্রুত অর্ডার তৈরি — দেরি নয়"],
+"Bar Kept Clean During Service":["काम के दौरान बार और औज़ारों की सफ़ाई", "কাজের সময় বার ও সরঞ্জাম পরিষ্কার রাখা"],
+"Waste & Returned Drinks Logged":["बर्बादी और लौटाए गए ड्रिंक्स दर्ज करना", "অপচয় ও ফেরত ড্রিংক লিখে রাখা"],
+"Machine Backflush & Grinder Cleaning":["मशीन बैकफ़्लश और ग्राइंडर की सफ़ाई", "মেশিন ব্যাকফ্লাশ ও গ্রাইন্ডার পরিষ্কার"],
+"Ice Machine & Water Filter Check":["आइस मशीन की सफ़ाई और पानी के फ़िल्टर की जाँच", "আইস মেশিন পরিষ্কার ও পানির ফিল্টার পরীক্ষা"],
+"Bar Restock List for Next Order":["अगले ऑर्डर के लिए बार की ज़रूरतों की सूची", "পরবর্তী অর্ডারের জন্য বারের প্রয়োজনের তালিকা"],
 'Front & Back Line Readiness':['फ्रंट और बैक लाइन की तैयारी और सफ़ाई','ফ্রন্ট ও ব্যাক লাইনের প্রস্তুতি ও পরিচ্ছন্নতা'],
 'Staff Attendance & Uniform':['स्टाफ़ की हाज़िरी और पूरी वर्दी','স্টাফের উপস্থিতি ও পূর্ণ ইউনিফর্ম'],
 'Station & Task Assignment':['स्टाफ़ को उनकी जगह पर लगाना','স্টাফকে তাদের জায়গায় বণ্টন'],
@@ -494,7 +534,7 @@ const SEC={'أ. التجهيز والمعدات':['A. Setup & Equipment','A. त
 'افتتاح الصباح':['Morning opening','सुबह की शुरुआत','সকালের শুরু'],'الكاشير':['Cashier','कैशियर','ক্যাশিয়ার'],
 'القسم 1':['Section 1','सेक्शन 1','সেকশন ১'],'القسم 2':['Section 2','सेक्शन 2','সেকশন ২'],'الزجاج':['Glass','कांच','কাচ']};
 /* sheet & station names: id → [English, Hindi, Bengali] */
-const SHEETN={dreport:['Daily report','दैनिक रिपोर्ट','দৈনিক রিপোর্ট'],supervisor:['Shift Supervisor','शिफ्ट सुपरवाइज़र','শিফট সুপারভাইজার'],cashier_am:['Morning Cashier','सुबह का कैशियर','সকালের ক্যাশিয়ার'],cashier:['Evening Cashier','शाम का कैशियर','সন্ধ্যার ক্যাশিয়ার'],bar:['Bar Opening & Closing','बार खोलना और बंद करना','বার খোলা ও বন্ধ'],display:['Display & Chiller','डिस्प्ले और चिलर','ডিসপ্লে ও চিলার'],reception:['Reception & Outdoor','रिसेप्शन और बाहरी क्षेत्र','রিসেপশন ও বাইরের এলাকা'],clean_am:['Cleaner – Morning','क्लीनर – सुबह','ক্লিনার – সকাল'],clean_pm1:['Cleaner – Evening S1 (1–10)','क्लीनर – शाम सेक्शन 1 (1–10)','ক্লিনার – সন্ধ্যা সেকশন ১ (১–১০)'],clean_pm2:['Cleaner – Evening S2 (11–19)','क्लीनर – शाम सेक्शन 2 (11–19)','ক্লিনার – সন্ধ্যা সেকশন ২ (১১–১৯)'],restroom:['Restroom Log · every 30 min','शौचालय लॉग · हर 30 मिनट','ওয়াশরুম লগ · প্রতি ৩০ মিনিট'],avg:['Sales & average · every 2 hours','बिक्री और औसत · हर 2 घंटे','বিক্রি ও গড় · প্রতি ২ ঘণ্টা']};
+const SHEETN={bar_sup:['Bar Supervisor','बार सुपरवाइज़र','বার সুপারভাইজার'],dreport:['Daily report','दैनिक रिपोर्ट','দৈনিক রিপোর্ট'],supervisor:['Shift Supervisor','शिफ्ट सुपरवाइज़र','শিফট সুপারভাইজার'],cashier_am:['Morning Cashier','सुबह का कैशियर','সকালের ক্যাশিয়ার'],cashier:['Evening Cashier','शाम का कैशियर','সন্ধ্যার ক্যাশিয়ার'],bar:['Bar Opening & Closing','बार खोलना और बंद करना','বার খোলা ও বন্ধ'],display:['Display & Chiller','डिस्प्ले और चिलर','ডিসপ্লে ও চিলার'],reception:['Reception & Outdoor','रिसेप्शन और बाहरी क्षेत्र','রিসেপশন ও বাইরের এলাকা'],clean_am:['Cleaner – Morning','क्लीनर – सुबह','ক্লিনার – সকাল'],clean_pm1:['Cleaner – Evening S1 (1–10)','क्लीनर – शाम सेक्शन 1 (1–10)','ক্লিনার – সন্ধ্যা সেকশন ১ (১–১০)'],clean_pm2:['Cleaner – Evening S2 (11–19)','क्लीनर – शाम सेक्शन 2 (11–19)','ক্লিনার – সন্ধ্যা সেকশন ২ (১১–১৯)'],restroom:['Restroom Log · every 30 min','शौचालय लॉग · हर 30 मिनट','ওয়াশরুম লগ · প্রতি ৩০ মিনিট'],avg:['Sales & average · every 2 hours','बिक्री और औसत · हर 2 घंटे','বিক্রি ও গড় · প্রতি ২ ঘণ্টা']};
 const ROLEN={bar_sup:['Bar supervisor','बार सुपरवाइज़र','বার সুপারভাইজার'],service:['Service (order runner)','सर्विस (ऑर्डर पहुँचाना)','সার্ভিস (অর্ডার পৌঁছানো)'],supervisor:['Shift supervisor','शिफ्ट सुपरवाइज़र','শিফট সুপারভাইজার'],cashier_am:['Morning cashier','सुबह का कैशियर','সকালের ক্যাশিয়ার'],cashier:['Evening cashier','शाम का कैशियर','সন্ধ্যার ক্যাশিয়ার'],barista:['Barista','बरिस्ता','বারিস্তা'],display:['Display','डिस्प्ले','ডিসপ্লে'],reception:['Reception','रिसेप्शन','রিসেপশন'],clean_am:['Cleaner – Morning','क्लीनर – सुबह','ক্লিনার – সকাল'],clean_pm1:['Cleaner – Evening S1','क्लीनर – शाम सेक्शन 1','ক্লিনার – সন্ধ্যা সেকশন ১'],clean_pm2:['Cleaner – Evening S2','क्लीनर – शाम सेक्शन 2','ক্লিনার – সন্ধ্যা সেকশন ২']};
 const SHIFTN={am:['Morning shift','सुबह की शिफ्ट','সকালের শিফট'],pm:['Evening shift','शाम की शिफ्ट','সন্ধ্যার শিফট']};
 const SHIFTH={am:'7:00 AM – 3:00 PM',pm:'3:00 PM – 12:00 AM'};
@@ -567,6 +607,9 @@ pendingApp:['بانتظار تأكيد المشرف — يتأكد إن هذا �
 takenName:['هذا الاسم مسجّل باسم حساب ثاني. اختر اسمك الصحيح أو كلّم المشرف.','This name is linked to another account. Pick your correct name or talk to the supervisor.','यह नाम किसी दूसरे खाते से जुड़ा है। अपना सही नाम चुनें या सुपरवाइज़र से बात करें।','এই নাম অন্য অ্যাকাউন্টে নিবন্ধিত। আপনার সঠিক নাম বেছে নিন বা সুপারভাইজারের সাথে কথা বলুন।'],
 rejectedReg:['المشرف ما أكّد اختيارك — اختر اسمك الصحيح.',"The supervisor didn't confirm your choice — please pick your correct name.",'सुपरवाइज़र ने आपका चुनाव कन्फ़र्म नहीं किया — अपना सही नाम चुनें।','সুপারভাইজার আপনার পছন্দ নিশ্চিত করেননি — আপনার সঠিক নাম বেছে নিন।'],
 sentDone:['تم الإرسال','Sent','भेज दिया','পাঠানো হয়েছে'],
+xLbl:['ما انعمل','Not done','नहीं हुआ','করা হয়নি'],
+xReason:['اكتب السبب…','Write the reason…','कारण लिखें…','কারণ লিখুন…'],
+xNeed:['اكتب السبب لكل بند عليه ✗','Write a reason for every ✗ item','हर ✗ आइटम का कारण लिखें','প্রতিটি ✗ আইটেমের কারণ লিখুন'],
 todayMsg:['رسالة اليوم من المشرف',"Today's message from the supervisor",'सुपरवाइज़र का आज का संदेश','সুপারভাইজারের আজকের বার্তা'],
 autosaveNum:['كل رقم ينحفظ تلقائياً','Every number saves automatically','हर नंबर अपने आप सेव होता है','প্রতিটি সংখ্যা নিজে থেকে সেভ হয়']};
 const LI={ar:0,en:1,hi:2,bn:3};
@@ -605,8 +648,8 @@ const riyadh=ms=>{const p={};RFMT.formatToParts(new Date(ms)).forEach(x=>{p[x.ty
 /* safe merge-write: create the document only when it truly does not exist */
 async function upsert(ref,f){try{await ref.update(f)}catch(e1){let s=null;try{s=await ref.get()}catch(e2){}if(s&&!s.exists)await ref.set(f);else throw e1}}
 /* entries store checks/vals/slots as arrays so un-ticking replaces the old value */
-function packE(e){const o={...e};o.checks=Object.keys(e.checks||{}).map(Number);o.vals=Object.entries(e.vals||{}).map(([i,v])=>[+i,v]);if(e.slots)o.slots=Object.entries(e.slots).map(([i,x])=>[+i,x.o,x.s]);return o}
-function unpackE(e){if(!e||typeof e!=='object')return e;const o={...e};if(Array.isArray(e.checks)){o.checks={};e.checks.forEach(i=>{o.checks[i]=true})}if(Array.isArray(e.vals)){o.vals={};e.vals.forEach(([i,v])=>{o.vals[i]=v})}if(Array.isArray(e.slots)){o.slots={};e.slots.forEach(([i,a,b])=>{o.slots[i]={o:a,s:b}})}return o}
+function packE(e){const o={...e};if(e.xs)o.xs=Object.entries(e.xs).map(([i,r])=>[+i,r]);o.checks=Object.keys(e.checks||{}).map(Number);o.vals=Object.entries(e.vals||{}).map(([i,v])=>[+i,v]);if(e.slots)o.slots=Object.entries(e.slots).map(([i,x])=>[+i,x.o,x.s]);return o}
+function unpackE(e){if(!e||typeof e!=='object')return e;const o={...e};if(Array.isArray(e.xs)){o.xs={};e.xs.forEach(([i,r])=>{o.xs[i]=r})}if(Array.isArray(e.checks)){o.checks={};e.checks.forEach(i=>{o.checks[i]=true})}if(Array.isArray(e.vals)){o.vals={};e.vals.forEach(([i,v])=>{o.vals[i]=v})}if(Array.isArray(e.slots)){o.slots={};e.slots.forEach(([i,a,b])=>{o.slots[i]={o:a,s:b}})}return o}
 function unpackDoc(d){const o={};for(const [k,v] of Object.entries(d||{}))o[k]=k.startsWith('d_')?unpackE(v):v;return o}
 const today=()=>ymd(riyadh(Date.now()-3*3600e3));
 const shiftDay=(d,k)=>{const t=new Date(d+'T12:00:00');t.setDate(t.getDate()+k);return ymd(t)};
@@ -619,10 +662,12 @@ const ss={get(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const rkey=(date,id)=>'r_'+date+'_'+id;
 const DEADLINE={am:'08:00',pm:'17:00'},DLAR={am:'8:00 ص',pm:'5:00 م'},DLEN={am:'8:00 AM',pm:'5:00 PM'};
-const dueTs=(date,sh)=>new Date(date+'T'+(DEADLINE[sh]||DEADLINE.am)+':00+03:00').getTime();
+const dueTs=(date,sh,id)=>{const s=id&&byId[id];if(s&&s.dueMin!=null)return new Date(date+'T00:00:00+03:00').getTime()+s.dueMin*60000;return new Date(date+'T'+(DEADLINE[sh]||DEADLINE.am)+':00+03:00').getTime()};
+const dlAr=(sh,id)=>{const s=id&&byId[id];return s&&s.dueAr?s.dueAr:DLAR[sh]||DLAR.am};
+const dlEn=(sh,id)=>{const s=id&&byId[id];return s&&s.dueEn?s.dueEn:DLEN[sh]||DLEN.am};
 const timed=id=>byId[id]&&!byId[id].auto&&!byId[id].nodue;
 /* minutes late for a sent entry (0 = on time), or null when not timed */
-function lateMin(e,date,sh){if(!e||!timed(e.sheet))return null;const f=e.firstTs||e.ts,d=dueTs(date,e.shift||sh);return f>d?Math.round((f-d)/60000):0}
+function lateMin(e,date,sh){if(!e||!timed(e.sheet))return null;const f=e.firstTs||e.ts,d=dueTs(date,e.shift||sh,e.sheet);return f>d?Math.round((f-d)/60000):0}
 const fmtLate=mi=>mi>=60?Math.floor(mi/60)+' س '+(mi%60)+' د':mi+' د';
 function rstate(e,r){if(!e)return null;if(!r)return 'pending';if(r.ts<e.ts)return r.status==='followup'?'resubmitted':'pending';return r.status}
 const RS={pending:['p-warn','بانتظار المراجعة'],approved:['p-ok','✓ معتمد'],followup:['p-bad','⚠ إعادة متابعة'],resubmitted:['p-warn','↻ أُعيد الإرسال']};
@@ -641,6 +686,8 @@ async function init(){
   try{me=user&&user.me?await user.me():null;uid=user&&user.id?await user.id():(me&&me.id)}catch(e){}
   if(!db||!uid){
     $('#main').innerHTML='<div class="msg rv">'+esc(t_('login'))+'</div>';reveal($('#main'));playHero();return}
+  try{const sv=await db.doc('plan/sheets').get();applySheets(sv.exists?(sv.data().ov||{}):{})}catch(e){}
+  try{db.doc('plan/sheets').onSnapshot(s=>{const n=s.exists?(s.data().ov||{}):{};if(JSON.stringify(n)===JSON.stringify(sheetOV))return;applySheets(n);if(staff&&staff.rid&&$('#secTasks')&&!document.querySelector('.task.open'))tasks();else refreshPills()},()=>{})}catch(e){}
   try{const [s,r]=await Promise.all([db.doc('staff/'+uid).get(),db.doc('roster/list').get()]);
     staff=s.exists?s.data():null;roster=r.exists?(r.data().people||[]):[];
     const b=await db.doc('plan/'+today()).get();if(b.exists)ingestPlan(today(),b.data())}catch(e){}
@@ -737,8 +784,8 @@ function watchMine(){
   try{mineUnsub=db.doc('submissions/'+uid).onSnapshot(s=>{mine=s.exists?unpackDoc(s.data()):{};refreshPills();if(!mineLoaded){mineLoaded=true;autoOpen()}},()=>{mineLoaded=true})}catch(e){}
 }
 const key=id=>'d_'+today()+'_'+id;
-function pill(id){const e=mine[key(id)],sh=myShift(),dl=lang==='ar'?DLAR[sh]:DLEN[sh];
-  if(!e){if(!timed(id))return `<span class="pill p-warn">${esc(t_('notSent'))}</span>`;return Date.now()>dueTs(today(),sh)?`<span class="pill p-bad">⏰ ${esc(t_('late'))}</span>`:`<span class="pill p-warn">${esc(t_('due'))} ${esc(dl)}</span>`}
+function pill(id){const e=mine[key(id)],sh=myShift(),dl=lang==='ar'?dlAr(sh,id):dlEn(sh,id);
+  if(!e){if(!timed(id))return `<span class="pill p-warn">${esc(t_('notSent'))}</span>`;return Date.now()>dueTs(today(),sh,id)?`<span class="pill p-bad">⏰ ${esc(t_('late'))}</span>`:`<span class="pill p-warn">${esc(t_('due'))} ${esc(dl)}</span>`}
   const lm=lateMin(e,today(),sh);if(lm)return `<span class="pill p-bad">✓ ${e.done}/${e.total} · ⏰ ${esc(t_('late'))}</span>`;return `<span class="pill ${e.done===e.total?'p-ok':'p-warn'}">✓ ${esc(t_('sentDone'))} · ${e.done}/${e.total}</span>`}
 function banner(id){const e=mine[key(id)],r=mine[rkey(today(),id)],st=rstate(e,r);
   if(st==='approved')return `<div class="rban ok">${esc(t_('approved'))}${r.note?' — '+esc(r.note):''}</div>`;
@@ -794,25 +841,27 @@ function avgForm(id,box,prev){
   box.querySelector('[data-send]').onclick=()=>save(id,box,false);
 }
 function reportForm(id,box,prev){const r=prev.rep||{},ar=lang==='ar';
-  box.innerHTML=`<p class="sub" style="margin:0 0 8px">${ar?'يتعبّى نهاية كل يوم، ويوصل لمدير الفرع.':'Fill in at the end of each day — it goes to the branch manager.'}</p>`+REPSEC.map(([k,a,e,h,he,def])=>`<label class="lbl rsec"><span class="rh">${esc(ar?a:e)}</span>${h?`<small>${esc(ar?h:he)}</small>`:''}<textarea data-rk="${k}" maxlength="2000" placeholder="${esc(ar?'اكتب هنا…':'Write here…')}">${esc(r[k]!=null?r[k]:def)}</textarea></label>`).join('')
+  box.innerHTML=`<p class="sub" style="margin:0 0 8px">${ar?'يُرفع نهاية اليوم من 12 الليل إلى 2 الليل، وبعدها يُسجّل تأخير. يوصل لمدير الفرع.':'Send it at the end of the day, 12–2 AM. After 2 AM it counts as late. It goes to the branch manager.'}</p>`+REPSEC.map(([k,a,e,h,he,def])=>`<label class="lbl rsec"><span class="rh">${esc(ar?a:e)}</span>${h?`<small>${esc(ar?h:he)}</small>`:''}<textarea data-rk="${k}" maxlength="2000" placeholder="${esc(ar?'اكتب هنا…':'Write here…')}">${esc(r[k]!=null?r[k]:def)}</textarea></label>`).join('')
    +`<div class="err" data-err></div><button class="btn pri" data-send>${esc(ar?'إرسال التقرير':'Send report')}</button>`;
   box.querySelector('[data-send]').onclick=()=>save(id,box,false)}
 function readSlots(box){const o={};box.querySelectorAll('[data-slot]').forEach(r=>{const a=r.querySelector('[data-o]').value.trim(),b=r.querySelector('[data-s]').value.trim();if(a||b)o[r.dataset.slot]={o:a.slice(0,8),s:b.slice(0,12)}});return o}
 function form(id){
   if(byId[id].type==='avg')return avgForm(id,document.getElementById('in_'+id),mine[key(id)]||{});
   if(byId[id].type==='report')return reportForm(id,document.getElementById('in_'+id),mine[key(id)]||{});
-  const s=byId[id],sh=myShift(),prev=mine[key(id)]||{},pc=prev.checks||{},pv=prev.vals||{};let n=0;
+  const s=byId[id],sh=myShift(),prev=mine[key(id)]||{},pc=prev.checks||{},pv=prev.vals||{},px=prev.xs||{};let n=0;
   const box=document.getElementById('in_'+id);
   box.innerHTML=`<div class="prog"><i id="pg_${id}"></i></div>`+s.items.map((it,i)=>{if(it[0]==='#')return `<div class="sec">${esc(secName(it[1]))}</div>`;if(!inShift(it,sh))return '';n++;
     const tx=itemText(s,it),main=Array.isArray(tx)?tx[0]:tx,sub=Array.isArray(tx)?tx[1]:'';
-    return `<div class="item"><input type="checkbox" id="c_${id}_${i}" data-i="${i}" ${pc[i]?'checked':''}><label for="c_${id}_${i}"><span class="ar">${s.auto?'':n+'. '}${esc(main)}</span>${sub?`<span class="en">${esc(sub)}</span>`:''}</label>${it[2]?`<input class="val" type="text" inputmode="decimal" data-v="${i}" placeholder="${esc(it[2])}" value="${esc(pv[i]||'')}">`:''}</div>`}).join('')
+    const xo=!s.auto&&px[i]!=null&&!pc[i];
+    return `<div class="item ${xo?'isx':''}" data-row="${i}"><input type="checkbox" id="c_${id}_${i}" data-i="${i}" ${pc[i]?'checked':''}><label for="c_${id}_${i}"><span class="ar">${s.auto?'':n+'. '}${esc(main)}</span>${sub?`<span class="en">${esc(sub)}</span>`:''}</label>${it[2]?`<input class="val" type="text" inputmode="decimal" data-v="${i}" placeholder="${esc(it[2])}" value="${esc(pv[i]||'')}">`:''}${s.auto?'':`<button type="button" class="xbtn" data-x="${i}" aria-pressed="${xo}" aria-label="${esc(t_('xLbl'))}">✗</button><input class="xr" type="text" maxlength="200" data-xr="${i}" placeholder="${esc(t_('xReason'))}" value="${esc(xo?px[i]:'')}">`}</div>`}).join('')
    +`<label class="lbl" style="margin-top:12px">${esc(t_('notes'))}<textarea data-notes placeholder="${esc(t_('notesPh'))}">${esc(prev.notes||'')}</textarea></label>
    <div class="err" data-err></div>
    <button class="btn pri" data-send>${esc(s.auto?t_('saveLog'):t_('send'))}</button>
    ${s.auto?`<p class="sub" style="text-align:center;margin-top:6px">${esc(t_('autosave'))}</p>`:''}`;
-  const upd=()=>{const all=box.querySelectorAll('[data-i]');const c=[...all].filter(x=>x.checked).length;document.getElementById('pg_'+id).style.width=(all.length?c/all.length*100:0)+'%'};upd();
+  const upd=()=>{const all=box.querySelectorAll('[data-i]');const c=[...all].filter(x=>x.checked||x.closest('.isx')).length;document.getElementById('pg_'+id).style.width=(all.length?c/all.length*100:0)+'%'};upd();
   let at=null;
-  box.querySelectorAll('[data-i]').forEach(c=>c.onchange=()=>{upd();if(s.auto){clearTimeout(at);at=setTimeout(()=>save(id,box,true),700)}});
+  box.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{const row=b.closest('.item'),on=!row.classList.contains('isx');row.classList.toggle('isx',on);b.setAttribute('aria-pressed',on);const c=row.querySelector('[data-i]');if(on){c.checked=false;const r=row.querySelector('[data-xr]');setTimeout(()=>r.focus(),30)}upd()});
+  box.querySelectorAll('[data-i]').forEach(c=>c.onchange=()=>{if(c.checked){const row=c.closest('.item');row.classList.remove('isx');const xb=row.querySelector('[data-x]');if(xb)xb.setAttribute('aria-pressed','false')}upd();if(s.auto){clearTimeout(at);at=setTimeout(()=>save(id,box,true),700)}});
   box.querySelector('[data-send]').onclick=()=>save(id,box,false);
 }
 let saving=false,pendSave=null;
@@ -823,8 +872,10 @@ async function save(id,box,silent){
   if(s.type==='avg'){slots=readSlots(box);Object.entries(slots).forEach(([i,x])=>{if(num(x.o)&&num(x.s)!=null)checks[i]=true})}
   box.querySelectorAll('[data-i]').forEach(c=>{if(c.checked)checks[c.dataset.i]=true});
   box.querySelectorAll('[data-v]').forEach(c=>{if(c.value.trim())vals[c.dataset.v]=c.value.trim().slice(0,20)});
+  const xs={};let xmiss=null;box.querySelectorAll('.item.isx [data-xr]').forEach(r=>{const v=r.value.trim().slice(0,200);if(!v&&!xmiss)xmiss=r;xs[r.dataset.xr]=v});
+  if(xmiss&&!silent){er.textContent=t_('xNeed');xmiss.focus();saving=false;b.disabled=false;return}
   let rp=null;if(s.type==='report'){rp={};box.querySelectorAll('[data-rk]').forEach((x,i)=>{rp[x.dataset.rk]=x.value.trim().slice(0,2000);if(rp[x.dataset.rk])checks[i]=true})}
-  const prevE=mine[key(id)];const entry={sheet:id,date:today(),firstTs:(prevE&&(prevE.firstTs||prevE.ts))||Date.now(),checks,vals,...(rp?{rep:rp}:{}),notes:((box.querySelector('[data-notes]')||{}).value||'').trim().slice(0,1000),done:Object.keys(checks).length,total:visIdx(s,sh).length,...(slots?{slots}:{}),by:uid,shift:sh,ts:Date.now()};
+  const prevE=mine[key(id)];const entry={sheet:id,date:today(),firstTs:(prevE&&(prevE.firstTs||prevE.ts))||Date.now(),checks,vals,...(Object.keys(xs).length?{xs}:{}),...(!s.type&&!s.auto?{lab:s.items.map(it=>it[0]==='#'?'#':it[1])}:{}),...(rp?{rep:rp}:{}),notes:((box.querySelector('[data-notes]')||{}).value||'').trim().slice(0,1000),done:Object.keys(checks).length,total:visIdx(s,sh).length,...(slots?{slots}:{}),by:uid,shift:sh,ts:Date.now()};
   const ref=db.doc('submissions/'+uid),f={[key(id)]:packE(entry)};
   try{await upsert(ref,f);
     mine={...mine,[key(id)]:entry};refreshPills();
@@ -846,7 +897,7 @@ const MANAGERS=[
  {id:'moath',ar:'معاذ',title:'المدير التنفيذي',home:'idara',nav:['m_day','m_month']},
  {id:'bassam',ar:'بسام',title:'مدير الفرع',home:'idara',nav:['review','staff','month','reports','m_day','m_month','m_targets']},
  {id:'hamad',ar:'حمد',title:'R&D',home:'idara',nav:['m_day','m_month']},
- {id:'turki',ar:'تركي',title:'مشرف وردية',home:'manager',staffMgr:true,nav:['review','staff','plan','month','reports','staffmsg','m_day','m_month','m_targets','act']}];
+ {id:'turki',ar:'تركي',title:'مشرف وردية',home:'manager',staffMgr:true,nav:['review','staff','plan','month','reports','staffmsg','sheets','m_day','m_month','m_targets','act']}];
 let forcePick=false,mgrMap={},meMgr=null,pvId=null;
 /* owner: identity is a local preview choice (default تركي); others: the mapping the owner confirmed */
 function myMgr(){if(isOwnerF())return mgrById('turki');return mgrById(mgrMap[uid])}
@@ -945,7 +996,10 @@ function people(){const R=rosterById(),byRid={};for(const [u,s] of Object.entrie
 function entriesFor(date){const out={};for(const [u,doc] of Object.entries(subs)){for(const [k,v] of Object.entries(doc)){if(k.startsWith('d_'+date+'_')&&v&&byId[v.sheet]){(out[v.sheet]=out[v.sheet]||[]).push({...v,by:u,review:doc[rkey(date,v.sheet)]||null})}}}return out}
 function who(u){const s=staffAll[u];if(!s)return 'موظف غير مسجّل';const p=s.rid&&rosterById()[s.rid];return p?(p.ar||p.name):(s.name||'—')}
 function rpill(e){const st=rstate(e,e.review);const [c,t]=RS[st];return `<span class="pill ${c}">${t}</span>`}
-function reviewBox(e){const st=rstate(e,e.review),r=e.review;
+/* sales & average: approval opens only once the shift's last reading is in */
+function avgLast(e){const s=byId[e.sheet];if(!s||s.type!=='avg')return null;const ix=visIdx(s,e.shift);const li=ix[ix.length-1];if(li==null)return null;const x=(e.slots||{})[li];return {done:!!(x&&num(x.o)&&num(x.s)!=null),at:s.items[li][1].replace('الساعة ','')}}
+function reviewBox(e){const st=rstate(e,e.review),r=e.review,al=avgLast(e);
+  if(al&&!al.done&&st!=='approved')return `<div class="rvbox" data-u="${esc(e.by)}" data-s="${esc(e.sheet)}">${rpill(e)}<div class="sub" style="margin-top:6px">🔒 الاعتماد يفتح بعد آخر أفرج (${esc(al.at)})</div></div>`;
   return `<div class="rvbox" data-u="${esc(e.by)}" data-s="${esc(e.sheet)}">${rpill(e)}${r?`<div class="sub" style="margin-top:4px">${r.status==='approved'?'اعتمدها':'طلب الإعادة'}: ${esc(mgrName(r.by))} · ${hm(r.ts)}${r.note?' — '+esc(r.note):''}</div>`:''}
    ${can('act')?'':'<!--'}<div class="rvbtns"><button class="btn sm okb" data-act="approve" ${st==='approved'?'disabled':''}>اعتماد ✓</button><button class="btn sm badb" data-act="follow">طلب إعادة متابعة</button></div>
    <div class="rvf" hidden><textarea maxlength="300" placeholder="مثلاً: تابعت وطلع مو كويس — أعد تنظيف الدسبلاي"></textarea><button class="btn sm badb" data-act="sendf">إرسال الطلب للموظف</button></div>${can('act')?'':'-->'}</div>`}
@@ -977,8 +1031,9 @@ function renderDash(){
   keepOpen(()=>{
   if(dtab==='sheets'){
     body.innerHTML=(eom&&isToday?`<button class="award awbtn" data-gomonth="1">🏆 <div><small>نهاية الشهر</small><b>شوف موظف الشهر وأعلنه للموظفين</b></div><span>←</span></button>`:'')+RSH.map(s=>{const es=E[s.id];
-      if(!es){const asg=P.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id));const lateU=timed(s.id)&&asg.some(p=>Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s)));
-        return `<div class="row ${isToday&&!lateU?'':'miss'}"><div class="t"><b>${esc(s.ar)}</b><small>${asg.length?esc(asg.map(p=>first(p.name)).join('، ')):esc(s.en)}${timed(s.id)&&asg.length?' · آخر موعد '+DLAR[shiftFor(boardDate,asg[0].key,asg[0].s)]:''}</small></div><span class="pill ${lateU?'p-bad':isToday?'p-warn':'p-bad'}">${lateU?'⏰ متأخر – لم تُرسل':isToday?'بانتظار':'لم تُرسل'}</span></div>`}
+      if(!es){const asg=P.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id));const lateU=timed(s.id)&&asg.some(p=>Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id));
+        return `<div class="row ${isToday&&!lateU?'':'miss'}"><div class="t"><b>${esc(s.ar)}</b><small>${asg.length?asg.map(p=>{const sh=shiftFor(boardDate,p.key,p.s);if(!timed(s.id))return esc(first(p.name));const lt=Date.now()>dueTs(boardDate,sh,s.id);return esc(first(p.name))+' <span class="dlx '+(lt?'bad':'')+'">('+esc((SHIFTS[sh]||SHIFTS.am).short)+' · '+esc(dlAr(sh,s.id))+(lt?' ⏰':'')+')</span>'}).join('، '):esc(s.en)}</small></div><span class="pill ${lateU?'p-bad':isToday?'p-warn':'p-bad'}">${lateU?'⏰ متأخر – لم تُرسل':isToday?'بانتظار':'لم تُرسل'}</span></div>`}
+      const miss_=P.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id)&&!es.some(e=>e.by===p.uid));
       let merged={},tot=real(s);es.forEach(e=>Object.keys(e.checks||{}).forEach(i=>merged[i]=true));const done=Object.keys(merged).length;
       const last=Math.max(...es.map(e=>e.ts));
       const sts=es.map(e=>rstate(e,e.review));const agg=sts.includes('followup')?'followup':sts.every(x=>x==='approved')?'approved':sts.includes('resubmitted')?'resubmitted':'pending';
@@ -986,11 +1041,13 @@ function renderDash(){
         if(s.type==='avg'){const idxs=visIdx(s,e.shift);const r=avgCalc(e.slots||{},idxs);const rows=idxs.map(i=>r[i]?`<tr><td>${esc(s.items[i][1].replace('الساعة ',''))}</td><td>${esc(e.slots[i].o)}</td><td>${esc(e.slots[i].s)}</td><td><b>${sar(r[i].avg)}</b></td><td>${sar(r[i].iavg)}</td></tr>`:'').join('');
           const SO=salesOf(e);
           return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · ${hm(e.ts)}</div>${SO?`<div class="salesline">💰 المبيعات <b>${money(SO.s)}</b> ريال · ${SO.o} طلب · الأفرج <b>${(SO.s/SO.o).toFixed(1)}</b></div>`:''}${rows?`<div style="overflow-x:auto"><table class="avt"><tr><th>الوقت</th><th>طلبات</th><th>مبيعات</th><th>الأفرج</th><th>آخر ساعتين</th></tr>${rows}</table></div>`:''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}
-        const vals=Object.entries(e.vals||{}).map(([i,v])=>esc(s.items[i]?s.items[i][1]:'')+': <b class="copy">'+esc(v)+' '+esc(s.items[i]&&s.items[i][2]||'')+'</b>');
-        const unc=visIdx(s,e.shift).filter(i=>!(e.checks||{})[i]).map(i=>s.items[i][1]);
+        const L=i=>(Array.isArray(e.lab)&&e.lab[i])||(s.items[i]?s.items[i][1]:'');
+        const vals=Object.entries(e.vals||{}).map(([i,v])=>esc(L(i))+': <b class="copy">'+esc(v)+' '+esc(s.items[i]&&s.items[i][2]||'')+'</b>');
+        const XS=e.xs||{},xl=Object.keys(XS).filter(i=>L(i)&&!(e.checks||{})[i]).map(i=>esc(L(i))+' — <b>السبب:</b> '+esc(XS[i]||'—'));
+        const unc=(Array.isArray(e.lab)?e.lab.map((x,i)=>i).filter(i=>e.lab[i]!=='#'):visIdx(s,e.shift)).filter(i=>!(e.checks||{})[i]&&XS[i]==null).map(L);
         const lm=lateMin(e,boardDate);
-        return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · أُرسلت ${hm(e.firstTs||e.ts)} · ${e.done}/${e.total} ${lm?`<span class="pill p-bad">⏰ متأخر ${fmtLate(lm)}</span>`:lm===0?'<span class="pill p-ok">في الوقت</span>':''}</div>${unc.length?'<div class="x">غير مكتمل ('+unc.length+'):<br>• '+unc.slice(0,40).map(esc).join('<br>• ')+'</div>':'<div style="color:var(--ok)">كل البنود مكتملة ✓</div>'}${vals.length?'<div>'+vals.join('<br>')+'</div>':''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}).join('');
-      return `<details class="row" data-k="s_${s.id}"><summary><div class="t"><b>${esc(s.ar)}</b><small>${es.map(e=>esc(first(who(e.by)))).join('، ')} · آخر تحديث ${hm(last)}</small></div><div class="pills"><span class="pill ${done===tot?'p-ok':'p-warn'}">${done}/${tot}</span>${es.some(e=>lateMin(e,boardDate))?'<span class="pill p-bad">⏰ متأخر</span>':''}<span class="pill ${RS[agg][0]}">${RS[agg][1]}</span></div></summary><div class="det">${per}</div></details>`}).join('');
+        return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · أُرسلت ${hm(e.firstTs||e.ts)} · ${e.done}/${e.total} ${lm?`<span class="pill p-bad">⏰ متأخر ${fmtLate(lm)}</span>`:lm===0?'<span class="pill p-ok">في الوقت</span>':''}</div>${unc.length?'<div class="x">غير مكتمل ('+unc.length+'):<br>• '+unc.slice(0,40).map(esc).join('<br>• ')+'</div>':xl.length?'':'<div style="color:var(--ok)">كل البنود مكتملة ✓</div>'}${xl.length?'<div class="xlist">✗ ما انعمل ('+xl.length+'):<br>• '+xl.join('<br>• ')+'</div>':''}${vals.length?'<div>'+vals.join('<br>')+'</div>':''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}).join('');
+      return `<details class="row" data-k="s_${s.id}"><summary><div class="t"><b>${esc(s.ar)}</b><small>${es.map(e=>esc(first(who(e.by)))).join('، ')} · آخر تحديث ${hm(last)}${miss_.length?' · <span class="dlx '+(miss_.some(p=>timed(s.id)&&Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id))?'bad':'')+'">ما أرسل: '+miss_.map(p=>esc(first(p.name))+' ('+esc((SHIFTS[shiftFor(boardDate,p.key,p.s)]||SHIFTS.am).short)+')').join('، ')+'</span>':''}</small></div><div class="pills"><span class="pill ${done===tot?'p-ok':'p-warn'}">${done}/${tot}</span>${es.some(e=>lateMin(e,boardDate))?'<span class="pill p-bad">⏰ متأخر</span>':''}<span class="pill ${RS[agg][0]}">${RS[agg][1]}</span></div></summary><div class="det">${per}</div></details>`}).join('');
   }else{
     if(!P.length){body.innerHTML='<div class="msg">ما فيه موظفين للحين.</div>';return}
     body.innerHTML=P.map(p=>{const s=p.s||{},sh=needFor(boardDate,p.key,s),shf=SHIFTS[shiftFor(boardDate,p.key,s)],pa=planFor(boardDate,p.key);
@@ -1013,7 +1070,7 @@ function monthStats(p,boardMonth){
     if(d<start||(!past&&!isT)||!nd.length){cal.push(nd.some(x=>E[d+'|'+x])?'f':'');continue}
     let dl=0,dm=0,dok=0;
     for(const x of nd){const e=E[d+'|'+x];if(!timed(x)){if(e)dok++;else if(past)dm++;continue}
-      const due=dueTs(d,shiftFor(d,p.key,s));if(!e){if(past||Date.now()>due){dm++;req++;miss++}continue}
+      const due=dueTs(d,shiftFor(d,p.key,s),x);if(!e){if(past||Date.now()>due){dm++;req++;miss++}continue}
       req++;const lm=lateMin(e,d);if(lm){late++;dl++}else{ontime++;dok++}}
     if(!dm&&!dl&&(dok||nd.length))full++;
     cal.push(dm?(dok||dl?'p':'n'):dl?'l':'f')}
@@ -1026,9 +1083,9 @@ let monthRank=[];
 function renderReports(){
   const body=$('#dbody'),E=entriesFor(boardDate),es=E.dreport||[],P=people().filter(p=>needFor(boardDate,p.key,p.s).includes('dreport'));
   $('#tiles').innerHTML=`<div class="tile"><b style="color:var(--ok)">${es.length}</b>تقارير وصلت</div><div class="tile"><b style="color:${P.length>es.length?'var(--warn)':'var(--ok)'}">${Math.max(0,P.length-es.filter(e=>P.some(p=>p.uid===e.by)).length)}</b>ما وصل</div><div class="tile"><b>${esc(dayLabel(boardDate).split(' ')[0])}</b>اليوم</div>`;
-  const card=e=>{const r=e.rep||{};return `<div class="card repcard"><div class="rch"><b>${esc(who(e.by))}</b><small>${esc((()=>{const s=staffAll[e.by];const pa=s&&planFor(boardDate,pkey(e.by,s));return pa&&pa.st?pa.st.map(x=>roleById[x]?roleById[x].ar:x).join(' + '):''})())} · ${hm(e.ts)}</small></div>${REPSEC.map(([k,a])=>`<div class="rsv"><span>${esc(a)}</span><div>${esc(r[k]||'—')}</div></div>`).join('')}</div>`};
+  const card=e=>{const r=e.rep||{};return `<div class="card repcard"><div class="rch"><b>${esc(who(e.by))}</b><small>${(()=>{const lm=lateMin(e,boardDate);return lm?`<span class="pill p-bad">⏰ متأخر ${fmtLate(lm)}</span> `:lm===0?'<span class="pill p-ok">في الوقت</span> ':''})()}${esc((()=>{const s=staffAll[e.by];const pa=s&&planFor(boardDate,pkey(e.by,s));return pa&&pa.st?pa.st.map(x=>roleById[x]?roleById[x].ar:x).join(' + '):''})())} · ${hm(e.ts)}</small></div>${REPSEC.map(([k,a])=>`<div class="rsv"><span>${esc(a)}</span><div>${esc(r[k]||'—')}</div></div>`).join('')}</div>`};
   const missing=P.filter(p=>!es.some(e=>e.by===p.uid));
-  body.innerHTML=(es.length?es.map(card).join(''):'')+missing.map(p=>`<div class="row"><div class="t"><b>${esc(p.name)}</b><small>${p.uid?'':'لم يسجّل بعد'}</small></div><span class="pill ${boardDate<today()?'p-bad':'p-warn'}">${boardDate<today()?'ما رفع التقرير':'بانتظار نهاية اليوم'}</span></div>`).join('')||'<div class="msg">ما فيه تقارير لهذا اليوم.</div>';
+  body.innerHTML=(es.length?es.map(card).join(''):'')+missing.map(p=>`<div class="row"><div class="t"><b>${esc(p.name)}</b><small>${p.uid?'':'لم يسجّل بعد'}</small></div><span class="pill ${Date.now()>dueTs(boardDate,'pm','dreport')?'p-bad':'p-warn'}">${Date.now()>dueTs(boardDate,'pm','dreport')?'⏰ متأخر – ما رفع التقرير':'بانتظار (12 – 2 الليل)'}</span></div>`).join('')||'<div class="msg">ما فيه تقارير لهذا اليوم.</div>';
 }
 function renderMonth(){
   const body=$('#dbody'),PP=people().filter(p=>p.uid);
@@ -1187,7 +1244,7 @@ function openMgmt(){
 }
 /* compliance + follow-up for one day */
 function dayCheck(date){const P=people(),E=entriesFor(date);let req=0,ontime=0,late=0,miss=0,pend=0;const missing=[];
-  for(const p of P){const s=p.s||{};for(const x of needFor(date,p.key,s)){if(!timed(x))continue;const due=dueTs(date,shiftFor(date,p.key,s));const e=p.uid&&(E[x]||[]).find(y=>y.by===p.uid);
+  for(const p of P){const s=p.s||{};for(const x of needFor(date,p.key,s)){if(!timed(x))continue;const due=dueTs(date,shiftFor(date,p.key,s),x);const e=p.uid&&(E[x]||[]).find(y=>y.by===p.uid);
     if(!e){if(Date.now()>due){req++;miss++;missing.push(p.name+' – '+byId[x].ar)}else pend++;continue}req++;if(lateMin(e,date))late++;else ontime++}}
   const all=Object.values(E).flat().filter(e=>e.sheet!=='supervisor'&&timed(e.sheet));const R={ontime:0,late:0,missed:0,pending:0};const notRev=[];
   const byRev={};all.forEach(e=>{const r=revStat(e);R[r.st]++;if(r.r){const n=mgrName(r.r.by);byRev[n]=(byRev[n]||0)+1}if(r.st==='missed')notRev.push(who(e.by)+' – '+byId[e.sheet].ar)});
@@ -1252,10 +1309,45 @@ async function openReport(){
   $('#rep_s').onclick=async()=>{const tx=$('#rep_t').value.trim();if(!tx){$('#rep_e').textContent='اكتب الرسالة';return}const b=$('#rep_s');b.disabled=true;
     try{await db.doc('plan/msg_'+day).set({text:tx,by:uid,ts:Date.now()});toast('انرسلت للموظفين ✓');b.disabled=false;b.textContent='تحديث الرسالة'}catch(e){b.disabled=false;$('#rep_e').textContent='ما انرسلت — جرب مرة ثانية'}};
 }
+/* ======================= checklist editor (owner) ======================= */
+let edSel=null,edItems=[],edDirty=false,edArm=null;
+const rolesUsing=id=>ROLES.filter(r=>r.sheets.includes(id)).map(r=>r.ar).join('، ');
+function openSheets(){closeDash();dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();
+  if(!edSel||!byId[edSel])edSel=EDITABLE[0];edLoad();drawSheets()}
+function edLoad(){edItems=byId[edSel].items.map(x=>({e:x[0],a:x[1],p:x[2]||null}));edDirty=false;edArm=null}
+function drawSheets(){const d=$('#dash');if(view!=='sheets')return;let n=0;
+  const btns=i=>`<div class="edb"><button class="btn sm" data-up="${i}" aria-label="فوق" ${i===0?'disabled':''}>↑</button><button class="btn sm" data-dn="${i}" aria-label="تحت" ${i===edItems.length-1?'disabled':''}>↓</button><button class="btn sm badb" data-del="${i}" aria-label="حذف">🗑</button></div>`;
+  d.innerHTML=`<div class="fade stack"><div class="card stack"><h2>📝 القوائم والمهام</h2><p class="sub" style="margin-top:-6px">اختر القائمة، عدّل البنود، واضغط حفظ. التعديل يطلع للموظفين على طول.</p>
+   <div class="edchips">${EDITABLE.map(id=>`<button class="edchip ${id===edSel?'on':''}" data-ed="${id}">${esc(byId[id].ar)}${sheetOV[id]?' ✎':''}</button>`).join('')}</div>
+   <div class="sub">يستخدمها: <b>${esc(rolesUsing(edSel)||'—')}</b></div></div>
+   <div class="card stack" id="edlist">${edItems.map((x,i)=>x.e==='#'
+     ?`<div class="edrow edsec"><span class="edn">قسم</span><div class="edin"><input data-fa="${i}" value="${esc(x.a)}" placeholder="اسم القسم" maxlength="80"></div>${btns(i)}</div>`
+     :`<div class="edrow"><span class="edn">${++n}</span><div class="edin"><input data-fa="${i}" value="${esc(x.a)}" placeholder="البند بالعربي" maxlength="160"><input data-fe="${i}" dir="ltr" value="${esc(x.e===x.a?'':x.e)}" placeholder="English (اختياري)" maxlength="160"></div>${btns(i)}</div>`).join('')}
+   <div class="edadd"><button class="btn sm" data-add="item">＋ بند جديد</button><button class="btn sm" data-add="sec">＋ قسم</button></div></div>
+   <div class="err" id="ed_e"></div>
+   <div class="edbar"><button class="btn pri" id="ed_s">حفظ التعديلات</button>${sheetOV[edSel]?'<button class="btn" id="ed_r">رجّع القائمة الأصلية</button>':''}</div>
+   <p class="sub">💡 البند الجديد يطلع للموظفين الهنود والبنغال بالإنجليزي، فاكتب الإنجليزي لو تقدر. القوائم القديمة المرسلة ما تتأثر.</p></div>`;
+  d.oninput=e=>{const t=e.target;if(t.dataset.fa!=null){edItems[+t.dataset.fa].a=t.value;edDirty=true}if(t.dataset.fe!=null){edItems[+t.dataset.fe].e=t.value;edDirty=true}};
+  d.onclick=async e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.ed){if(b.dataset.ed===edSel)return;if(edDirty&&edArm!=='sw'+b.dataset.ed){edArm='sw'+b.dataset.ed;toast('فيه تعديلات ما انحفظت — اضغط مرة ثانية للتجاهل');return}edSel=b.dataset.ed;edLoad();drawSheets();scrollTo(0,0);return}
+    const mv=(i,j)=>{const t=edItems[i];edItems[i]=edItems[j];edItems[j]=t;edDirty=true;drawSheets()};
+    if(b.dataset.up!=null){const i=+b.dataset.up;if(i>0)mv(i,i-1);return}
+    if(b.dataset.dn!=null){const i=+b.dataset.dn;if(i<edItems.length-1)mv(i,i+1);return}
+    if(b.dataset.del!=null){edItems.splice(+b.dataset.del,1);edDirty=true;drawSheets();return}
+    if(b.dataset.add){edItems.push(b.dataset.add==='sec'?{e:'#',a:''}:{e:'',a:''});edDirty=true;drawSheets();const ins=d.querySelectorAll('[data-fa]');const last=ins[ins.length-1];if(last){last.scrollIntoView({block:'center'});last.focus()}return}
+    if(b.id==='ed_s'){const er=$('#ed_e');er.textContent='';
+      const items=edItems.map(x=>x.e==='#'?{e:'#',a:x.a.trim().slice(0,80)}:{e:(x.e||'').trim().slice(0,160)||x.a.trim().slice(0,160),a:x.a.trim().slice(0,160),...(x.p?{p:x.p}:{})}).filter(x=>x.a);
+      if(!items.some(x=>x.e!=='#')){er.textContent='لازم يبقى بند واحد على الأقل';return}
+      b.disabled=true;const ov={...sheetOV,[edSel]:{items,ts:Date.now()}};
+      try{await db.doc('plan/sheets').set({ov,by:uid,ts:Date.now()});applySheets(ov);edLoad();drawSheets();toast('انحفظت ✓ — تطلع للموظفين الحين')}catch(x){b.disabled=false;er.textContent='ما انحفظت — جرب مرة ثانية'}return}
+    if(b.id==='ed_r'){if(edArm!=='reset'){edArm='reset';b.textContent='متأكد؟ اضغط مرة ثانية';return}
+      b.disabled=true;const ov={...sheetOV};delete ov[edSel];
+      try{await db.doc('plan/sheets').set({ov,by:uid,ts:Date.now()});applySheets(ov);edLoad();drawSheets();toast('رجعت القائمة الأصلية ✓')}catch(x){b.disabled=false;$('#ed_e').textContent='ما انحفظت — جرب مرة ثانية'}return}
+  }}
 /* ======================= app shell: ☰ menu ======================= */
 const isOwnerF=()=>ownerFlag;
-const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
-const TITLES={staffmsg:'رسالة اليوم للموظفين',reports:'التقارير اليومية',review:'مراجعة القوائم',staff:'الموظفين اليوم',plan:'التوزيع',month:'ملخص الموظفين الشهري',m_day:'المبيعات واليوم',m_month:'أداء الشهر',m_targets:'الأهداف'};
+const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين'],['sheets','📝','القوائم والمهام']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
+const TITLES={sheets:'القوائم والمهام',staffmsg:'رسالة اليوم للموظفين',reports:'التقارير اليومية',review:'مراجعة القوائم',staff:'الموظفين اليوم',plan:'التوزيع',month:'ملخص الموظفين الشهري',m_day:'المبيعات واليوم',m_month:'أداء الشهر',m_targets:'الأهداف'};
 let view='home';
 function setTitle(){const t=$('#tbTitle');if(!t)return;t.textContent=TITLES[view]||({home:t_('home'),checklist:t_('myChecklist'),team:t_('team'),me:t_('myDetails')}[view])||''}
 function renderDrawer(){
@@ -1280,6 +1372,7 @@ function go(v){closeDrawer();
   if(['checklist','team','me'].includes(v)&&pureMgr())v=meMgr&&can('m_day')?'m_day':'home';
   view=v;
   if(v==='staffmsg'){ensureMgr(openReport);return}
+  if(v==='sheets'){ensureMgr(openSheets);return}
   if(['home','checklist','team','me'].includes(v)){try{if(location.hash)history.replaceState(null,'',location.pathname+location.search)}catch(e){}
     closeDash();setTitle();
     if(v==='me'){register(true);scrollTo(0,0);return}
