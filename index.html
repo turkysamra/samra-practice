@@ -234,6 +234,8 @@ body.ltr .dpanel{transform:translateX(-100%)}
 @media (max-width:460px){.edrow{flex-wrap:wrap}.edb{width:100%;justify-content:flex-end}}
 /*../patch18.css*/.dlx{color:var(--mut)}.dlx.bad{color:var(--bad);font-weight:700}
 /*../patch20.css*/.hl.go{animation-duration:.7s}.drop.go{animation-duration:.75s}.seqin{animation-duration:.75s}
+/*../patch21.css*/.ptm{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:6px 0;font-size:13px;color:var(--mut)}.ptm input{min-height:36px;padding:4px 8px;width:auto;direction:ltr}
+.trow small.tmh{display:block;color:var(--mut);font-size:11.5px}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -395,7 +397,7 @@ const DEFI=Object.fromEntries(EDITABLE.map(id=>[id,JSON.parse(JSON.stringify(byI
 let sheetOV={};
 function applySheets(ov){sheetOV=(ov&&typeof ov==='object')?ov:{};EDITABLE.forEach(id=>{const o=sheetOV[id];
   byId[id].items=(o&&Array.isArray(o.items)&&o.items.some(x=>x&&x.e!=='#'))?o.items.map(x=>[String(x.e||x.a||''),String(x.a||x.e||''),x.p||null]):JSON.parse(JSON.stringify(DEFI[id]))})}
-const SHIFTS={am:{ar:'الوردية الصباحية',short:'صباحي',hours:'7:00 ص – 3:00 م',from:420,to:900},pm:{ar:'الوردية المسائية',short:'مسائي',hours:'3:00 م – 12:00 ص',from:901,to:1440}};
+const SHIFTS={am:{ar:'الوردية الصباحية',short:'صباحي',hours:'6:30 ص – 3:00 م',from:390,to:900},pm:{ar:'الوردية المسائية',short:'مسائي',hours:'3:30 م – 12:00 ص',from:901,to:1440}};
 const ROLES=[
 {id:'supervisor',ar:'مشرف وردية',sheets:['supervisor','dreport']},
 {id:'cashier_am',ar:'كاشير صباح',sheets:['cashier_am','avg'],shift:'am'},
@@ -538,7 +540,7 @@ const SEC={'أ. التجهيز والمعدات':['A. Setup & Equipment','A. त
 const SHEETN={bar_sup:['Bar Supervisor','बार सुपरवाइज़र','বার সুপারভাইজার'],dreport:['Daily report','दैनिक रिपोर्ट','দৈনিক রিপোর্ট'],supervisor:['Shift Supervisor','शिफ्ट सुपरवाइज़र','শিফট সুপারভাইজার'],cashier_am:['Morning Cashier','सुबह का कैशियर','সকালের ক্যাশিয়ার'],cashier:['Evening Cashier','शाम का कैशियर','সন্ধ্যার ক্যাশিয়ার'],bar:['Bar Opening & Closing','बार खोलना और बंद करना','বার খোলা ও বন্ধ'],display:['Display & Chiller','डिस्प्ले और चिलर','ডিসপ্লে ও চিলার'],reception:['Reception & Outdoor','रिसेप्शन और बाहरी क्षेत्र','রিসেপশন ও বাইরের এলাকা'],clean_am:['Cleaner – Morning','क्लीनर – सुबह','ক্লিনার – সকাল'],clean_pm1:['Cleaner – Evening S1 (1–10)','क्लीनर – शाम सेक्शन 1 (1–10)','ক্লিনার – সন্ধ্যা সেকশন ১ (১–১০)'],clean_pm2:['Cleaner – Evening S2 (11–19)','क्लीनर – शाम सेक्शन 2 (11–19)','ক্লিনার – সন্ধ্যা সেকশন ২ (১১–১৯)'],restroom:['Restroom Log · every 30 min','शौचालय लॉग · हर 30 मिनट','ওয়াশরুম লগ · প্রতি ৩০ মিনিট'],avg:['Sales & average · every 2 hours','बिक्री और औसत · हर 2 घंटे','বিক্রি ও গড় · প্রতি ২ ঘণ্টা']};
 const ROLEN={bar_sup:['Bar supervisor','बार सुपरवाइज़र','বার সুপারভাইজার'],service:['Service (order runner)','सर्विस (ऑर्डर पहुँचाना)','সার্ভিস (অর্ডার পৌঁছানো)'],supervisor:['Shift supervisor','शिफ्ट सुपरवाइज़र','শিফট সুপারভাইজার'],cashier_am:['Morning cashier','सुबह का कैशियर','সকালের ক্যাশিয়ার'],cashier:['Evening cashier','शाम का कैशियर','সন্ধ্যার ক্যাশিয়ার'],barista:['Barista','बरिस्ता','বারিস্তা'],display:['Display','डिस्प्ले','ডিসপ্লে'],reception:['Reception','रिसेप्शन','রিসেপশন'],clean_am:['Cleaner – Morning','क्लीनर – सुबह','ক্লিনার – সকাল'],clean_pm1:['Cleaner – Evening S1','क्लीनर – शाम सेक्शन 1','ক্লিনার – সন্ধ্যা সেকশন ১'],clean_pm2:['Cleaner – Evening S2','क्लीनर – शाम सेक्शन 2','ক্লিনার – সন্ধ্যা সেকশন ২']};
 const SHIFTN={am:['Morning shift','सुबह की शिफ्ट','সকালের শিফট'],pm:['Evening shift','शाम की शिफ्ट','সন্ধ্যার শিফট']};
-const SHIFTH={am:'7:00 AM – 3:00 PM',pm:'3:00 PM – 12:00 AM'};
+const SHIFTH={am:'6:30 AM – 3:00 PM',pm:'3:30 PM – 12:00 AM'};
 /* UI strings: key → [Arabic, English, Hindi, Bengali] */
 const UI={
 hello:['أهلاً','Hello','नमस्ते','হ্যালো'],
@@ -584,11 +586,11 @@ errEmail:['الإيميل غير صحيح','Invalid email','ईमेल सह�
 errPhone:['رقم الجوال غير صحيح','Invalid mobile number','मोबाइल नंबर सही नहीं है','মোবাইল নম্বর সঠিক নয়'],
 regErr:['ما انحفظ — تأكد أن صاحب الرابط دعاك بصلاحية تسمح بالتعبئة.','Not saved — make sure the owner invited you with access to fill in.','सेव नहीं हुआ — पक्का करें कि मालिक ने आपको भरने की अनुमति के साथ बुलाया है।','সেভ হয়নি — নিশ্চিত করুন মালিক আপনাকে পূরণের অনুমতি দিয়ে আমন্ত্রণ করেছেন।'],
 regSaved:['تم حفظ بياناتك ✓','Your details are saved ✓','आपकी जानकारी सेव हो गई ✓','আপনার তথ্য সেভ হয়েছে ✓'],
-avgHelp:['من تقرير الكاشير: اكتب إجمالي عدد الطلبات وإجمالي المبيعات من بداية ورديتك لين الساعة المحددة — الأفرج ينحسب تلقائي.','From the POS report: enter total orders and total sales from the start of your shift up to each time — the average is calculated automatically.','POS रिपोर्ट से: शिफ्ट शुरू होने से तय समय तक के कुल ऑर्डर और कुल बिक्री लिखें — औसत अपने आप निकलेगा।','POS রিপোর্ট থেকে: শিফট শুরু থেকে নির্দিষ্ট সময় পর্যন্ত মোট অর্ডার ও মোট বিক্রি লিখুন — গড় নিজে থেকে হিসাব হবে।'],
+avgHelp:['من تقرير الكاشير: اكتب عدد الفواتير والمبيعات من بداية ورديتك لين الساعة المحددة، واكتب الأفرج بنفسك من التقرير.','From the POS report: enter the number of invoices and sales from the start of your shift up to each time, and type the average yourself from the report.','POS रिपोर्ट से: शिफ्ट शुरू होने से तय समय तक के बिल और बिक्री लिखें, और औसत रिपोर्ट से खुद लिखें।','POS রিপোর্ট থেকে: শিফট শুরু থেকে নির্দিষ্ট সময় পর্যন্ত বিল ও বিক্রি লিখুন, আর গড় রিপোর্ট দেখে নিজে লিখুন।'],
 avgShift:['أفرج الوردية','Shift average','शिफ्ट औसत','শিফটের গড়'],
 avgLast:['آخر ساعتين','Last 2 hours','पिछले 2 घंटे','শেষ ২ ঘণ্টা'],
 time:['الوقت','Time','समय','সময়'],
-orders:['عدد الطلبات','Orders','ऑर्डर','অর্ডার'],
+orders:['عدد الفواتير','Invoices','बिल','বিল'],
 sales:['المبيعات SAR','Sales SAR','बिक्री SAR','বিক্রি SAR'],
 avg:['الأفرج','Average','औसत','গড়'],
 avgNotes:['ملاحظات (عروض، اقتراحات بيع إضافي…)','Notes (offers, upsell ideas…)','नोट्स (ऑफ़र, अतिरिक्त बिक्री…)','নোট (অফার, অতিরিক্ত বিক্রি…)'],
@@ -635,7 +637,9 @@ const pkey=(u,s)=>(s&&s.rid)||('u_'+u);
 /* a name is bound to one account only after the supervisor confirms it */
 function approval(){const p=staff&&staff.rid&&rosterById()[staff.rid];if(!p)return 'none';if(p.uid===uid)return 'ok';return p.uid?'taken':'pending'}
 async function bindName(u,rid){const list=JSON.parse(JSON.stringify(roster)).map(p=>{if(p.uid===u&&p.id!==rid)delete p.uid;if(p.id===rid)p.uid=u;return p});await db.doc('roster/list').set({people:list,ts:Date.now()});roster=list}
-function planFor(date,k){const o=planD[date];if(o&&o.assign)return o.assign[k]||null;const p=rosterById()[k];if(!p)return null;const d=dowOf(date),w=p.w&&p.w[d];return {st:(w?w.st:p.st)||[],sh:(w&&w.sh)||p.sh||'am',off:p.off!=null&&p.off!==''&&Number(p.off)===d}}
+function planFor(date,k){const o=planD[date];if(o&&o.assign)return o.assign[k]||null;const p=rosterById()[k];if(!p)return null;const d=dowOf(date),w=p.w&&p.w[d];return {st:(w?w.st:p.st)||[],sh:(w&&w.sh)||p.sh||'am',tm:(w&&w.tm)||p.tm||'',off:p.off!=null&&p.off!==''&&Number(p.off)===d}}
+const tmFor=(date,k)=>{const a=planFor(date,k);return (a&&a.tm)||''};
+const hoursOf=(a,sh,l)=>(a&&a.tm&&fmtTm(a.tm,l))||(l==='ar'?SHIFTS[sh||'am'].hours:SHIFTH[sh||'am']);
 function needFor(date,k,s){const a=planFor(date,k);if(!a){const r=roleById[(s||{}).role];return r&&!(s&&s.rid)?r.sheets:[]}if(a.off)return [];return [...new Set((a.st||[]).flatMap(r=>roleById[r]?roleById[r].sheets:[]))]}
 function shiftFor(date,k,s){const a=planFor(date,k);return (a&&a.sh)||shiftOf(s)||'am'}
 function ingestPlan(id,d){if(!d||id==='template')return;planD[id]=d}
@@ -649,8 +653,8 @@ const riyadh=ms=>{const p={};RFMT.formatToParts(new Date(ms)).forEach(x=>{p[x.ty
 /* safe merge-write: create the document only when it truly does not exist */
 async function upsert(ref,f){try{await ref.update(f)}catch(e1){let s=null;try{s=await ref.get()}catch(e2){}if(s&&!s.exists)await ref.set(f);else throw e1}}
 /* entries store checks/vals/slots as arrays so un-ticking replaces the old value */
-function packE(e){const o={...e};if(e.xs)o.xs=Object.entries(e.xs).map(([i,r])=>[+i,r]);o.checks=Object.keys(e.checks||{}).map(Number);o.vals=Object.entries(e.vals||{}).map(([i,v])=>[+i,v]);if(e.slots)o.slots=Object.entries(e.slots).map(([i,x])=>[+i,x.o,x.s]);return o}
-function unpackE(e){if(!e||typeof e!=='object')return e;const o={...e};if(Array.isArray(e.xs)){o.xs={};e.xs.forEach(([i,r])=>{o.xs[i]=r})}if(Array.isArray(e.checks)){o.checks={};e.checks.forEach(i=>{o.checks[i]=true})}if(Array.isArray(e.vals)){o.vals={};e.vals.forEach(([i,v])=>{o.vals[i]=v})}if(Array.isArray(e.slots)){o.slots={};e.slots.forEach(([i,a,b])=>{o.slots[i]={o:a,s:b}})}return o}
+function packE(e){const o={...e};if(e.xs)o.xs=Object.entries(e.xs).map(([i,r])=>[+i,r]);o.checks=Object.keys(e.checks||{}).map(Number);o.vals=Object.entries(e.vals||{}).map(([i,v])=>[+i,v]);if(e.slots)o.slots=Object.entries(e.slots).map(([i,x])=>[+i,x.o,x.s,x.a||'']);return o}
+function unpackE(e){if(!e||typeof e!=='object')return e;const o={...e};if(Array.isArray(e.xs)){o.xs={};e.xs.forEach(([i,r])=>{o.xs[i]=r})}if(Array.isArray(e.checks)){o.checks={};e.checks.forEach(i=>{o.checks[i]=true})}if(Array.isArray(e.vals)){o.vals={};e.vals.forEach(([i,v])=>{o.vals[i]=v})}if(Array.isArray(e.slots)){o.slots={};e.slots.forEach(([i,a,b,c])=>{o.slots[i]={o:a,s:b,a:c||''}})}return o}
 function unpackDoc(d){const o={};for(const [k,v] of Object.entries(d||{}))o[k]=k.startsWith('d_')?unpackE(v):v;return o}
 const today=()=>ymd(riyadh(Date.now()-3*3600e3));
 const shiftDay=(d,k)=>{const t=new Date(d+'T12:00:00');t.setDate(t.getDate()+k);return ymd(t)};
@@ -663,12 +667,19 @@ const ss={get(k){try{return sessionStorage.getItem(k)}catch(e){return null}},set
 const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const rkey=(date,id)=>'r_'+date+'_'+id;
 const DEADLINE={am:'08:00',pm:'17:00'},DLAR={am:'8:00 ص',pm:'5:00 م'},DLEN={am:'8:00 AM',pm:'5:00 PM'};
-const dueTs=(date,sh,id)=>{const s=id&&byId[id];if(s&&s.dueMin!=null)return new Date(date+'T00:00:00+03:00').getTime()+s.dueMin*60000;return new Date(date+'T'+(DEADLINE[sh]||DEADLINE.am)+':00+03:00').getTime()};
-const dlAr=(sh,id)=>{const s=id&&byId[id];return s&&s.dueAr?s.dueAr:DLAR[sh]||DLAR.am};
-const dlEn=(sh,id)=>{const s=id&&byId[id];return s&&s.dueEn?s.dueEn:DLEN[sh]||DLEN.am};
+/* working hours: "HH:MM-HH:MM" (24h). Deadline = shift deadline, or 1½ h after the start for a late start */
+const SHDEF={am:'06:30-15:00',pm:'15:30-00:00'};
+const toMin=t=>{const x=/^(\d{1,2}):(\d{2})$/.exec(String(t||'').trim());return x?(+x[1])*60+(+x[2]):null};
+const startMin=tm=>tm?toMin(String(tm).split('-')[0]):null;
+const fmtMin=(mn,l)=>{const h=Math.floor(mn/60)%24,mm=String(mn%60).padStart(2,'0'),h12=(h%12)||12;return l==='ar'?h12+':'+mm+' '+(h<12?'ص':'م'):h12+':'+mm+' '+(h<12?'AM':'PM')};
+const fmtTm=(tm,l)=>{const [a,b]=String(tm||'').split('-');const x=toMin(a),y=toMin(b);return x==null||y==null?'':fmtMin(x,l)+' – '+fmtMin(y,l)};
+function dueMin(sh,id,tm){const s=id&&byId[id];if(s&&s.dueMin!=null)return s.dueMin;const base=toMin(DEADLINE[sh]||DEADLINE.am),st=startMin(tm);return st==null?base:Math.max(base,st+90)}
+const dueTs=(date,sh,id,tm)=>new Date(date+'T00:00:00+03:00').getTime()+dueMin(sh,id,tm)*60000;
+const dlAr=(sh,id,tm)=>{const s=id&&byId[id];return s&&s.dueAr?s.dueAr:fmtMin(dueMin(sh,id,tm),'ar')};
+const dlEn=(sh,id,tm)=>{const s=id&&byId[id];return s&&s.dueEn?s.dueEn:fmtMin(dueMin(sh,id,tm),'en')};
 const timed=id=>byId[id]&&!byId[id].auto&&!byId[id].nodue;
 /* minutes late for a sent entry (0 = on time), or null when not timed */
-function lateMin(e,date,sh){if(!e||!timed(e.sheet))return null;const f=e.firstTs||e.ts,d=dueTs(date,e.shift||sh,e.sheet);return f>d?Math.round((f-d)/60000):0}
+function lateMin(e,date,sh){if(!e||!timed(e.sheet))return null;const f=e.firstTs||e.ts,d=e.due||dueTs(date,e.shift||sh,e.sheet,e.tm);return f>d?Math.round((f-d)/60000):0}
 const fmtLate=mi=>mi>=60?Math.floor(mi/60)+' س '+(mi%60)+' د':mi+' د';
 function rstate(e,r){if(!e)return null;if(!r)return 'pending';if(r.ts<e.ts)return r.status==='followup'?'resubmitted':'pending';return r.status}
 const RS={pending:['p-warn','بانتظار المراجعة'],approved:['p-ok','✓ معتمد'],followup:['p-bad','⚠ إعادة متابعة'],resubmitted:['p-warn','↻ أُعيد الإرسال']};
@@ -698,11 +709,24 @@ async function init(){
   if(staff&&staff.rid&&isOwnerF()&&approval()==='pending'){try{await bindName(uid,staff.rid)}catch(e){}}
   if(isAdmin){try{mgrMap=mg&&mg.exists?(mg.data()||{}):{}}catch(e){}meMgr=myMgr()}
   try{const A=[a1,a2].filter(x=>x.exists).map(x=>x.data()).sort((a,b)=>b.ts-a.ts)[0];if(A&&Date.now()-A.ts<12*864e5)award=A}catch(e){}
+  if(isOwnerF()&&roster.length){try{await migrateSched()}catch(e){}}
   greet();
   if(isAdmin&&pureMgr()){route();if(!location.hash||!['#manager','#idara'].includes(location.hash))go('home');restoreView();toDashBtn();return}
   if(staff&&staff.lang&&staff.rid){watchMine();watchPlan();tasks()}else if(staff)register(true);else showGate();
   route();restoreView();toDashBtn();
 }
+async function migrateSched(){const mt=await db.doc('plan/meta').get();if(mt.exists&&(mt.data()||{}).sched1)return;
+  const P='15:30-00:00',L='16:00-00:30',A='06:30-15:00';
+  const S={tauquir:{off:6,tm:L},azzam:{off:2,tm:P,d:{4:'17:00-01:30',5:L}},alamin:{off:2,tm:P},fahad:{off:3,tm:P,d:{4:L,5:L}},
+    youssef:{off:1,tm:P,d:{0:'18:00-00:30',2:'18:00-00:30',4:L,5:L}},turki:{off:6,tm:P,d:{5:'17:00-01:30'}},sunny:{off:0,tm:P,d:{5:'13:30-22:00'}},
+    arafat:{off:1,tm:P},chanchal:{off:5,tm:A},mukaram:{off:5,tm:A},juned:{off:5,tm:P},bader:{tm:A,d:{5:{sh:'pm',tm:'13:00-21:30'}}}};
+  const shOf=tm=>startMin(tm)<720?'am':'pm';
+  const list=clone(roster).filter(p=>!/^saleh$/i.test(String(p.name||'').trim())&&String(p.ar||'').trim()!=='صالح');
+  for(const p of list){const x=S[String(p.name||'').toLowerCase().replace(/[^a-z]/g,'')];if(!x)continue;
+    if(x.off!==undefined)p.off=x.off;p.tm=x.tm;p.sh=shOf(x.tm);
+    if(p.w)for(const k of Object.keys(p.w))if(p.w[k]&&!x.d?.[k])p.w[k].sh=p.sh;
+    for(const [d,v] of Object.entries(x.d||{})){const o=typeof v==='string'?{tm:v}:v;p.w=p.w||{};const b=p.w[d]||{st:[...(p.st||[])],sh:p.sh};p.w[d]={...b,tm:o.tm,sh:o.sh||shOf(o.tm)}}}
+  await saveRoster(list);await db.doc('plan/meta').set({sched1:Date.now()});toast('تحدّث جدول الدوام ✓')}
 function playHero(){document.querySelectorAll('#hero .hl').forEach(e=>{e.classList.remove('go');void e.offsetWidth;e.classList.add('go')})}
 function greet(){setTimeout(playHero,30);setTitle();
   const rp=staff&&staff.rid&&rosterById()[staff.rid];
@@ -786,8 +810,8 @@ function watchMine(){
   try{mineUnsub=db.doc('submissions/'+uid).onSnapshot(s=>{mine=s.exists?unpackDoc(s.data()):{};refreshPills();if(!mineLoaded){mineLoaded=true;autoOpen()}},()=>{mineLoaded=true})}catch(e){}
 }
 const key=id=>'d_'+today()+'_'+id;
-function pill(id){const e=mine[key(id)],sh=myShift(),dl=lang==='ar'?dlAr(sh,id):dlEn(sh,id);
-  if(!e){if(!timed(id))return `<span class="pill p-warn">${esc(t_('notSent'))}</span>`;return Date.now()>dueTs(today(),sh,id)?`<span class="pill p-bad">⏰ ${esc(t_('late'))}</span>`:`<span class="pill p-warn">${esc(t_('due'))} ${esc(dl)}</span>`}
+function pill(id){const e=mine[key(id)],sh=myShift(),tm=tmFor(today(),myKey),dl=lang==='ar'?dlAr(sh,id,tm):dlEn(sh,id,tm);
+  if(!e){if(!timed(id))return `<span class="pill p-warn">${esc(t_('notSent'))}</span>`;return Date.now()>dueTs(today(),sh,id,tm)?`<span class="pill p-bad">⏰ ${esc(t_('late'))}</span>`:`<span class="pill p-warn">${esc(t_('due'))} ${esc(dl)}</span>`}
   const lm=lateMin(e,today(),sh);if(lm)return `<span class="pill p-bad">✓ ${e.done}/${e.total} · ⏰ ${esc(t_('late'))}</span>`;return `<span class="pill ${e.done===e.total?'p-ok':'p-warn'}">✓ ${esc(t_('sentDone'))} · ${e.done}/${e.total}</span>`}
 function banner(id){const e=mine[key(id)],r=mine[rkey(today(),id)],st=rstate(e,r);
   if(st==='approved')return `<div class="rban ok">${esc(t_('approved'))}${r.note?' — '+esc(r.note):''}</div>`;
@@ -802,7 +826,7 @@ function tasks(){
   const sh=myShift(),a=myAssign(),list=mySheets();
   shownSheets=list.join(',')+'|'+sh+'|'+JSON.stringify(a||{});
   const d=riyadh(Date.now()-3*3600e3).toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});
-  const chip=a&&a.off||!(list.length||(a&&(a.st||[]).length))?'':`<span class="shiftchip">${esc(shiftName(sh))} · ${esc(shiftHours(sh))}</span>`;
+  const chip=a&&a.off||!(list.length||(a&&(a.st||[]).length))?'':`<span class="shiftchip">${esc(shiftName(sh))} · ${esc(hoursOf(a,sh,lang))}</span>`;
   $('#main').innerHTML=`<div class="stack">
    ${award&&award.winners&&award.winners[0]?`<div class="award rv">🏆 <div><small>${esc(t_('empMonth'))}</small><b>${esc((()=>{const w=award.winners[0],p=rosterById()[w.key];return p?(lang==='ar'?(p.ar||p.name):(p.name||p.ar)):w.name})())}</b></div>${award.winners[0].key===myKey?'<span>🎉</span>':''}</div>`:''}
    <div class="staffmsg rv in" id="staffMsg" hidden></div>
@@ -818,7 +842,7 @@ function tasks(){
 }
 function teamView(){const box=$('#team');if(!box)return;const d=today(),nm=p=>lang==='ar'?(p.ar||p.name):(p.name||p.ar);let h='';
   for(const k of ['am','pm']){const rows=roster.filter(p=>{const a=planFor(d,p.id);return a&&!a.off&&(a.st||[]).length&&(a.sh||'am')===k});if(!rows.length)continue;
-    h+=`<div class="sec">${esc(shiftName(k))} · ${esc(shiftHours(k))}</div>`+rows.map(p=>{const a=planFor(d,p.id);return `<div class="trow${p.id===myKey?' me':''}"><b>${esc(nm(p))}</b><span>${esc(a.st.map(roleName).join(' + '))}</span></div>`}).join('')}
+    h+=`<div class="sec">${esc(shiftName(k))} · ${esc(shiftHours(k))}</div>`+rows.map(p=>{const a=planFor(d,p.id);return `<div class="trow${p.id===myKey?' me':''}"><b>${esc(nm(p))}</b><span>${esc(a.st.map(roleName).join(' + '))}${a.tm&&a.tm!==SHDEF[k]?`<small class="tmh">${esc(fmtTm(a.tm,lang))}</small>`:''}</span></div>`}).join('')}
   const off=roster.filter(p=>{const a=planFor(d,p.id);return a&&a.off});if(off.length)h+=`<div class="sec">${esc(t_('offList'))} 🌴</div><div class="sub" style="padding:4px 2px">${off.map(p=>esc(nm(p))).join('، ')}</div>`;
   box.innerHTML=h||`<p class="sub">${esc(t_('noAssign'))}</p>`}
 function toggle(id){
@@ -832,21 +856,19 @@ function avgCalc(slots,idxs){const out={};let po=0,ps=0;for(const i of idxs){con
 function avgForm(id,box,prev){
   const s=byId[id],sl=prev.slots||{},idxs=visIdx(s,myShift());
   box.innerHTML=`<p class="sub" style="margin:0 0 6px">${esc(t_('avgHelp'))}</p>
-   <div class="avgsum"><div><b id="as_s">—</b>${esc(t_('salesTotal'))}</div><div><b id="as_o">—</b>${esc(t_('orders'))}</div><div><b id="as_d">—</b>${esc(t_('avgShift'))}</div><div><b id="as_l">—</b>${esc(t_('avgLast'))}</div></div>
+   <div class="avgsum"><div><b id="as_s">—</b>${esc(t_('salesTotal'))}</div><div><b id="as_o">—</b>${esc(t_('orders'))}</div><div><b id="as_d">—</b>${esc(t_('avgShift'))}</div></div>
    <div class="avgrow hd"><span>${esc(t_('time'))}</span><span>${esc(t_('orders'))}</span><span>${esc(t_('sales'))}</span><span>${esc(t_('avg'))}</span></div>`
-   +idxs.map(i=>{const it=s.items[i];return `<div class="avgrow" data-slot="${i}"><span>${esc(lang==='ar'?it[1].replace('الساعة ',''):it[0])}</span><input inputmode="numeric" data-o placeholder="0" value="${esc((sl[i]||{}).o||'')}"><input inputmode="decimal" data-s placeholder="0" value="${esc((sl[i]||{}).s||'')}"><span class="a" data-a>—</span></div>`}).join('')
+   +idxs.map(i=>{const it=s.items[i];return `<div class="avgrow" data-slot="${i}"><span>${esc(lang==='ar'?it[1].replace('الساعة ',''):it[0])}</span><input inputmode="numeric" data-o placeholder="0" value="${esc((sl[i]||{}).o||'')}"><input inputmode="decimal" data-s placeholder="0" value="${esc((sl[i]||{}).s||'')}"><input inputmode="decimal" data-av placeholder="0" value="${esc((sl[i]||{}).a||'')}"></div>`}).join('')
    +`<label class="lbl" style="margin-top:12px">${esc(t_('avgNotes'))}<textarea data-notes>${esc(prev.notes||'')}</textarea></label><div class="err" data-err></div><button class="btn pri" data-send>${esc(t_('sendShort'))}</button><p class="sub" style="text-align:center;margin-top:6px">${esc(t_('autosaveNum'))}</p>`;
-  const calc=()=>{const r=avgCalc(readSlots(box),idxs);let last=null,lasti=null;
-    box.querySelectorAll('[data-slot]').forEach(row=>{const x=r[row.dataset.slot];row.querySelector('[data-a]').textContent=x?sar(x.avg):'—';if(x){last=x.avg;lasti=x.iavg}});
-    $('#as_d').textContent=sar(last);$('#as_l').textContent=sar(lasti);const ss_=readSlots(box);let lo=null,ls_=null;idxs.forEach(i=>{const x=ss_[i];if(x&&num(x.o)&&num(x.s)!=null){lo=num(x.o);ls_=num(x.s)}});$('#as_s').textContent=ls_==null?'—':Math.round(ls_).toLocaleString('en-US');$('#as_o').textContent=lo==null?'—':lo};calc();
-  let at=null;box.querySelectorAll('[data-o],[data-s]').forEach(x=>x.oninput=()=>{calc();clearTimeout(at);at=setTimeout(()=>save(id,box,true),1200)});
+  const calc=()=>{const ss_=readSlots(box);let lo=null,ls_=null,la=null;idxs.forEach(i=>{const x=ss_[i];if(!x)return;if(num(x.o)!=null)lo=num(x.o);if(num(x.s)!=null)ls_=num(x.s);if(num(x.a)!=null)la=num(x.a)});$('#as_s').textContent=ls_==null?'—':Math.round(ls_).toLocaleString('en-US');$('#as_o').textContent=lo==null?'—':lo;$('#as_d').textContent=la==null?'—':String(la)};calc();
+  let at=null;box.querySelectorAll('[data-o],[data-s],[data-av]').forEach(x=>x.oninput=()=>{calc();clearTimeout(at);at=setTimeout(()=>save(id,box,true),1200)});
   box.querySelector('[data-send]').onclick=()=>save(id,box,false);
 }
 function reportForm(id,box,prev){const r=prev.rep||{},ar=lang==='ar';
   box.innerHTML=`<p class="sub" style="margin:0 0 8px">${ar?'يُرفع نهاية اليوم من 12 الليل إلى 2 الليل، وبعدها يُسجّل تأخير. يوصل لمدير الفرع.':'Send it at the end of the day, 12–2 AM. After 2 AM it counts as late. It goes to the branch manager.'}</p>`+REPSEC.map(([k,a,e,h,he,def])=>`<label class="lbl rsec"><span class="rh">${esc(ar?a:e)}</span>${h?`<small>${esc(ar?h:he)}</small>`:''}<textarea data-rk="${k}" maxlength="2000" placeholder="${esc(ar?'اكتب هنا…':'Write here…')}">${esc(r[k]!=null?r[k]:def)}</textarea></label>`).join('')
    +`<div class="err" data-err></div><button class="btn pri" data-send>${esc(ar?'إرسال التقرير':'Send report')}</button>`;
   box.querySelector('[data-send]').onclick=()=>save(id,box,false)}
-function readSlots(box){const o={};box.querySelectorAll('[data-slot]').forEach(r=>{const a=r.querySelector('[data-o]').value.trim(),b=r.querySelector('[data-s]').value.trim();if(a||b)o[r.dataset.slot]={o:a.slice(0,8),s:b.slice(0,12)}});return o}
+function readSlots(box){const o={};box.querySelectorAll('[data-slot]').forEach(r=>{const a=r.querySelector('[data-o]').value.trim(),b=r.querySelector('[data-s]').value.trim(),c=r.querySelector('[data-av]').value.trim();if(a||b||c)o[r.dataset.slot]={o:a.slice(0,8),s:b.slice(0,12),a:c.slice(0,10)}});return o}
 function form(id){
   if(byId[id].type==='avg')return avgForm(id,document.getElementById('in_'+id),mine[key(id)]||{});
   if(byId[id].type==='report')return reportForm(id,document.getElementById('in_'+id),mine[key(id)]||{});
@@ -877,7 +899,7 @@ async function save(id,box,silent){
   const xs={};let xmiss=null;box.querySelectorAll('.item.isx [data-xr]').forEach(r=>{const v=r.value.trim().slice(0,200);if(!v&&!xmiss)xmiss=r;xs[r.dataset.xr]=v});
   if(xmiss&&!silent){er.textContent=t_('xNeed');xmiss.focus();saving=false;b.disabled=false;return}
   let rp=null;if(s.type==='report'){rp={};box.querySelectorAll('[data-rk]').forEach((x,i)=>{rp[x.dataset.rk]=x.value.trim().slice(0,2000);if(rp[x.dataset.rk])checks[i]=true})}
-  const prevE=mine[key(id)];const entry={sheet:id,date:today(),firstTs:(prevE&&(prevE.firstTs||prevE.ts))||Date.now(),checks,vals,...(Object.keys(xs).length?{xs}:{}),...(!s.type&&!s.auto?{lab:s.items.map(it=>it[0]==='#'?'#':it[1])}:{}),...(rp?{rep:rp}:{}),notes:((box.querySelector('[data-notes]')||{}).value||'').trim().slice(0,1000),done:Object.keys(checks).length,total:visIdx(s,sh).length,...(slots?{slots}:{}),by:uid,shift:sh,ts:Date.now()};
+  const prevE=mine[key(id)];const entry={sheet:id,date:today(),firstTs:(prevE&&(prevE.firstTs||prevE.ts))||Date.now(),checks,vals,...(timed(id)?{tm:tmFor(today(),myKey),due:dueTs(today(),myShift(),id,tmFor(today(),myKey))}:{}),...(Object.keys(xs).length?{xs}:{}),...(!s.type&&!s.auto?{lab:s.items.map(it=>it[0]==='#'?'#':it[1])}:{}),...(rp?{rep:rp}:{}),notes:((box.querySelector('[data-notes]')||{}).value||'').trim().slice(0,1000),done:Object.keys(checks).length,total:visIdx(s,sh).length,...(slots?{slots}:{}),by:uid,shift:sh,ts:Date.now()};
   const ref=db.doc('submissions/'+uid),f={[key(id)]:packE(entry)};
   try{await upsert(ref,f);
     mine={...mine,[key(id)]:entry};refreshPills();
@@ -897,7 +919,7 @@ async function sha(t){const s='samraa:'+t;try{if(crypto.subtle){const b=await cr
 let fails=0,lockUntil=0;
 const MANAGERS=[
  {id:'moath',ar:'معاذ',title:'المدير التنفيذي',home:'idara',nav:['m_day','m_month']},
- {id:'bassam',ar:'بسام',title:'مدير الفرع',home:'idara',nav:['review','staff','month','reports','m_day','m_month','m_targets']},
+ {id:'bassam',ar:'بسام',title:'مدير الفرع',home:'idara',nav:['review','staff','plan','sheets','month','reports','m_day','m_month','m_targets']},
  {id:'hamad',ar:'حمد',title:'R&D',home:'idara',nav:['m_day','m_month']},
  {id:'turki',ar:'تركي',title:'مشرف وردية',home:'manager',staffMgr:true,nav:['review','staff','plan','month','reports','staffmsg','sheets','m_day','m_month','m_targets','act']}];
 let forcePick=false,mgrMap={},meMgr=null,pvId=null;
@@ -1001,7 +1023,7 @@ function entriesFor(date){const out={};for(const [u,doc] of Object.entries(subs)
 function who(u){const s=staffAll[u];if(!s)return 'موظف غير مسجّل';const p=s.rid&&rosterById()[s.rid];return p?(p.ar||p.name):(s.name||'—')}
 function rpill(e){const st=rstate(e,e.review);const [c,t]=RS[st];return `<span class="pill ${c}">${t}</span>`}
 /* sales & average: approval opens only once the shift's last reading is in */
-function avgLast(e){const s=byId[e.sheet];if(!s||s.type!=='avg')return null;const ix=visIdx(s,e.shift);const li=ix[ix.length-1];if(li==null)return null;const x=(e.slots||{})[li];return {done:!!(x&&num(x.o)&&num(x.s)!=null),at:s.items[li][1].replace('الساعة ','')}}
+function avgLast(e){const s=byId[e.sheet];if(!s||s.type!=='avg')return null;const ix=visIdx(s,e.shift);const li=ix[ix.length-1];if(li==null)return null;const x=(e.slots||{})[li];return {done:!!(x&&num(x.a)!=null),at:s.items[li][1].replace('الساعة ','')}}
 function reviewBox(e){const st=rstate(e,e.review),r=e.review,al=avgLast(e);
   if(al&&!al.done&&st!=='approved')return `<div class="rvbox" data-u="${esc(e.by)}" data-s="${esc(e.sheet)}">${rpill(e)}<div class="sub" style="margin-top:6px">🔒 الاعتماد يفتح بعد آخر أفرج (${esc(al.at)})</div></div>`;
   return `<div class="rvbox" data-u="${esc(e.by)}" data-s="${esc(e.sheet)}">${rpill(e)}${r?`<div class="sub" style="margin-top:4px">${r.status==='approved'?'اعتمدها':'طلب الإعادة'}: ${esc(mgrName(r.by))} · ${hm(r.ts)}${r.note?' — '+esc(r.note):''}</div>`:''}
@@ -1035,23 +1057,23 @@ function renderDash(){
   keepOpen(()=>{
   if(dtab==='sheets'){
     body.innerHTML=(eom&&isToday?`<button class="award awbtn" data-gomonth="1">🏆 <div><small>نهاية الشهر</small><b>شوف موظف الشهر وأعلنه للموظفين</b></div><span>←</span></button>`:'')+RSH.map(s=>{const es=E[s.id];
-      if(!es){const asg=P.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id));const lateU=timed(s.id)&&asg.some(p=>Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id));
-        return `<div class="row ${isToday&&!lateU?'':'miss'}"><div class="t"><b>${esc(s.ar)}</b><small>${asg.length?asg.map(p=>{const sh=shiftFor(boardDate,p.key,p.s);if(!timed(s.id))return esc(first(p.name));const lt=Date.now()>dueTs(boardDate,sh,s.id);return esc(first(p.name))+' <span class="dlx '+(lt?'bad':'')+'">('+esc((SHIFTS[sh]||SHIFTS.am).short)+' · '+esc(dlAr(sh,s.id))+(lt?' ⏰':'')+')</span>'}).join('، '):esc(s.en)}</small></div><span class="pill ${lateU?'p-bad':isToday?'p-warn':'p-bad'}">${lateU?'⏰ متأخر – لم تُرسل':isToday?'بانتظار':'لم تُرسل'}</span></div>`}
+      if(!es){const asg=P.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id));const lateU=timed(s.id)&&asg.some(p=>Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id,tmFor(boardDate,p.key)));
+        return `<div class="row ${isToday&&!lateU?'':'miss'}"><div class="t"><b>${esc(s.ar)}</b><small>${asg.length?asg.map(p=>{const sh=shiftFor(boardDate,p.key,p.s);if(!timed(s.id))return esc(first(p.name));const tm_=tmFor(boardDate,p.key),lt=Date.now()>dueTs(boardDate,sh,s.id,tm_);return esc(first(p.name))+' <span class="dlx '+(lt?'bad':'')+'">('+esc((SHIFTS[sh]||SHIFTS.am).short)+' · '+esc(dlAr(sh,s.id,tm_))+(lt?' ⏰':'')+')</span>'}).join('، '):esc(s.en)}</small></div><span class="pill ${lateU?'p-bad':isToday?'p-warn':'p-bad'}">${lateU?'⏰ متأخر – لم تُرسل':isToday?'بانتظار':'لم تُرسل'}</span></div>`}
       const miss_=P.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id)&&!es.some(e=>e.by===p.uid));
       let merged={},tot=real(s);es.forEach(e=>Object.keys(e.checks||{}).forEach(i=>merged[i]=true));const done=Object.keys(merged).length;
       const last=Math.max(...es.map(e=>e.ts));
       const sts=es.map(e=>rstate(e,e.review));const agg=sts.includes('followup')?'followup':sts.every(x=>x==='approved')?'approved':sts.includes('resubmitted')?'resubmitted':'pending';
       const per=es.map(e=>{const sh=SHIFTS[e.shift]?' · '+SHIFTS[e.shift].short:'';
-        if(s.type==='avg'){const idxs=visIdx(s,e.shift);const r=avgCalc(e.slots||{},idxs);const rows=idxs.map(i=>r[i]?`<tr><td>${esc(s.items[i][1].replace('الساعة ',''))}</td><td>${esc(e.slots[i].o)}</td><td>${esc(e.slots[i].s)}</td><td><b>${sar(r[i].avg)}</b></td><td>${sar(r[i].iavg)}</td></tr>`:'').join('');
+        if(s.type==='avg'){const idxs=visIdx(s,e.shift);const rows=idxs.map(i=>{const x=(e.slots||{})[i];return x?`<tr><td>${esc(s.items[i][1].replace('الساعة ',''))}</td><td>${esc(x.o||'—')}</td><td>${esc(x.s||'—')}</td><td><b>${esc(x.a||'—')}</b></td></tr>`:''}).join('');
           const SO=salesOf(e);
-          return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · ${hm(e.ts)}</div>${SO?`<div class="salesline">💰 المبيعات <b>${money(SO.s)}</b> ريال · ${SO.o} طلب · الأفرج <b>${(SO.s/SO.o).toFixed(1)}</b></div>`:''}${rows?`<div style="overflow-x:auto"><table class="avt"><tr><th>الوقت</th><th>طلبات</th><th>مبيعات</th><th>الأفرج</th><th>آخر ساعتين</th></tr>${rows}</table></div>`:''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}
+          return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · ${hm(e.ts)}</div>${SO?`<div class="salesline">🧾 ${SO.o} فاتورة · 💰 <b>${money(SO.s)}</b> ريال · الأفرج <b>${SO.a==null?'—':SO.a}</b></div>`:''}${rows?`<div style="overflow-x:auto"><table class="avt"><tr><th>الوقت</th><th>فواتير</th><th>مبيعات</th><th>الأفرج</th></tr>${rows}</table></div>`:''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}
         const L=i=>(Array.isArray(e.lab)&&e.lab[i])||(s.items[i]?s.items[i][1]:'');
         const vals=Object.entries(e.vals||{}).map(([i,v])=>esc(L(i))+': <b class="copy">'+esc(v)+' '+esc(s.items[i]&&s.items[i][2]||'')+'</b>');
         const XS=e.xs||{},xl=Object.keys(XS).filter(i=>L(i)&&!(e.checks||{})[i]).map(i=>esc(L(i))+' — <b>السبب:</b> '+esc(XS[i]||'—'));
         const unc=(Array.isArray(e.lab)?e.lab.map((x,i)=>i).filter(i=>e.lab[i]!=='#'):visIdx(s,e.shift)).filter(i=>!(e.checks||{})[i]&&XS[i]==null).map(L);
         const lm=lateMin(e,boardDate);
         return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · أُرسلت ${hm(e.firstTs||e.ts)} · ${e.done}/${e.total} ${lm?`<span class="pill p-bad">⏰ متأخر ${fmtLate(lm)}</span>`:lm===0?'<span class="pill p-ok">في الوقت</span>':''}</div>${unc.length?'<div class="x">غير مكتمل ('+unc.length+'):<br>• '+unc.slice(0,40).map(esc).join('<br>• ')+'</div>':xl.length?'':'<div style="color:var(--ok)">كل البنود مكتملة ✓</div>'}${xl.length?'<div class="xlist">✗ ما انعمل ('+xl.length+'):<br>• '+xl.join('<br>• ')+'</div>':''}${vals.length?'<div>'+vals.join('<br>')+'</div>':''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}).join('');
-      return `<details class="row" data-k="s_${s.id}"><summary><div class="t"><b>${esc(s.ar)}</b><small>${es.map(e=>esc(first(who(e.by)))).join('، ')} · آخر تحديث ${hm(last)}${miss_.length?' · <span class="dlx '+(miss_.some(p=>timed(s.id)&&Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id))?'bad':'')+'">ما أرسل: '+miss_.map(p=>esc(first(p.name))+' ('+esc((SHIFTS[shiftFor(boardDate,p.key,p.s)]||SHIFTS.am).short)+')').join('، ')+'</span>':''}</small></div><div class="pills"><span class="pill ${done===tot?'p-ok':'p-warn'}">${done}/${tot}</span>${es.some(e=>lateMin(e,boardDate))?'<span class="pill p-bad">⏰ متأخر</span>':''}<span class="pill ${RS[agg][0]}">${RS[agg][1]}</span></div></summary><div class="det">${per}</div></details>`}).join('');
+      return `<details class="row" data-k="s_${s.id}"><summary><div class="t"><b>${esc(s.ar)}</b><small>${es.map(e=>esc(first(who(e.by)))).join('، ')} · آخر تحديث ${hm(last)}${miss_.length?' · <span class="dlx '+(miss_.some(p=>timed(s.id)&&Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id,tmFor(boardDate,p.key)))?'bad':'')+'">ما أرسل: '+miss_.map(p=>esc(first(p.name))+' ('+esc((SHIFTS[shiftFor(boardDate,p.key,p.s)]||SHIFTS.am).short)+')').join('، ')+'</span>':''}</small></div><div class="pills"><span class="pill ${done===tot?'p-ok':'p-warn'}">${done}/${tot}</span>${es.some(e=>lateMin(e,boardDate))?'<span class="pill p-bad">⏰ متأخر</span>':''}<span class="pill ${RS[agg][0]}">${RS[agg][1]}</span></div></summary><div class="det">${per}</div></details>`}).join('');
   }else{
     if(!P.length){body.innerHTML='<div class="msg">ما فيه موظفين للحين.</div>';return}
     body.innerHTML=P.map(p=>{const s=p.s||{},sh=needFor(boardDate,p.key,s),shf=SHIFTS[shiftFor(boardDate,p.key,s)],pa=planFor(boardDate,p.key);
@@ -1059,7 +1081,7 @@ function renderDash(){
       if(pa&&pa.off)return `<div class="row"><div class="t"><b>${esc(p.name)}</b><small>${p.uid?'':'لم يسجّل بعد'}</small></div><span class="pill p-off">إجازة 🌴</span></div>`;
       if(!p.uid)return `<div class="row"><div class="t"><b>${esc(p.name)}</b><small>${esc(stTxt)}${sh.length?' · '+esc(shf.short):''}</small></div><span class="pill p-warn">لم يسجّل بعد</span></div>`;
       const u=p.uid,mineDone=sh.filter(id=>(E[id]||[]).some(e=>e.by===u)).length;const ok=sh.length&&mineDone===sh.length;
-      return `<details class="row ${!ok&&!isToday&&sh.length?'miss':''}" data-k="u_${esc(u)}"><summary><div class="t"><b>${esc(p.name)}</b><small>${esc(stTxt)}${sh.length?' · '+esc(shf.short):''}</small></div><span class="pill ${!sh.length?'':ok?'p-ok':isToday?'p-warn':'p-bad'}">${mineDone}/${sh.length}</span></summary><div class="det">📱 <span class="copy">${esc(s.phone||'')}</span><br>✉️ <span class="copy">${esc(s.email||'')}</span><br>🌐 ${esc(LANGTAG[s.lang]||'')}<br>${sh.map(id=>{const e=(E[id]||[]).find(x=>x.by===u);const lm=lateMin(e,boardDate);return esc(byId[id].ar)+': '+(e?'<span style="color:var(--ok)">✓ '+hm(e.firstTs||e.ts)+' ('+e.done+'/'+e.total+')</span> '+(lm?'<span class="pill p-bad">⏰ '+fmtLate(lm)+'</span> ':'')+rpill(e):(timed(id)&&Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,s))?'<span class="x">⏰ متأخر – لم تُرسل</span>':'<span class="x">لم تُرسل</span>'))}).join('<br>')}</div></details>`}).join('');
+      return `<details class="row ${!ok&&!isToday&&sh.length?'miss':''}" data-k="u_${esc(u)}"><summary><div class="t"><b>${esc(p.name)}</b><small>${esc(stTxt)}${sh.length?' · '+esc(shf.short):''}</small></div><span class="pill ${!sh.length?'':ok?'p-ok':isToday?'p-warn':'p-bad'}">${mineDone}/${sh.length}</span></summary><div class="det">📱 <span class="copy">${esc(s.phone||'')}</span><br>✉️ <span class="copy">${esc(s.email||'')}</span><br>🌐 ${esc(LANGTAG[s.lang]||'')}<br>${sh.map(id=>{const e=(E[id]||[]).find(x=>x.by===u);const lm=lateMin(e,boardDate);return esc(byId[id].ar)+': '+(e?'<span style="color:var(--ok)">✓ '+hm(e.firstTs||e.ts)+' ('+e.done+'/'+e.total+')</span> '+(lm?'<span class="pill p-bad">⏰ '+fmtLate(lm)+'</span> ':'')+rpill(e):(timed(id)&&Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,s),id,tmFor(boardDate,p.key))?'<span class="x">⏰ متأخر – لم تُرسل</span>':'<span class="x">لم تُرسل</span>'))}).join('<br>')}</div></details>`}).join('');
   }});
 }
 function monthStats(p,boardMonth){
@@ -1074,7 +1096,7 @@ function monthStats(p,boardMonth){
     if(d<start||(!past&&!isT)||!nd.length){cal.push(nd.some(x=>E[d+'|'+x])?'f':'');continue}
     let dl=0,dm=0,dok=0;
     for(const x of nd){const e=E[d+'|'+x];if(!timed(x)){if(e)dok++;else if(past)dm++;continue}
-      const due=dueTs(d,shiftFor(d,p.key,s),x);if(!e){if(past||Date.now()>due){dm++;req++;miss++}continue}
+      const due=dueTs(d,shiftFor(d,p.key,s),x,tmFor(d,p.key));if(!e){if(past||Date.now()>due){dm++;req++;miss++}continue}
       req++;const lm=lateMin(e,d);if(lm){late++;dl++}else{ontime++;dok++}}
     if(!dm&&!dl&&(dok||nd.length))full++;
     cal.push(dm?(dok||dl?'p':'n'):dl?'l':'f')}
@@ -1116,9 +1138,10 @@ function effectiveAll(date){const o=planD[date];if(o&&o.assign)return clone(o.as
 function dayLabel(d){return DOW[dowOf(d)]+' '+new Date(d+'T12:00:00').toLocaleDateString('ar-SA',{day:'numeric',month:'long'})}
 function planText(date){const A=(pmode==='day'&&draftDate===date&&draft)?draft:effectiveAll(date),P=roster;let out='توزيع الموظفين – '+dayLabel(date)+'\n';
   for(const k of ['am','pm']){const rows=P.filter(p=>A[p.id]&&!A[p.id].off&&(A[p.id].st||[]).length&&(A[p.id].sh||'am')===k);if(!rows.length)continue;
-    out+='\n'+SHIFTS[k].ar+' ('+SHIFTS[k].hours+'):\n'+rows.map(p=>'• '+(p.ar||p.name)+(p.name&&p.name!==p.ar?' ('+p.name+')':'')+': '+A[p.id].st.map(x=>roleById[x]?roleById[x].ar:x).join(' + ')).join('\n')+'\n'}
+    out+='\n'+SHIFTS[k].ar+' ('+SHIFTS[k].hours+'):\n'+rows.map(p=>'• '+(p.ar||p.name)+(p.name&&p.name!==p.ar?' ('+p.name+')':'')+': '+A[p.id].st.map(x=>roleById[x]?roleById[x].ar:x).join(' + ')+(A[p.id].tm&&A[p.id].tm!==SHDEF[k]?' ('+fmtTm(A[p.id].tm,'ar')+')':'')).join('\n')+'\n'}
   const off=P.filter(p=>A[p.id]&&A[p.id].off);if(off.length)out+='\nإجازة: '+off.map(p=>p.ar||p.name).join('، ')+'\n';return out.trim()}
 const offOpts=(v)=>`<option value="">بدون إجازة ثابتة</option>`+DOWORDER.map(d=>`<option value="${d}" ${String(v)===String(d)?'selected':''}>إجازته: ${DOW[d]}</option>`).join('');
+const tmRow=(tm,sh)=>{const [f,t]=String(tm||SHDEF[sh||'am']).split('-');return `<div class="ptm"><span>الدوام</span><input type="time" data-tf value="${esc(f)}"><span>إلى</span><input type="time" data-tt value="${esc(t)}"></div>`};
 const chipsHTML=(st,dis)=>ROLES.map(r=>`<button data-st="${r.id}" class="${(st||[]).includes(r.id)?'on':''}" ${dis?'disabled':''}>${esc(r.ar)}</button>`).join('');
 function renderPlan(){
   const body=$('#dbody');
@@ -1135,7 +1158,7 @@ function renderPlan(){
        if(isOff)return `<div class="prow isoff" data-k="${esc(p.id)}"><div class="ph"><b>${esc(p.ar||p.name)}</b><span class="pill p-off">إجازته 🌴</span></div></div>`;
        return `<div class="prow ${ov?'ovr':''}" data-k="${esc(p.id)}"><div class="ph"><div><b>${esc(p.ar||p.name)}</b>${p.name&&p.name!==p.ar?` <span class="sub">${esc(p.name)}</span>`:''}${reg[p.id]?'':' <span class="pill p-warn" style="font-size:10px">لم يسجّل</span>'}</div><div class="seg3"><button data-sh="am" class="${(cur.sh||'am')==='am'?'on':''}">صباحي</button><button data-sh="pm" class="${cur.sh==='pm'?'on':''}">مسائي</button></div></div>
        ${W==null?`<div class="pline"><select data-offsel>${offOpts(p.off)}</select>${pendDel===p.id?`<span class="delc">متأكد؟ <button class="btn sm badb" data-del="yes">حذف</button><button class="btn sm" data-del="no">لا</button></span>`:`<button class="link delb" data-del="ask">🗑 حذف</button>`}</div>`:(ov?`<div class="pline"><span class="sub">مختلف عن الأساسي</span><button class="link" data-wreset="1">↺ نفس الأساسي</button></div>`:'')}
-       <div class="chips">${chipsHTML(cur.st)}</div></div>`}).join('')
+       ${tmRow(W==null?p.tm:((ov&&ov.tm)||p.tm),cur.sh||'am')}<div class="chips">${chipsHTML(cur.st)}</div></div>`}).join('')
      +`<div class="card stack" style="margin-top:10px;padding:12px">${addOpen?`<b>موظف جديد</b><div class="addrow"><input id="nn_ar" placeholder="الاسم بالعربي"><input id="nn_en" placeholder="Name in English" dir="ltr"></div><div class="addrow"><select id="nn_off">${offOpts('')}</select><select id="nn_sh"><option value="am">صباحي</option><option value="pm">مسائي</option></select></div><div style="display:flex;gap:8px"><button class="btn pri" data-pa="addsave">إضافة</button><button class="btn" data-pa="addcancel">إلغاء</button></div>`:`<button class="link" data-pa="add">+ إضافة موظف جديد</button>`}</div>`
      +`<div class="psave card stack"><button class="btn pri" data-pa="savefixed" ${dirtyR?'':'disabled'}>${dirtyR?'حفظ التوزيع الثابت':'✓ التوزيع الثابت محفوظ'}</button><button class="btn" data-pa="copy">📋 نسخ توزيع اليوم للقروب</button><textarea id="ptext" readonly hidden></textarea></div>`;
     return}
@@ -1146,7 +1169,7 @@ function renderPlan(){
   body.innerHTML=head+`<div class="card" style="padding:12px;margin-bottom:10px"><b>${esc(dayLabel(boardDate))}</b><div class="sub">${isOver?'تعديل خاص بهذا اليوم (يغطي على الثابت)':'نفس التوزيع الثابت — عدّل للتغطية أو الإجازة ثم احفظ'}</div></div>`
    +roster.map(p=>{const a=draft[p.id]||{st:[],sh:'am'},off=!!a.off,sh=a.sh||'am';
     return `<div class="prow ${off?'isoff':''}" data-k="${esc(p.id)}"><div class="ph"><div><b>${esc(p.ar||p.name)}</b></div><div class="seg3"><button data-sh="am" class="${!off&&sh==='am'?'on':''}">صباحي</button><button data-sh="pm" class="${!off&&sh==='pm'?'on':''}">مسائي</button><button data-off="1" class="${off?'on off':''}">إجازة</button></div></div>
-     <div class="chips">${chipsHTML(a.st,off)}</div></div>`}).join('')
+     ${off?'':tmRow(a.tm,sh)}<div class="chips">${chipsHTML(a.st,off)}</div></div>`}).join('')
    +`<div class="psave card stack"><button class="btn pri" data-pa="day">حفظ لهذا اليوم</button>${isOver?'<button class="link" data-pa="reset">إلغاء التعديل والرجوع للثابت</button>':''}<button class="btn" data-pa="copy">📋 نسخ التوزيع للقروب</button><textarea id="ptext" readonly hidden></textarea></div>`;
 }
 async function saveRoster(list,msg){list=list.map(p=>{const r=roster.find(x=>x.id===p.id);const q={...p};if(r&&r.uid)q.uid=r.uid;else delete q.uid;return q});await db.doc('roster/list').set({people:list,ts:Date.now()});roster=clone(list);draftR=clone(list);dirtyR=false;if(msg)toast(msg)}
@@ -1178,17 +1201,22 @@ async function planClick(ev){
   if(act==='copy'){const txt=planText(pmode==='day'?boardDate:today());try{await navigator.clipboard.writeText(txt);toast('انسخ — الصقه في القروب ✓')}catch(e){const ta=$('#ptext');ta.hidden=false;ta.value=txt;ta.style.minHeight='180px';ta.select();toast('حدد النص وانسخه')}return}
   p.disabled=true;
   try{
-    if(act==='day'){const clean={};for(const [k,a] of Object.entries(draft)){if(a)clean[k]={st:a.off?[]:(a.st||[]),sh:a.sh||'am',off:!!a.off}}await db.doc('plan/'+boardDate).set({assign:clean,ts:Date.now()});planD[boardDate]={assign:clean};toast('انحفظ تعديل اليوم ✓')}
+    if(act==='day'){const clean={};for(const [k,a] of Object.entries(draft)){if(a)clean[k]={st:a.off?[]:(a.st||[]),sh:a.sh||'am',off:!!a.off,...(a.tm?{tm:a.tm}:{})}}await db.doc('plan/'+boardDate).set({assign:clean,ts:Date.now()});planD[boardDate]={assign:clean};toast('انحفظ تعديل اليوم ✓')}
     else if(act==='reset'){await db.doc('plan/'+boardDate).delete();delete planD[boardDate];toast('رجع للتوزيع الثابت')}
     draft=effectiveAll(boardDate);draftDate=boardDate;renderPlan();
   }catch(e){toast('ما انحفظ — جرب مرة ثانية')}finally{p.disabled=false}
 }
+// working hours (change event)
+document.addEventListener('change',e=>{const inp=e.target.closest('[data-tf],[data-tt]');if(!inp)return;const row=inp.closest('.prow');if(!row)return;
+  const f=row.querySelector('[data-tf]').value,t=row.querySelector('[data-tt]').value;if(!toMin(f)&&toMin(f)!==0||toMin(t)==null)return;const tm=f+'-'+t;
+  if(pmode==='fixed'){const p=draftR&&draftR.find(x=>x.id===row.dataset.k);if(!p)return;if(wsel==='all')p.tm=tm;else{const W=Number(wsel);p.w=p.w||{};if(!p.w[W])p.w[W]={st:[...(p.st||[])],sh:p.sh||'am'};p.w[W].tm=tm}dirtyR=true;renderPlan()}
+  else if(draft){const k=row.dataset.k;draft[k]=draft[k]||{st:[],sh:'am'};draft[k].tm=tm}});
 // offday select (change event)
 document.addEventListener('change',e=>{const s=e.target.closest('[data-offsel]');if(!s||pmode!=='fixed')return;const row=s.closest('.prow'),p=draftR&&draftR.find(x=>x.id===row.dataset.k);if(!p)return;p.off=s.value===''?null:Number(s.value);dirtyR=true;renderPlan()});
 
 /* ======================= management dashboard (#idara) ======================= */
-function salesOf(e){if(!e||!e.slots)return null;const s=byId.avg,idxs=visIdx(s,e.shift);let o=null,v=null;for(const i of idxs){const x=e.slots[i];if(x&&num(x.o)&&num(x.s)!=null){o=num(x.o);v=num(x.s)}}return o==null?null:{o,s:v}}
-function daySales(date){let o=0,s=0,n=0;for(const doc of Object.values(subs)){const r=salesOf(doc['d_'+date+'_avg']);if(r){o+=r.o;s+=r.s;n++}}return {o,s,avg:o?s/o:null,n}}
+function salesOf(e){if(!e||!e.slots)return null;const s=byId.avg,idxs=visIdx(s,e.shift);let o=null,v=null,a=null;for(const i of idxs){const x=e.slots[i];if(!x)continue;if(num(x.o)!=null)o=num(x.o);if(num(x.s)!=null)v=num(x.s);if(num(x.a)!=null)a=num(x.a)}return o==null&&v==null&&a==null?null:{o:o||0,s:v||0,a}}
+function daySales(date){let o=0,s=0,n=0,aw=0,ao=0,as=0,an=0;for(const doc of Object.values(subs)){const r=salesOf(doc['d_'+date+'_avg']);if(r){o+=r.o;s+=r.s;n++;if(r.a!=null){if(r.o){aw+=r.a*r.o;ao+=r.o}as+=r.a;an++}}}return {o,s,avg:ao?aw/ao:an?as/an:null,n}}
 const shiftEnd=(date,sh)=>sh==='pm'?new Date(shiftDay(date,1)+'T00:00:00+03:00').getTime():new Date(date+'T15:00:00+03:00').getTime();
 /* supervisor follow-up status of one submitted entry */
 function revStat(e){const r=e.review,f=e.firstTs||e.ts,end=Math.max(shiftEnd(e.date,e.shift),f+3600e3);
@@ -1232,7 +1260,7 @@ function openMgmt(){
   $('#mmprev').onclick=()=>setM(-1);$('#mmnext').onclick=()=>setM(1);$('#mmonth').onchange=e=>{if(e.target.value){boardMonth=e.target.value;renderMgmt()}};
   d.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mtab=b.dataset.m;renderMgmt()});
   $('#mbody').onclick=async ev=>{if(ev.target.closest('[data-goreports]')){go('reports');return}const b=ev.target.closest('[data-savet]');if(!b)return;const v=k=>{const x=num($('#t_'+k).value);return x==null?null:x};
-    const T={daySales:v('day'),monthSales:v('month'),avg:v('avg'),ts:Date.now()};b.disabled=true;try{await db.doc('admin/targets').set(T);targets=T;toast('انحفظت الأهداف ✓');renderMgmt()}catch(e){b.disabled=false;toast('ما انحفظ')}};
+    const T={dayOrders:v('day'),monthOrders:v('month'),avg:v('avg'),ts:Date.now()};b.disabled=true;try{await db.doc('admin/targets').set(T);targets=T;toast('انحفظت الأهداف ✓');renderMgmt()}catch(e){b.disabled=false;toast('ما انحفظ')}};
   dashLoaded=false;const tm=setTimeout(()=>{if(!dashLoaded){const x=$('#mbody');if(x)x.innerHTML='<div class="msg">تعذر التحميل — لوحة الإدارة تفتح لصاحب الرابط أو من عنده صلاحية تعديل.</div>'}},10000);
   const fail=()=>{clearTimeout(tm);const x=$('#mbody');if(x)x.innerHTML='<div class="msg">تعذر التحميل — لوحة الإدارة تفتح لصاحب الرابط أو من عنده صلاحية تعديل.</div>'};
   try{
@@ -1248,7 +1276,7 @@ function openMgmt(){
 }
 /* compliance + follow-up for one day */
 function dayCheck(date){const P=people(),E=entriesFor(date);let req=0,ontime=0,late=0,miss=0,pend=0;const missing=[];
-  for(const p of P){const s=p.s||{};for(const x of needFor(date,p.key,s)){if(!timed(x))continue;const due=dueTs(date,shiftFor(date,p.key,s),x);const e=p.uid&&(E[x]||[]).find(y=>y.by===p.uid);
+  for(const p of P){const s=p.s||{};for(const x of needFor(date,p.key,s)){if(!timed(x))continue;const due=dueTs(date,shiftFor(date,p.key,s),x,tmFor(date,p.key));const e=p.uid&&(E[x]||[]).find(y=>y.by===p.uid);
     if(!e){if(Date.now()>due){req++;miss++;missing.push(p.name+' – '+byId[x].ar)}else pend++;continue}req++;if(lateMin(e,date))late++;else ontime++}}
   const all=Object.values(E).flat().filter(e=>e.sheet!=='supervisor'&&timed(e.sheet));const R={ontime:0,late:0,missed:0,pending:0};const notRev=[];
   const byRev={};all.forEach(e=>{const r=revStat(e);R[r.st]++;if(r.r){const n=mgrName(r.r.by);byRev[n]=(byRev[n]||0)+1}if(r.st==='missed')notRev.push(who(e.by)+' – '+byId[e.sheet].ar)});
@@ -1260,17 +1288,17 @@ function renderMgmt(){
   $('#mdBar').hidden=mtab!=='day';$('#mmBar').hidden=mtab!=='month';
   if(mtab==='targets'&&!can('m_targets')){mtab='day'}
   if(mtab==='targets'){body.innerHTML=`<div class="card stack"><h2>الأهداف</h2><p class="sub" style="margin-top:-6px">تطلع كنسبة إنجاز في لوحة الإدارة.</p>
-    <label class="lbl">هدف المبيعات اليومي (ريال)<input id="t_day" inputmode="decimal" dir="ltr" value="${targets.daySales??''}"></label>
-    <label class="lbl">هدف المبيعات الشهري (ريال)<input id="t_month" inputmode="decimal" dir="ltr" value="${targets.monthSales??''}"></label>
+    <label class="lbl">هدف عدد الفواتير اليومي<input id="t_day" inputmode="numeric" dir="ltr" value="${targets.dayOrders??''}"></label>
+    <label class="lbl">هدف عدد الفواتير الشهري<input id="t_month" inputmode="numeric" dir="ltr" value="${targets.monthOrders??''}"></label>
     <label class="lbl">هدف الأفرج (متوسط الفاتورة)<input id="t_avg" inputmode="decimal" dir="ltr" value="${targets.avg??''}"></label>
     <button class="btn pri" data-savet="1">حفظ الأهداف</button></div>`;return}
   if(mtab==='day'){
     const S=daySales(boardDate),C=dayCheck(boardDate),R=C.R,revDone=R.ontime+R.late,revDue=revDone+R.missed;
     const supName=C.supE?who(C.supE.by):'';const supLate=C.supE?lateMin(C.supE,boardDate):null;
     const DR=(entriesFor(boardDate).dreport||[]);
-    body.innerHTML=(can('reports')?`<button class="card repc awbtn2" data-goreports="1"><div class="mh">📋 التقارير اليومية</div><div class="sub">${DR.length?DR.map(e=>esc(first(who(e.by)))+' ✓').join(' · '):'ما وصل تقرير لهذا اليوم'}</div><span>←</span></button>`:'')+`<div class="kpis"><div class="kpi"><small>المبيعات</small><b>${money(S.s)} <i>ريال</i></b>${prog(S.s,targets.daySales)}</div>
+    body.innerHTML=(can('reports')?`<button class="card repc awbtn2" data-goreports="1"><div class="mh">📋 التقارير اليومية</div><div class="sub">${DR.length?DR.map(e=>esc(first(who(e.by)))+' ✓').join(' · '):'ما وصل تقرير لهذا اليوم'}</div><span>←</span></button>`:'')+`<div class="kpis"><div class="kpi"><small>عدد الفواتير</small><b>${money(S.o)}</b>${prog(S.o,targets.dayOrders)}</div>
       <div class="kpi"><small>الأفرج</small><b>${S.avg==null?'—':S.avg.toFixed(1)} <i>ريال</i></b>${targets.avg&&S.avg!=null?`<small style="color:${S.avg>=targets.avg?'var(--ok)':'var(--bad)'}">${S.avg>=targets.avg?'فوق':'تحت'} الهدف ${targets.avg}</small>`:''}</div>
-      <div class="kpi"><small>عدد الطلبات</small><b>${money(S.o)}</b><small>${S.n?S.n+' وردية مسجلة':'ما انسجل بيع'}</small></div></div>
+      <div class="kpi"><small>المبيعات</small><b>${money(S.s)} <i>ريال</i></b><small>${S.n?S.n+' وردية مسجلة':'ما انسجل بيع'}</small></div></div>
      <div class="card mcard"><div class="mh">📋 تشيك ليست الموظفين</div><div class="mstats"><div><b style="color:var(--ok)">${C.ontime}</b>في الوقت</div><div><b style="color:var(--warn)">${C.late}</b>متأخر</div><div><b style="color:var(--bad)">${C.miss}</b>ما انرسل</div></div>
       ${C.req?`<div class="tprog"><i style="width:${Math.round(C.ontime/C.req*100)}%;background:var(--ok)"></i></div><small class="sub">${Math.round(C.ontime/C.req*100)}% انرسلت في الوقت${C.pend?' · '+C.pend+' لسا وقتها ما خلص':''}</small>`:'<p class="sub">ما فيه قوائم مستحقة لهذا اليوم حتى الآن.</p>'}
       ${C.missing.length?`<div class="x" style="margin-top:6px">ما انرسل:<br>• ${C.missing.map(esc).join('<br>• ')}</div>`:''}</div>
@@ -1284,16 +1312,16 @@ function renderMgmt(){
     return}
   // month
   const [y,m]=boardMonth.split('-').map(Number),dim=new Date(y,m,0).getDate(),tdy=today();
-  let tot=0,ord=0;const days=[];let Rm={ontime:0,late:0,missed:0},Cm={req:0,ontime:0,late:0,miss:0},supSent=0,supLate=0,supDays=0;
-  for(let i=1;i<=dim;i++){const d=boardMonth+'-'+String(i).padStart(2,'0');if(d>tdy)break;const S=daySales(d);tot+=S.s;ord+=S.o;days.push([i,S.s]);
+  let tot=0,ord=0,maw=0,mao=0;const days=[];let Rm={ontime:0,late:0,missed:0},Cm={req:0,ontime:0,late:0,miss:0},supSent=0,supLate=0,supDays=0;
+  for(let i=1;i<=dim;i++){const d=boardMonth+'-'+String(i).padStart(2,'0');if(d>tdy)break;const S=daySales(d);tot+=S.s;ord+=S.o;if(S.avg!=null&&S.o){maw+=S.avg*S.o;mao+=S.o}days.push([i,S.o]);
     const C=dayCheck(d);['ontime','late','missed'].forEach(k=>Rm[k]+=C.R[k]);['req','ontime','late','miss'].forEach(k=>Cm[k]+=C[k]);
     const needSup=people().some(p=>needFor(d,p.key,p.s).includes('supervisor'));if(needSup){supDays++;if(C.supE){supSent++;if(lateMin(C.supE,d))supLate++}}}
-  const mx=Math.max(1,...days.map(x=>x[1]),targets.daySales||0);const revDue=Rm.ontime+Rm.late+Rm.missed;
+  const mx=Math.max(1,...days.map(x=>x[1]),targets.dayOrders||0);const revDue=Rm.ontime+Rm.late+Rm.missed;
   const PP=people().filter(p=>p.uid),rank=PP.map(p=>({p,m:monthStats(p,boardMonth)})).filter(x=>x.m.req>=1).sort((a,b)=>b.m.score-a.m.score).slice(0,3);
-  body.innerHTML=`<div class="kpis"><div class="kpi"><small>مبيعات الشهر</small><b>${money(tot)} <i>ريال</i></b>${prog(tot,targets.monthSales)}</div>
-     <div class="kpi"><small>أفرج الشهر</small><b>${ord?(tot/ord).toFixed(1):'—'} <i>ريال</i></b>${targets.avg&&ord?`<small style="color:${tot/ord>=targets.avg?'var(--ok)':'var(--bad)'}">الهدف ${targets.avg}</small>`:''}</div>
+  body.innerHTML=`<div class="kpis"><div class="kpi"><small>فواتير الشهر</small><b>${money(ord)}</b>${prog(ord,targets.monthOrders)}<small>المبيعات ${money(tot)} ريال</small></div>
+     <div class="kpi"><small>أفرج الشهر</small><b>${mao?(maw/mao).toFixed(1):'—'} <i>ريال</i></b>${targets.avg&&mao?`<small style="color:${maw/mao>=targets.avg?'var(--ok)':'var(--bad)'}">الهدف ${targets.avg}</small>`:''}</div>
      <div class="kpi"><small>التزام الموظفين</small><b>${Cm.req?Math.round(Cm.ontime/Cm.req*100):0}%</b><small>${Cm.late} متأخر · ${Cm.miss} ما انرسل</small></div></div>
-   <div class="card mcard"><div class="mh">📈 المبيعات اليومية</div><div class="bars">${days.map(([i,v])=>`<div class="bar" title="${money(v)}"><i style="height:${Math.round(v/mx*100)}%;${targets.daySales&&v>=targets.daySales?'background:var(--ok)':''}"></i><span>${i}</span></div>`).join('')}</div>${targets.daySales?'<small class="sub">الأخضر = حقق الهدف اليومي</small>':''}</div>
+   <div class="card mcard"><div class="mh">📈 عدد الفواتير اليومي</div><div class="bars">${days.map(([i,v])=>`<div class="bar" title="${money(v)}"><i style="height:${Math.round(v/mx*100)}%;${targets.dayOrders&&v>=targets.dayOrders?'background:var(--ok)':''}"></i><span>${i}</span></div>`).join('')}</div>${targets.dayOrders?'<small class="sub">الأخضر = حقق هدف الفواتير اليومي</small>':''}</div>
    <div class="card mcard"><div class="mh">👁️ متابعة المشرف خلال الشهر</div><div class="mstats"><div><b style="color:var(--ok)">${revDue?Math.round(Rm.ontime/revDue*100):0}%</b>مراجعة في الوقت</div><div><b style="color:var(--warn)">${Rm.late}</b>مراجعة متأخرة</div><div><b style="color:var(--bad)">${Rm.missed}</b>ما انراجعت</div><div><b>${supSent}/${supDays}</b>قائمة المشرف</div><div><b style="color:var(--warn)">${supLate}</b>قائمة المشرف متأخرة</div><div><b>${Cm.req}</b>قوائم مستحقة</div></div></div>
    ${rank.length?`<div class="card best"><div class="besth">🏆 أفضل موظف للشهر</div>${rank.map((x,i)=>`<div class="brow ${i?'':'top'}"><span>${['🥇','🥈','🥉'][i]}</span><b>${esc(x.p.name)}</b><small>${Math.round(x.m.rate*100)}% في الوقت · إنجاز ${x.m.pct}%</small></div>`).join('')}</div>`:''}`;
 }
