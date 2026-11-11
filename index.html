@@ -258,6 +258,15 @@ body.ltr .dpanel{transform:translateX(-100%)}
 details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::-webkit-details-marker{display:none}details.rv-done>summary::after{content:'▾';margin-inline-start:auto;color:var(--mut)}details.rv-done[open]>summary::after{content:'▴'}
 .rv-done .rvh{color:var(--ok)}
 .rvsec>.row,.rvsec>details.row{margin:0}
+/*../patch25.css*/.staffmsg.vipmsg{background:var(--card);border:1px solid var(--line);border-inline-start:4px solid #4F8A5B;border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.vph{display:flex;align-items:center;justify-content:space-between;font-weight:700;color:#3F7A4C;font-size:15px}
+.vpn{background:#E3F0E6;color:#3F7A4C;border-radius:999px;padding:0 9px;font-size:12.5px}
+.vpi{display:flex;flex-direction:column;gap:6px;padding-top:10px;border-top:1px solid var(--line)}
+.vph+.vpi{border-top:0;padding-top:0}
+.vpt{display:flex;align-items:center;justify-content:space-between;gap:8px}.vpt b{font-size:16px}
+.vptm{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:13px;color:var(--fg);white-space:nowrap}
+.vpcs{display:flex;flex-wrap:wrap;gap:6px}.vpc{background:#EEF6F0;color:#2F5F3A;border-radius:10px;padding:4px 10px;font-size:13.5px}
+.vpnote{font-size:13.5px;color:var(--mut);border-top:1px dashed var(--line);padding-top:8px;white-space:pre-wrap}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -277,7 +286,7 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v28</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v29</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -832,7 +841,10 @@ function watchPlan(){
 }
 let dayUnsub=null,msgUnsub=null,staffMsg=null,vipMsg=null;
 function showVip(){const b=$('#vipMsg');if(!b)return;const v=vipMsg,ok=v&&v.date===today()&&((v.items||[]).length||v.note);b.hidden=!ok;if(!ok)return;
-  b.innerHTML=`<div class="smh">📣 معلنين اليوم</div>${(v.items||[]).map(x=>`<div class="vipi"><b><bdi>${esc(x.n)}</bdi></b>${x.t?` <span class="vipt">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}${x.p?`<div class="smt">${esc(x.p)}</div>`:''}</div>`).join('')}${v.note?`<div class="smt" style="margin-top:6px">${esc(v.note)}</div>`:''}`}
+  const its=v.items||[],chips=t=>String(t||'').split(/\s*[+،,\n]\s*/).filter(Boolean).map(x=>`<span class="vpc">${esc(x)}</span>`).join('');
+  b.innerHTML=`<div class="vph"><span>📣 معلنين اليوم</span>${its.length>1?`<span class="vpn">${its.length}</span>`:''}</div>`
+   +its.map(x=>`<div class="vpi"><div class="vpt"><b><bdi>${esc(x.n||'—')}</bdi></b>${x.t?`<span class="vptm">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}</div>${x.p?`<div class="vpcs">${chips(x.p)}</div>`:''}</div>`).join('')
+   +(v.note?`<div class="vpnote">📝 ${esc(v.note)}</div>`:'')}
 function showMsg(){const b=$('#staffMsg');if(!b)return;b.hidden=!(staffMsg&&staffMsg.text);if(staffMsg&&staffMsg.text)b.innerHTML=`<div class="smh">📢 ${esc(t_('todayMsg'))}</div><div class="smt">${esc(staffMsg.text)}</div>`}
 let mineLoaded=false;
 /* open the only checklist automatically, but never one that was already sent today */
