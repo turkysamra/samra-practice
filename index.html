@@ -307,7 +307,7 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v31</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v32</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -443,9 +443,9 @@ const SHEETS=[
 {id:'display',ar:'الديسبلاي',en:'Display & Chiller',items:[
 ['Chiller temperature check','فحص درجة برودة الثلاجة','°C'],['Product quality & visual appearance','جودة ومظهر وجمالية المنتجات'],['All items fully available','توفر كامل الأصناف والمخبوزات'],['Expiry dates & removal of expired items','متابعة تواريخ الصلاحية وسحب المنتهي'],['Glass cleaning inside & out','نظافة الزجاج كامل من الداخل والخارج'],['Pick-up / takeaway supplies','توفر جميع أدوات ومستلزمات السفري'],['Gift & occasion supplies (boxes, candles, cards)','توفر مستلزمات المناسبات (بوكسات، شموع، كروت إهداء)'],['Napkins & tissues refill','توفر وتعبئة المناديل'],['Quantity tracking & kitchen follow-up','متابعة الكميات والربط مع المطبخ'],['Glove & mask food safety','الالتزام بالقفاز والكمامة والمعايير'],['Closing: cover sweets & clean chiller shelves','عند الإغلاق: تغطية الحلويات وتنظيف أرفف الثلاجة']]},
 {id:'reception',ar:'الاستقبال والمنطقة الخارجية',en:'Reception & Outdoor',items:[
-['Readiness of outdoor seating','جاهزية الجلسات الخارجية'],['Visual check: outdoor tables & chairs','فحص نظافة وترتيب الطاولات والكراسي'],['Waiting line / queue barrier setup','تنظيم شريط وحواجز الانتظار'],['Outdoor landscaping & plants','مظهر ونظافة التشجير الخارجي'],['Planter lights & ambiance','جاهزية إضاءات الأحواض'],['Safety & condition of planters','سلامة ونظافة الأحواض'],['Readiness & cleanliness of heaters','جاهزية ونظافة المدافئ'],['Readiness & cleanliness of ACs','جاهزية ونظافة المكيفات'],['Ground lights illumination','سلامة وعمل الإضاءات الأرضية'],['Umbrellas / canopies setup','فرد وجاهزية المظلات'],['Ensure watering of plants','التأكد من سقي الأشجار والنباتات'],['Outdoor signage & facade lights','جاهزية اللوحة الخارجية والواجهة'],['Parking area cleanliness','نظافة وترتيب منطقة المواقف']]}
+['Readiness of outdoor seating','جاهزية الجلسات الخارجية'],['Visual check: outdoor tables & chairs','فحص نظافة وترتيب الطاولات والكراسي'],['Waiting line / queue barrier setup','تنظيم شريط وحواجز الانتظار'],['Outdoor landscaping & plants','مظهر ونظافة التشجير الخارجي'],['Planter lights & ambiance','جاهزية إضاءات الأحواض'],['Safety & condition of planters','سلامة ونظافة الأحواض'],['Readiness & cleanliness of heaters','جاهزية ونظافة المدافئ'],['Gas check','التشييك على الغاز'],['Ground lights illumination','سلامة وعمل الإضاءات الأرضية'],['Umbrellas / canopies setup','فرد وجاهزية المظلات'],['Ensure watering of plants','التأكد من سقي الأشجار والنباتات'],['Outdoor signage & facade lights','جاهزية اللوحة الخارجية والواجهة'],['Parking area cleanliness','نظافة وترتيب منطقة المواقف']]}
 ];
-const C1=[['Branch floor sweeping & mopping','كنس ومسح أرضية الفرع'],['Marble surfaces & counters polishing','تلميع الرخام والكونترات'],['Wood furniture & partitions wiping','مسح وتلميع الخشب والبارتشن'],['Restroom log filled every 30 min','تعبئة سجل دورة المياه كل 30 دقيقة'],['Main entrance & front door glass','نظافة الباب الأمامي والمدخل'],['Table stability & chair balance','ثبات الطاولات وتوازن الكراسي'],['Glass, windows & partition cleaning','نظافة الزجاج والشبابيك'],['Dusting all surfaces & ledges','مسح الغبار عن الأسطح'],['Indoor plants care & leaf dusting','العناية بالنباتات ومسح أوراقها'],['Display cleaning from all sides','نظافة الدسبلاي من كل الجهات']];
+const C1=[['Branch floor sweeping & mopping','كنس ومسح أرضية الفرع'],['Marble surfaces & counters polishing','تلميع الرخام والكونترات'],['Wood furniture & partitions wiping','مسح وتلميع الخشب والبارتشن'],['Main entrance & front door glass','نظافة الباب الأمامي والمدخل'],['Table stability & chair balance','ثبات الطاولات وتوازن الكراسي'],['Glass, windows & partition cleaning','نظافة الزجاج والشبابيك'],['Dusting all surfaces & ledges','مسح الغبار عن الأسطح'],['Indoor plants care & leaf dusting','العناية بالنباتات ومسح أوراقها'],['Display cleaning from all sides','نظافة الدسبلاي من كل الجهات']];
 const C2=[['Table tops sanitization & wiping','مسح وتعقيم أسطح الطاولات'],['Chair fabrics & leather cleaning','نظافة وتلميع الكراسي'],['Under-table & corners cleanliness','نظافة الزوايا وما أسفل الطاولات'],['iPads & payment screens cleaning','نظافة ومسح شاشات الايباد'],['Area fragrance & air freshness','رائحة المنطقة العامة والتعطير'],['Wall frames & artwork dusting','تنظيف المناظر واللوحات الجدارية'],['Outdoor seating area cleaning','نظافة وترتيب الجلسات الخارجية'],['Cleaning trays & caddy readiness','جاهزية صواني وأدوات التنظيف'],['Final check & table wipe-down','تأكيد تمسيح وتجهيز الطاولات']];
 SHEETS.push({id:'clean_am',ar:'كلينر الصباح',en:'Cleaner – Morning',items:[['#','القسم 1'],...C1,['#','القسم 2'],...C2,['#','الزجاج'],['Internal glass cleaning','تنظيف وتلميع الزجاج من الداخل']]});
 SHEETS.push({id:'clean_pm1',ar:'كلينر المساء – القسم 1',en:'Cleaner – Evening S1 (1–10)',items:[...C1]});
@@ -474,8 +474,8 @@ const ROLES=[
 {id:'barista',ar:'باريستا',sheets:['bar']},
 {id:'display',ar:'ديسبلاي',sheets:['display']},
 {id:'reception',ar:'استقبال',sheets:['reception']},
-{id:'clean_am',ar:'كلينر – الصباح',sheets:['clean_am','restroom'],shift:'am'},
-{id:'clean_pm1',ar:'كلينر – المساء القسم 1',sheets:['clean_pm1','restroom'],shift:'pm'},
+{id:'clean_am',ar:'كلينر – الصباح',sheets:['clean_am'],shift:'am'},
+{id:'clean_pm1',ar:'كلينر – المساء القسم 1',sheets:['clean_pm1'],shift:'pm'},
 {id:'clean_pm2',ar:'كلينر – المساء القسم 2',sheets:['clean_pm2'],shift:'pm'},
 {id:'bar_sup',ar:'مشرف البار',sheets:['bar_sup','dreport']},
 {id:'service',ar:'سيرفس (تنزيل طلبات)',sheets:[]}];
@@ -489,6 +489,7 @@ const dowOf=d=>new Date(d+'T12:00:00').getDay();
 const LANGS={ar:{label:'عربي',dir:'rtl',loc:'ar-SA'},en:{label:'English',dir:'ltr',loc:'en-GB'},hi:{label:'हिन्दी',dir:'ltr',loc:'hi-IN'},bn:{label:'বাংলা',dir:'ltr',loc:'bn-BD'}};
 /* item translations: English → [Hindi, Bengali] */
 const TR={
+"Gas check":["गैस की जाँच","গ্যাস চেক"],
 "Bar Readiness & Cleanliness":["खुलने से पहले बार की तैयारी और सफ़ाई", "খোলার আগে বারের প্রস্তুতি ও পরিচ্ছন্নতা"],
 "Espresso Dial-in & Tasting":["एस्प्रेसो सेटिंग (ग्राइंड, वज़न, समय) और चखना", "এসপ্রেসো সেটিং (গ্রাইন্ড, ওজন, সময়) ও স্বাদ পরীক্ষা"],
 "Grinders & Espresso Machine Check":["ग्राइंडर और एस्प्रेसो मशीन की जाँच (प्रेशर और तापमान)", "গ্রাইন্ডার ও এসপ্রেসো মেশিন পরীক্ষা (চাপ ও তাপমাত্রা)"],
