@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="سمراء">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>html{color-scheme:light}body{margin:0}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}.authc{max-width:380px;margin:10vh auto 0}</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 </head>
@@ -281,6 +286,8 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
 .sechrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .tprog{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:2px 12px;font-weight:700;font-size:14px;color:var(--mut)}
 .tprog.done{background:#E3F0E6;border-color:#B9D8C1;color:#2F5F3A}
+/*../patch27.css*/.pushc{background:var(--card);border:1px dashed var(--gold);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.pch{display:flex;justify-content:space-between;align-items:center}.pcx{background:none;border:0;color:var(--mut);font-size:16px;cursor:pointer;min-height:0;padding:4px}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -300,7 +307,7 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v30</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v31</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -357,6 +364,23 @@ const USER={
   async me(){return {id:SESSION?.user?.id||null,name:MEMBER?.name||'',email:SESSION?.user?.email||null,isOwner:MEMBER?.level==='owner',canEdit:MEMBER?.level==='owner'||MEMBER?.level==='admin'}},
   async profiles(ids){const out={};if(!ids||!ids.length)return out;const {data}=await sb.from('members').select('uid,name,email').in('uid',ids);(data||[]).forEach(r=>{out[r.uid]={id:r.uid,name:r.name||'',email:r.email||''}});return out}
 };
+/* ---------- push notifications ---------- */
+const VAPID_PUB='BAfpCtAXgPCigJJVUvOuOh6wjW5HuRMSns1i9y5LTPs0rm309Uab2e1WSwTtzyuRYHWXHc8dC_y7mQJ-qFYVBWY';
+const b64u=s=>{const p='='.repeat((4-s.length%4)%4),b=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(b,c=>c.charCodeAt(0))};
+window.__push={
+  ok:()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window,
+  ios:()=>/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),
+  standalone:()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true,
+  async isOn(){try{if(!this.ok()||Notification.permission!=='granted')return false;const r=await navigator.serviceWorker.getRegistration();const s=r&&await r.pushManager.getSubscription();return !!s}catch(e){return false}},
+  async enable(){const reg=await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;
+    const p=await Notification.requestPermission();if(p!=='granted')throw new Error('denied');
+    let s=await reg.pushManager.getSubscription();if(!s)s=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(VAPID_PUB)});
+    const j=s.toJSON(),path='push/'+SESSION.user.id;const {data}=await sb.from('docs').select('data').eq('path',path).maybeSingle();
+    const subs=((data&&data.data&&data.data.subs)||[]).filter(x=>x.endpoint!==j.endpoint);subs.push(j);
+    const {error}=await sb.from('docs').upsert({path,data:{subs:subs.slice(-5)}},{onConflict:'path'});if(error)throw error;return true},
+  async notify(uid,title,body){try{const {data}=await sb.functions.invoke('notify',{body:{uid,title,body}});return data}catch(e){return null}}
+};
+if('serviceWorker' in navigator&&'Notification' in window&&Notification.permission==='granted'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 window.claude={use:async n=>{await authReady;if(!SESSION)return null;if(n==='db')return DB;if(n==='user')return USER;return null}};
 
 /* ---------- sign in / sign up screen ---------- */
@@ -643,6 +667,12 @@ sendShort:['إرسال','Send','भेजें','পাঠান'],
 team:['توزيع الموظفين',"Today's staff assignment",'आज की स्टाफ़ ड्यूटी','আজকের স্টাফ দায়িত্ব'],
 offList:['إجازة','Day off','छुट्टी','ছুটি'],
 weekSched:['جدول الدوام','Work schedule','काम का समय','কাজের সময়সূচি'],
+pushTitle:['فعّل التنبيهات','Turn on notifications','सूचनाएं चालू करें','নোটিফিকেশন চালু করুন'],
+pushWhy:['يوصلك تنبيه على جوالك إذا رجعت قائمتك للمتابعة.','You will get an alert on your phone if your checklist is sent back.','अगर आपकी चेकलिस्ट वापस भेजी गई तो फोन पर सूचना आएगी।','আপনার চেকলিস্ট ফেরত পাঠালে ফোনে নোটিফিকেশন আসবে।'],
+pushIos:['على الآيفون: اضغط زر المشاركة ⬆️ ← "إضافة إلى الشاشة الرئيسية"، وافتح الموقع من الأيقونة، وبيطلع لك زر التفعيل.','On iPhone: tap Share ⬆️ → "Add to Home Screen", open the site from the icon, then turn notifications on.','iPhone पर: शेयर ⬆️ → "Add to Home Screen" दबाएं, आइकन से साइट खोलें, फिर सूचनाएं चालू करें।','iPhone-এ: শেয়ার ⬆️ → "Add to Home Screen" চাপুন, আইকন থেকে সাইট খুলুন, তারপর নোটিফিকেশন চালু করুন।'],
+pushOn:['تفعيل','Turn on','चालू करें','চালু করুন'],
+pushDone:['تم تفعيل التنبيهات ✓','Notifications on ✓','सूचनाएं चालू ✓','নোটিফিকেশন চালু ✓'],
+pushFail:['ما تفعّلت — اسمح بالتنبيهات من إعدادات المتصفح وجرب مرة ثانية','Not enabled — allow notifications in your browser settings and try again','चालू नहीं हुआ — ब्राउज़र सेटिंग में अनुमति दें और फिर कोशिश करें','চালু হয়নি — ব্রাউজার সেটিংসে অনুমতি দিন এবং আবার চেষ্টা করুন'],
 hide:['إخفاء','Hide','छिपाएँ','লুকান'],
 due:['آخر موعد','Due by','अंतिम समय','শেষ সময়'],
 late:['متأخر','Late','देर','দেরি'],
@@ -862,6 +892,12 @@ function showVip(){const b=$('#vipMsg');if(!b)return;setTimeout(inboxSync,0);con
   b.innerHTML=`<div class="vph"><span>📣 معلنين اليوم</span>${its.length>1?`<span class="vpn">${its.length}</span>`:''}</div>`
    +its.map(x=>`<div class="vpi"><div class="vpt"><b><bdi>${esc(x.n||'—')}</bdi></b>${x.t?`<span class="vptm">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}</div>${x.p?`<div class="vpcs">${chips(x.p)}</div>`:''}</div>`).join('')
    +(v.note?`<div class="vpnote">📝 ${esc(v.note)}</div>`:'')}
+async function pushCard(){const b=$('#pushc');if(!b||!window.__push)return;const P=window.__push;let dis=false;try{dis=localStorage.getItem('samraa_push_x')==='1'}catch(e){}
+  if(dis||await P.isOn()){b.hidden=true;return}
+  const iosWeb=P.ios()&&!P.standalone();if(!P.ok()&&!iosWeb){b.hidden=true;return}
+  b.innerHTML=`<div class="pch"><b>🔔 ${esc(t_('pushTitle'))}</b><button class="pcx" aria-label="close">✕</button></div><div class="sub">${esc(iosWeb?t_('pushIos'):t_('pushWhy'))}</div>${iosWeb?'':`<button class="btn pri" id="pushOn">${esc(t_('pushOn'))}</button>`}<div class="err" id="pushE"></div>`;b.hidden=false;
+  b.querySelector('.pcx').onclick=()=>{try{localStorage.setItem('samraa_push_x','1')}catch(e){}b.hidden=true};
+  const on=b.querySelector('#pushOn');if(on)on.onclick=async()=>{on.disabled=true;try{await P.enable();b.hidden=true;toast(t_('pushDone'));if(isAdmin)setTimeout(()=>P.notify(uid,'سمراء ✓','التنبيهات شغالة على جوالك'),1500)}catch(e){on.disabled=false;$('#pushE').textContent=t_('pushFail')}}}
 function showMsg(){const b=$('#staffMsg');if(!b)return;setTimeout(inboxSync,0);b.hidden=!(staffMsg&&staffMsg.text);if(staffMsg&&staffMsg.text)b.innerHTML=`<div class="smh">📢 ${esc(t_('todayMsg'))}</div><div class="smt">${esc(staffMsg.text)}</div>`}
 let mineLoaded=false;
 /* open the only checklist automatically, but never one that was already sent today */
@@ -889,6 +925,7 @@ function tasks(){
   const chip=a&&a.off||!(list.length||(a&&(a.st||[]).length))?'':`<span class="shiftchip">${esc(shiftName(sh))} · ${esc(hoursOf(a,sh,lang))}</span>`;
   $('#main').innerHTML=`<div class="stack">
    ${award&&award.winners&&award.winners[0]?`<div class="award rv">🏆 <div><small>${esc(t_('empMonth'))}</small><b>${esc((()=>{const w=award.winners[0],p=rosterById()[w.key];return p?(lang==='ar'?(p.ar||p.name):(p.name||p.ar)):w.name})())}</b></div>${award.winners[0].key===myKey?'<span>🎉</span>':''}</div>`:''}
+   <div class="pushc rv in" id="pushc" hidden></div>
    <div class="inbox rv in" id="inbox" hidden><div class="staffmsg" id="staffMsg" hidden></div><div class="staffmsg vipmsg" id="vipMsg" hidden></div></div>
    <section id="secTasks" class="hsec"><div class="sech sechrow rv"><h2>📝 ${esc(t_('myChecklist'))}</h2><span class="tprog" id="tprog" hidden></span></div>
    ${a&&a.off?`<div class="card rv" style="text-align:center"><div style="font-size:40px">🌴</div><h2>${esc(t_('offToday'))}</h2><p class="sub">${esc(t_('noTasksOff'))}</p></div>`:''}
@@ -897,7 +934,7 @@ function tasks(){
    <section id="secTeam" class="hsec"><div class="sech rv"><h2>👥 ${esc(t_('team'))}</h2></div><div class="card rv" id="team"></div></section></div>`;
   $('#main').querySelectorAll('.top').forEach(b=>b.onclick=()=>toggle(b.dataset.id));
   if(!homeSeqDone){homeSeqDone=true;$('#secTasks').classList.add('seqin');$('#secTasks').style.animationDelay='1.1s';$('#secTeam').classList.add('seqin');$('#secTeam').style.animationDelay='1.35s';$('#main').querySelectorAll('.rv').forEach(x=>x.classList.add('in'))}
-  teamView();refreshPills();showMsg();showVip();reveal($('#main'));
+  teamView();refreshPills();showMsg();showVip();pushCard();reveal($('#main'));
   autoOpen();
 }
 function teamView(){const box=$('#team');if(!box)return;const d=today(),nm=p=>lang==='ar'?(p.ar||p.name):(p.name||p.ar);let h='';
@@ -1109,7 +1146,7 @@ async function reviewClick(ev){if(!can('act'))return;
   const note=act==='sendf'?box.querySelector('textarea').value.trim():'';
   if(act==='sendf'&&!note){toast('اكتب سبب طلب الإعادة');return}
   b.disabled=true;
-  try{await db.doc('submissions/'+u).update({[rkey(boardDate,s)]:{status:act==='approve'?'approved':'followup',note:note.slice(0,300),ts:Date.now(),by:uid}});toast(act==='approve'?'تم الاعتماد ✓':'انرسل طلب الإعادة للموظف')}
+  try{await db.doc('submissions/'+u).update({[rkey(boardDate,s)]:{status:act==='approve'?'approved':'followup',note:note.slice(0,300),ts:Date.now(),by:uid}});toast(act==='approve'?'تم الاعتماد ✓':'انرسل طلب الإعادة للموظف');if(act!=='approve'&&window.__push){const L=(staffAll[u]&&staffAll[u].lang)||'ar',sx=byId[s],nm=sx?(L==='ar'?sx.ar:L==='en'?sx.en:((SHEETN[s]||[])[L==='hi'?1:2]||sx.en)):'';const T={ar:'⚠ قائمتك رجعت للمتابعة',en:'⚠ Your checklist needs a fix',hi:'⚠ आपकी चेकलिस्ट वापस आई है',bn:'⚠ আপনার চেকলিস্ট ফেরত এসেছে'};window.__push.notify(u,T[L]||T.ar,nm+(note?' — '+note:''))}}
   catch(e){b.disabled=false;toast('ما انحفظ — جرب مرة ثانية')}
 }
 let rvSh='all';
