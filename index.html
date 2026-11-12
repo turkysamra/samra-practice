@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#FFFFFF">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://ddkhtmquslpwsobwfzai.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="سمراء">
@@ -307,7 +309,7 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v32</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v33</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -335,16 +337,23 @@ function deepMerge(a,b){const o={...(a&&typeof a==='object'&&!Array.isArray(a)?a
 const snapDoc=(path,row)=>({id:lastSeg(path),exists:!!row,data:()=>row?JSON.parse(JSON.stringify(row.data)):undefined});
 const deny=(msg)=>{const e=new Error(msg||'refused');e.code='invalid_argument';throw e};
 let chanSeq=0;
+const CK='samraa_cache_v1';let CC={u:null,docs:{},m:null};try{CC=JSON.parse(localStorage.getItem(CK)||'null')||CC}catch(e){}
+let cT=null;const cSave=()=>{clearTimeout(cT);cT=setTimeout(()=>{try{localStorage.setItem(CK,JSON.stringify(CC))}catch(e){try{CC.docs={};localStorage.setItem(CK,JSON.stringify(CC))}catch(x){}}},400)};
+const cUser=()=>{const u=SESSION&&SESSION.user&&SESSION.user.id;if(CC.u!==u){CC={u,docs:{},m:null}}return u};
+const cPut=(p,row)=>{if(!cUser())return;CC.docs[p]=row?row.data:null;cSave()};
+const cHas=p=>cUser()&&Object.prototype.hasOwnProperty.call(CC.docs,p);
 
 /* ---------- db ---------- */
 const DB={
   doc(path){return {
-    async get(){const {data,error}=await sb.from('docs').select('path,data').eq('path',path).maybeSingle();if(error)throw error;return snapDoc(path,data)},
+    async get(){const {data,error}=await sb.from('docs').select('path,data').eq('path',path).maybeSingle();if(error)throw error;cPut(path,data);return snapDoc(path,data)},
+    async getFast(){if(cHas(path)){const v=CC.docs[path];this.get().catch(()=>{});return snapDoc(path,v==null?null:{data:v})}return this.get()},
     async set(d){const {error}=await sb.from('docs').upsert({path,data:d},{onConflict:'path'});if(error)deny(error.message)},
     async update(patch){const {data:row,error}=await sb.from('docs').select('data').eq('path',path).maybeSingle();if(error)throw error;if(!row)deny('missing');
       const next=deepMerge(row.data,patch);const {data:up,error:e2}=await sb.from('docs').update({data:next}).eq('path',path).select('path');if(e2)deny(e2.message);if(!up||!up.length)deny('refused')},
     async delete(){const {error}=await sb.from('docs').delete().eq('path',path);if(error)deny(error.message)},
     onSnapshot(next,err){let alive=true;const load=async()=>{try{const s=await this.get();if(alive)next(s)}catch(e){if(alive&&err)err(e)}};
+      if(cHas(path)){const v=CC.docs[path];Promise.resolve().then(()=>{if(alive)next(snapDoc(path,v==null?null:{data:v}))})}
       load();const ch=sb.channel('d'+(++chanSeq)).on('postgres_changes',{event:'*',schema:'public',table:'docs',filter:'path=eq.'+path},()=>load()).subscribe();
       return()=>{alive=false;sb.removeChannel(ch)}}
   }},
@@ -380,12 +389,14 @@ window.__push={
     const {error}=await sb.from('docs').upsert({path,data:{subs:subs.slice(-5)}},{onConflict:'path'});if(error)throw error;return true},
   async notify(uid,title,body){try{const {data}=await sb.functions.invoke('notify',{body:{uid,title,body}});return data}catch(e){return null}}
 };
-if('serviceWorker' in navigator&&'Notification' in window&&Notification.permission==='granted'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 window.claude={use:async n=>{await authReady;if(!SESSION)return null;if(n==='db')return DB;if(n==='user')return USER;return null}};
 
 /* ---------- sign in / sign up screen ---------- */
-async function loadMember(){const {data}=await sb.from('members').select('uid,name,email,level').eq('uid',SESSION.user.id).maybeSingle();MEMBER=data||{level:'interact',name:''}}
-window.__logout=async()=>{try{await sb.auth.signOut()}catch(e){}location.reload()};
+async function fetchMember(){const {data}=await sb.from('members').select('uid,name,email,level').eq('uid',SESSION.user.id).maybeSingle();return data||{level:'interact',name:''}}
+async function loadMember(){cUser();if(CC.m&&CC.m.uid===SESSION.user.id){MEMBER=CC.m;fetchMember().then(m=>{CC.m=m;cSave();if(m.level!==MEMBER.level)location.reload()}).catch(()=>{});return}
+  MEMBER=await fetchMember();CC.m=MEMBER;cSave()}
+window.__logout=async()=>{try{localStorage.removeItem(CK)}catch(e){}try{await sb.auth.signOut()}catch(e){}location.reload()};
 function authScreen(){
   const box=document.getElementById('auth');box.hidden=false;document.getElementById('emp').hidden=true;
   let mode='in';
@@ -779,7 +790,7 @@ async function init(){
     $('#main').innerHTML='<div class="msg rv">'+esc(t_('login'))+'</div>';reveal($('#main'));playHero();return}
   try{db.doc('plan/sheets').onSnapshot(s=>{const n=s.exists?(s.data().ov||{}):{};if(JSON.stringify(n)===JSON.stringify(sheetOV))return;applySheets(n);if(staff&&staff.rid&&$('#secTasks')&&!document.querySelector('.task.open'))tasks();else refreshPills()},()=>{})}catch(e){}
   const mo_=today().slice(0,7),pm_=(()=>{const [y,mm]=mo_.split('-').map(Number);const t=new Date(y,mm-2,1);return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')})();
-  const G=p=>db.doc(p).get().catch(()=>null);
+  const G=p=>{const r=db.doc(p);return (r.getFast?r.getFast():r.get()).catch(()=>null)};
   const [sv,s,r,b,a1,a2,mg]=await Promise.all([G('plan/sheets'),G('staff/'+uid),G('roster/list'),G('plan/'+today()),G('plan/award_'+mo_),G('plan/award_'+pm_),isAdmin?G('admin/managers'):null]);
   try{applySheets(sv&&sv.exists?(sv.data().ov||{}):{})}catch(e){}
   try{staff=s&&s.exists?s.data():null;roster=r&&r.exists?(r.data().people||[]):[];if(b&&b.exists)ingestPlan(today(),b.data())}catch(e){}
@@ -788,7 +799,7 @@ async function init(){
   if(staff&&staff.rid&&isOwnerF()&&approval()==='pending'){try{await bindName(uid,staff.rid)}catch(e){}}
   if(isAdmin){try{mgrMap=mg&&mg.exists?(mg.data()||{}):{}}catch(e){}meMgr=myMgr()}
   try{const A=[a1,a2].filter(x=>x.exists).map(x=>x.data()).sort((a,b)=>b.ts-a.ts)[0];if(A&&Date.now()-A.ts<12*864e5)award=A}catch(e){}
-  if(isOwnerF()&&roster.length){try{await migrateSched()}catch(e){}}
+  if(isOwnerF()&&roster.length)migrateSched().catch(()=>{});
   greet();
   if(isAdmin&&pureMgr()){route();if(!location.hash||!['#manager','#idara'].includes(location.hash))go('home');restoreView();toDashBtn();return}
   if(staff&&staff.lang&&staff.rid){watchMine();watchPlan();tasks()}else if(staff)register(true);else showGate();
