@@ -309,7 +309,7 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v33</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v34</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -387,7 +387,8 @@ window.__push={
     const j=s.toJSON(),path='push/'+SESSION.user.id;const {data}=await sb.from('docs').select('data').eq('path',path).maybeSingle();
     const subs=((data&&data.data&&data.data.subs)||[]).filter(x=>x.endpoint!==j.endpoint);subs.push(j);
     const {error}=await sb.from('docs').upsert({path,data:{subs:subs.slice(-5)}},{onConflict:'path'});if(error)throw error;return true},
-  async notify(uid,title,body){try{const {data}=await sb.functions.invoke('notify',{body:{uid,title,body}});return data}catch(e){return null}}
+  async notify(uid,title,body){try{const {data}=await sb.functions.invoke('notify',{body:{uid,title,body}});return data}catch(e){return null}},
+  async submitted(sheet,date,label,resend){try{const {data}=await sb.functions.invoke('submitted',{body:{sheet,date,label,resend}});return data}catch(e){return null}}
 };
 if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 window.claude={use:async n=>{await authReady;if(!SESSION)return null;if(n==='db')return DB;if(n==='user')return USER;return null}};
@@ -680,7 +681,7 @@ team:['توزيع الموظفين',"Today's staff assignment",'आज की �
 offList:['إجازة','Day off','छुट्टी','ছুটি'],
 weekSched:['جدول الدوام','Work schedule','काम का समय','কাজের সময়সূচি'],
 pushTitle:['فعّل التنبيهات','Turn on notifications','सूचनाएं चालू करें','নোটিফিকেশন চালু করুন'],
-pushWhy:['يوصلك تنبيه على جوالك إذا رجعت قائمتك للمتابعة.','You will get an alert on your phone if your checklist is sent back.','अगर आपकी चेकलिस्ट वापस भेजी गई तो फोन पर सूचना आएगी।','আপনার চেকলিস্ট ফেরত পাঠালে ফোনে নোটিফিকেশন আসবে।'],
+pushWhy:['يوصلك تذكير أول ما يبدأ دوامك، وتنبيه إذا انعتمدت قائمتك أو رجعت للمتابعة.','Get a reminder when your shift starts, and an alert when your checklist is approved or sent back.','शिफ्ट शुरू होने पर याद दिलाया जाएगा, और चेकलिस्ट मंज़ूर या वापस होने पर सूचना मिलेगी।','শিফট শুরু হলে রিমাইন্ডার, আর চেকলিস্ট অনুমোদিত বা ফেরত হলে নোটিফিকেশন পাবেন।'],
 pushIos:['على الآيفون: اضغط زر المشاركة ⬆️ ← "إضافة إلى الشاشة الرئيسية"، وافتح الموقع من الأيقونة، وبيطلع لك زر التفعيل.','On iPhone: tap Share ⬆️ → "Add to Home Screen", open the site from the icon, then turn notifications on.','iPhone पर: शेयर ⬆️ → "Add to Home Screen" दबाएं, आइकन से साइट खोलें, फिर सूचनाएं चालू करें।','iPhone-এ: শেয়ার ⬆️ → "Add to Home Screen" চাপুন, আইকন থেকে সাইট খুলুন, তারপর নোটিফিকেশন চালু করুন।'],
 pushOn:['تفعيل','Turn on','चालू करें','চালু করুন'],
 pushDone:['تم تفعيل التنبيهات ✓','Notifications on ✓','सूचनाएं चालू ✓','নোটিফিকেশন চালু ✓'],
@@ -1025,7 +1026,7 @@ async function save(id,box,silent){
   const ref=db.doc('submissions/'+uid),f={[key(id)]:packE(entry)};
   try{await upsert(ref,f);
     mine={...mine,[key(id)]:entry};refreshPills();
-    if(silent)toast(t_('savedToast'));else{toast(t_('sentToast'));toggle(id)}
+    if(silent)toast(t_('savedToast'));else{toast(t_('sentToast'));toggle(id);if(window.__push&&window.__push.submitted&&!isOwnerF())window.__push.submitted(id,entry.date,s.ar,!!(prevE||mine[rkey(entry.date,id)]))}
   }catch(e){er.textContent=t_('sendErr')}
   finally{saving=false;if(b)b.disabled=false;if(pendSave){const [pi,pb]=pendSave;pendSave=null;save(pi,pb,true)}}
 }
@@ -1158,7 +1159,7 @@ async function reviewClick(ev){if(!can('act'))return;
   const note=act==='sendf'?box.querySelector('textarea').value.trim():'';
   if(act==='sendf'&&!note){toast('اكتب سبب طلب الإعادة');return}
   b.disabled=true;
-  try{await db.doc('submissions/'+u).update({[rkey(boardDate,s)]:{status:act==='approve'?'approved':'followup',note:note.slice(0,300),ts:Date.now(),by:uid}});toast(act==='approve'?'تم الاعتماد ✓':'انرسل طلب الإعادة للموظف');if(act!=='approve'&&window.__push){const L=(staffAll[u]&&staffAll[u].lang)||'ar',sx=byId[s],nm=sx?(L==='ar'?sx.ar:L==='en'?sx.en:((SHEETN[s]||[])[L==='hi'?1:2]||sx.en)):'';const T={ar:'⚠ قائمتك رجعت للمتابعة',en:'⚠ Your checklist needs a fix',hi:'⚠ आपकी चेकलिस्ट वापस आई है',bn:'⚠ আপনার চেকলিস্ট ফেরত এসেছে'};window.__push.notify(u,T[L]||T.ar,nm+(note?' — '+note:''))}}
+  try{await db.doc('submissions/'+u).update({[rkey(boardDate,s)]:{status:act==='approve'?'approved':'followup',note:note.slice(0,300),ts:Date.now(),by:uid}});toast(act==='approve'?'تم الاعتماد ✓':'انرسل طلب الإعادة للموظف');if(act==='approve'&&window.__push){const L=(staffAll[u]&&staffAll[u].lang)||'ar',sx=byId[s],nm=sx?(L==='ar'?sx.ar:L==='en'?sx.en:((SHEETN[s]||[])[L==='hi'?1:2]||sx.en)):'';const T={ar:'✅ قائمتك اعتُمدت',en:'✅ Your checklist was approved',hi:'✅ आपकी चेकलिस्ट मंज़ूर हो गई',bn:'✅ আপনার চেকলিস্ট অনুমোদিত হয়েছে'};window.__push.notify(u,T[L]||T.ar,nm)}if(act!=='approve'&&window.__push){const L=(staffAll[u]&&staffAll[u].lang)||'ar',sx=byId[s],nm=sx?(L==='ar'?sx.ar:L==='en'?sx.en:((SHEETN[s]||[])[L==='hi'?1:2]||sx.en)):'';const T={ar:'⚠ قائمتك رجعت للمتابعة',en:'⚠ Your checklist needs a fix',hi:'⚠ आपकी चेकलिस्ट वापस आई है',bn:'⚠ আপনার চেকলিস্ট ফেরত এসেছে'};window.__push.notify(u,T[L]||T.ar,nm+(note?' — '+note:''))}}
   catch(e){b.disabled=false;toast('ما انحفظ — جرب مرة ثانية')}
 }
 let rvSh='all';
