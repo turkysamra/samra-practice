@@ -309,7 +309,7 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v35</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v36</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -809,6 +809,10 @@ async function init(){
   route();restoreView();toDashBtn();
 }
 async function migrateSched(){const mt=await db.doc('plan/meta').get(),M=mt.exists?(mt.data()||{}):{};
+  if(M.sched2&&!M.sched3){/* Tauquir: bar only on Fridays */const list=clone(roster);const t=list.find(p=>String(p.name||'').toLowerCase()==='tauquir');
+    if(t){t.w=t.w||{};const b=t.w[5]||{sh:t.sh||'pm'};t.w[5]={...b,st:['barista']};await saveRoster(list)}
+    try{const d='2026-11-13',pd=await db.doc('plan/'+d).get();if(pd.exists){const P=pd.data()||{};if(P.assign&&P.assign.tauquir){P.assign.tauquir={...P.assign.tauquir,st:['barista']};await db.doc('plan/'+d).set(P);ingestPlan(d,P)}}}catch(e){}
+    await db.doc('plan/meta').set({...M,sched3:Date.now()});toast('تحدّث توزيع توكير ✓');return}
   if(M.sched1&&!M.sched2){/* fix: Sunny works Turki's hours on Friday */const list=clone(roster);const s=list.find(p=>String(p.name||'').toLowerCase()==='sunny');
     if(s){s.w=s.w||{};const b=s.w[5]||{st:[...(s.st||[])],sh:'pm'};s.w[5]={...b,sh:'pm',tm:'17:00-01:30'};await saveRoster(list)}await db.doc('plan/meta').set({...M,sched2:Date.now()});return}
   if(M.sched1)return;
