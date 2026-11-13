@@ -294,6 +294,17 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
 .dnav .btn{min-height:36px;padding:0 12px;white-space:nowrap}.dnav .dnt{flex:1;min-width:0;text-align:center;display:flex;flex-direction:column;align-items:center;line-height:1.25}
 .dnav .dnt b{font-size:14px}.dnav .dnt .link{font-size:12.5px;padding:0;min-height:0}
 .pill.p-mut{background:var(--soft);color:var(--mut)}
+/*../patch29.css*/details.dday{display:block;padding:0}details.dday>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;cursor:pointer}
+details.dday>summary::-webkit-details-marker{display:none}details.dday:not([data-empty])>summary .t b::after{content:' ▾';color:var(--mut);font-weight:400}details.dday[open]>summary .t b::after{content:' ▴'}
+details.dday[data-empty]>summary{cursor:default}
+.ddb{border-top:1px solid var(--line);padding:10px 16px 14px;display:flex;flex-direction:column;gap:6px}
+.dds{font-weight:700;color:var(--brown);font-size:13.5px;margin-top:6px}
+.ddi{display:flex;gap:10px;align-items:flex-start;font-size:14px}.ddi .ddm{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700}
+.ddi.ok .ddm{background:#E3F0E6;color:#2F7A45}.ddi.x .ddm{background:#F8E1DE;color:var(--bad)}.ddi.no .ddm{background:var(--soft);color:var(--mut)}
+.ddi.no>div>span{color:var(--mut)}.ddi small{display:block;color:var(--bad);font-size:12.5px}.ddv{color:var(--brown)}
+.ddr{padding:6px 0;border-bottom:1px dashed var(--line)}.ddr span{display:block;font-size:12px;color:var(--brown);font-weight:700}.ddr div{white-space:pre-wrap}
+.ddn{margin-top:6px;color:var(--mut);font-size:13.5px;white-space:pre-wrap}
+.tblx{overflow-x:auto}.avt{width:100%;border-collapse:collapse;font-size:13px}.avt th,.avt td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:center}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -313,7 +324,7 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v37</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v38</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -954,6 +965,18 @@ function dnavHTML(){const D=vD||today(),df=Math.round((Date.parse(D)-Date.parse(
 function goDay(n){const D=n===0?today():addDays(vD||today(),n);vD=D===today()?null:D;greet();tasks();scrollTo({top:0})}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-dnav]');if(!b||!$('#main').contains(b))return;goDay(+b.dataset.dnav)});
 const dayMsgs={};
+/* read-only contents of a sent checklist */
+function entryDetail(s,e){const ar=lang==='ar';
+  if(s.type==='report'){const r=e.rep||{};return repFlat(r.__v).map(([k,a])=>`<div class="ddr"><span>${esc(a)}</span><div>${esc(r[k]||'—')}</div></div>`).join('')}
+  if(s.type==='avg'){const ix=visIdx(s,e.shift),sl=e.slots||{};const rows=ix.filter(i=>sl[i]).map(i=>`<tr><td>${esc(itemText(s,s.items[i]))}</td><td>${esc(sl[i].o||'—')}</td><td>${esc(sl[i].s||'—')}</td><td><b>${esc(sl[i].a||'—')}</b></td></tr>`).join('');
+    return rows?`<div class="tblx"><table class="avt"><tr><th></th><th>${esc(t_('orders'))}</th><th>${esc(t_('sales'))}</th><th>${esc(t_('avg'))}</th></tr>${rows}</table></div>`:''}
+  const lab=Array.isArray(e.lab)?e.lab:null,n=lab?lab.length:s.items.length,C=e.checks||{},X=e.xs||{},V=e.vals||{};let h='',k=0;
+  for(let i=0;i<n;i++){const cur=s.items[i],same=cur&&(!lab||lab[i]===(cur[0]==='#'?'#':cur[1]));
+    if(lab?lab[i]==='#':cur&&cur[0]==='#'){h+=`<div class="dds">${esc(secName(cur&&cur[0]==='#'?cur[1]:''))}</div>`;continue}
+    const txt=same&&cur?(()=>{const t=itemText(s,cur);return Array.isArray(t)?t[0]:t})():(lab?lab[i]:'');k++;
+    const st=C[i]?'ok':X[i]!=null?'x':'no';
+    h+=`<div class="ddi ${st}"><span class="ddm">${st==='ok'?'✓':st==='x'?'✗':'○'}</span><div><span>${esc(txt)}</span>${V[i]?` <b class="ddv">${esc(V[i])}</b>`:''}${st==='x'&&X[i]?`<small>${esc(X[i])}</small>`:''}</div></div>`}
+  return h+(e.notes?`<div class="ddn">📝 ${esc(e.notes)}</div>`:'')}
 async function dayView(){const D=vD;shownSheets='day:'+D;
   $('#main').innerHTML=`<div class="stack">${dnavHTML()}<div class="msg">…</div></div>`;
   try{if(!(D in planD)){const s=await db.doc('plan/'+D).get();if(s.exists)ingestPlan(D,s.data())}}catch(e){}
@@ -963,12 +986,13 @@ async function dayView(){const D=vD;shownSheets='day:'+D;
   const row=id=>{const s=byId[id],e=mine['d_'+D+'_'+id],rv=mine[rkey(D,id)],st=rstate(e,rv),lm=e?lateMin(e,D):null;
     const pl=!e?`<span class="pill ${past?'p-bad':'p-mut'}">${esc(past?t_('notSentDay'):t_('notYet'))}</span>`
       :st==='approved'||st==='self'?`<span class="pill p-ok">${esc(t_('approved'))}</span>`:st==='followup'?`<span class="pill p-bad">${esc(t_('followup'))}</span>`:`<span class="pill p-ok">✓ ${esc(t_('sentDone'))}</span>`;
-    return `<div class="row"><div class="t"><b>${esc(sheetName(s))}</b><small>${e?(e.total?e.done+'/'+e.total+' · ':'')+esc(new Date(e.ts).toLocaleTimeString(loc(),{timeZone:'Asia/Riyadh',hour:'numeric',minute:'2-digit'}))+(lm?' · ⏰ '+(lang==='ar'?fmtLate(lm):'+'+lm+' min'):''):''}</small>${rv&&rv.note?`<small>${esc(rv.note)}</small>`:''}</div>${pl}</div>`};
+    const body=e?entryDetail(s,e):'';
+    return `<details class="row dday" ${body?'':'data-empty'}><summary><div class="t"><b>${esc(sheetName(s))}</b><small>${e?(e.total?e.done+'/'+e.total+' · ':'')+esc(new Date(e.ts).toLocaleTimeString(loc(),{timeZone:'Asia/Riyadh',hour:'numeric',minute:'2-digit'}))+(lm?' · ⏰ '+(lang==='ar'?fmtLate(lm):'+'+(lm>=60?Math.floor(lm/60)+'h '+(lm%60?lm%60+'m':''):lm+'m')):''):''}</small>${rv&&rv.note?`<small>${esc(rv.note)}</small>`:''}</div>${pl}</summary>${body?`<div class="ddb">${body}</div>`:''}</details>`};
   $('#main').innerHTML=`<div class="stack">${dnavHTML()}
    ${M&&M.text?`<div class="inbox rv in"><div class="staffmsg"><div class="smh">📢 ${esc(t_('dayMsg'))}</div><div class="smt">${esc(M.text)}</div></div></div>`:''}
    <section class="hsec"><div class="sech rv in"><h2>📝 ${esc(t_('myChecklist'))}</h2></div>
    ${a&&a.off?`<div class="card rv in" style="text-align:center"><div style="font-size:34px">🌴</div><p class="sub" style="margin:6px 0 0">${esc(t_('dayOff'))}</p></div>`
-     :list.length?`<div class="card rv in stack" style="gap:0">${list.map(row).join('')}</div>`:`<div class="msg rv in">${esc(t_('noAssign'))}</div>`}</section>
+     :list.length?`<div class="stack" style="gap:10px">${list.map(row).join('')}</div>`:`<div class="msg rv in">${esc(t_('noAssign'))}</div>`}</section>
    <section class="hsec"><div class="sech rv in"><h2>👥 ${esc(t_('dayTeam'))}</h2></div><div class="card rv in" id="team"></div></section></div>`;
   teamView(D);reveal($('#main'))}
 function tasks(){
