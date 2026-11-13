@@ -290,6 +290,10 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
 .tprog.done{background:#E3F0E6;border-color:#B9D8C1;color:#2F5F3A}
 /*../patch27.css*/.pushc{background:var(--card);border:1px dashed var(--gold);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .pch{display:flex;justify-content:space-between;align-items:center}.pcx{background:none;border:0;color:var(--mut);font-size:16px;cursor:pointer;min-height:0;padding:4px}
+/*../patch28.css*/.dnav{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px}
+.dnav .btn{min-height:36px;padding:0 12px;white-space:nowrap}.dnav .dnt{flex:1;min-width:0;text-align:center;display:flex;flex-direction:column;align-items:center;line-height:1.25}
+.dnav .dnt b{font-size:14px}.dnav .dnt .link{font-size:12.5px;padding:0;min-height:0}
+.pill.p-mut{background:var(--soft);color:var(--mut)}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -309,7 +313,7 @@ details.rv-done>summary{cursor:pointer;list-style:none}details.rv-done>summary::
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v36</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v37</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -682,6 +686,15 @@ sendShort:['إرسال','Send','भेजें','পাঠান'],
 team:['توزيع الموظفين',"Today's staff assignment",'आज की स्टाफ़ ड्यूटी','আজকের স্টাফ দায়িত্ব'],
 offList:['إجازة','Day off','छुट्टी','ছুটি'],
 weekSched:['جدول الدوام','Work schedule','काम का समय','কাজের সময়সূচি'],
+prevDay:['اليوم السابق','Previous','पिछला','আগের'],
+nextDay:['اليوم التالي','Next','अगला','পরের'],
+backToday:['ارجع لليوم','Back to today','आज पर लौटें','আজকে ফিরুন'],
+today:['اليوم','Today','आज','আজ'],
+dayOff:['إجازة','Day off','छुट्टी','ছুটি'],
+notSentDay:['ما انرسلت','Not sent','नहीं भेजी','পাঠানো হয়নি'],
+notYet:['لسّا','Not yet','अभी नहीं','এখনো না'],
+dayMsg:['رسالة المشرف','Supervisor message','सुपरवाइज़र का संदेश','সুপারভাইজারের বার্তা'],
+dayTeam:['توزيع الموظفين','Staff assignment','स्टाफ़ की ड्यूटी','স্টাফের দায়িত্ব'],
 pushTitle:['فعّل التنبيهات','Turn on notifications','सूचनाएं चालू करें','নোটিফিকেশন চালু করুন'],
 pushWhy:['يوصلك تذكير أول ما يبدأ دوامك، وتنبيه إذا انعتمدت قائمتك أو رجعت للمتابعة.','Get a reminder when your shift starts, and an alert when your checklist is approved or sent back.','शिफ्ट शुरू होने पर याद दिलाया जाएगा, और चेकलिस्ट मंज़ूर या वापस होने पर सूचना मिलेगी।','শিফট শুরু হলে রিমাইন্ডার, আর চেকলিস্ট অনুমোদিত বা ফেরত হলে নোটিফিকেশন পাবেন।'],
 pushIos:['على الآيفون: اضغط زر المشاركة ⬆️ ← "إضافة إلى الشاشة الرئيسية"، وافتح الموقع من الأيقونة، وبيطلع لك زر التفعيل.','On iPhone: tap Share ⬆️ → "Add to Home Screen", open the site from the icon, then turn notifications on.','iPhone पर: शेयर ⬆️ → "Add to Home Screen" दबाएं, आइकन से साइट खोलें, फिर सूचनाएं चालू करें।','iPhone-এ: শেয়ার ⬆️ → "Add to Home Screen" চাপুন, আইকন থেকে সাইট খুলুন, তারপর নোটিফিকেশন চালু করুন।'],
@@ -833,11 +846,11 @@ function greet(){setTimeout(playHero,30);setTitle();
   const n=rp?first(lang==='ar'?(rp.ar||rp.name):(rp.name||rp.ar)):(first(staff&&staff.name)||first(me&&me.name));
   $('#hi').innerHTML=esc(t_('hello'))+(n?' <em>'+esc(n)+'</em>':'')+' 👋';
   if(!staff){$('#l2').textContent=t_('welcomeTeam');$('#l3').textContent=t_('regOnce');return}
-  const a=approval()==='ok'?myAssign():null;
+  const D=vD||today(),a=approval()==='ok'&&myKey?planFor(D,myKey):null;
   const l3=$('#l3');l3.textContent='';l3.hidden=true;
-  const dd=riyadh(Date.now()-3*3600e3).toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});
-  if(a&&a.off){$('#l2').innerHTML=`<span class="hchips"><span class="hchip hc-off">🌴 ${esc(t_('offToday'))}</span><span class="hchip">${esc(dd)}</span></span>`}
-  else if(a&&(a.st||[]).length){const sh=myShift();$('#l2').innerHTML=`<span class="hchips"><span class="hchip hc-role">${esc(a.st.map(roleName).join(' + '))}</span><span class="hchip">🕒 ${esc(hoursOf(a,sh,lang))}</span><span class="hchip">${esc(dd)}</span></span>`}
+  const dd=dayName(D);
+  if(a&&a.off){$('#l2').innerHTML=`<span class="hchips"><span class="hchip hc-off">🌴 ${esc(vD?t_('dayOff'):t_('offToday'))}</span><span class="hchip">${esc(dd)}</span></span>`}
+  else if(a&&(a.st||[]).length){const sh=a.sh||myShift();$('#l2').innerHTML=`<span class="hchips"><span class="hchip hc-role">${esc(a.st.map(roleName).join(' + '))}</span><span class="hchip">🕒 ${esc(hoursOf(a,sh,lang))}</span><span class="hchip">${esc(dd)}</span></span>`}
   else{$('#l2').innerHTML=`<span class="hchips"><span class="hchip">${esc(dd)}</span></span>`}
 }
 
@@ -900,7 +913,7 @@ function watchPlan(){
   const subDay=()=>{try{if(dayUnsub)dayUnsub();if(msgUnsub)msgUnsub();const d=today();dayUnsub=db.doc('plan/'+d).onSnapshot(s=>{if(s.exists)ingestPlan(d,s.data());else delete planD[d];chk()},()=>{});msgUnsub=db.doc('plan/msg_'+d).onSnapshot(s=>{staffMsg=s.exists?s.data():null;showMsg()},()=>{})}catch(e){}};
   try{db.doc('vip/'+uid).onSnapshot(s=>{vipMsg=s.exists?s.data():null;showVip()},()=>{})}catch(e){}
   subDay();let curDay=today();
-  const tick=()=>{if(today()!==curDay){curDay=today();subDay();if(!$('#reg')){greet();tasks()}}else refreshPills()};
+  const tick=()=>{if(today()!==curDay){curDay=today();subDay();if(vD===today())vD=null;if(!$('#reg')){greet();tasks()}}else refreshPills()};
   setInterval(tick,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()});
   try{db.doc('staff/'+uid).onSnapshot(s=>{if(!s.exists)return;const n=s.data();if(JSON.stringify(n)===JSON.stringify(staff))return;staff=n;myKey=pkey(uid,staff);if($('#reg'))return;if(staff.rejected||!staff.rid)register(true);else tasks()},()=>{})}catch(e){}
 }
@@ -933,7 +946,33 @@ function banner(id){const e=mine[key(id)],r=mine[rkey(today(),id)],st=rstate(e,r
   if(st==='followup')return `<div class="rban bad"><b>${esc(t_('followup'))}</b>${r.note?'<br>'+esc(r.note):''}<br><small>${esc(t_('fixResend'))}</small></div>`;
   if(st==='resubmitted')return `<div class="rban warn">${esc(t_('resub'))}</div>`;return ''}
 function refreshPills(){const tp=$('#tprog');if(tp){const L=mySheets(),n=L.filter(id=>mine[key(id)]).length;tp.hidden=!L.length;tp.className='tprog'+(L.length&&n===L.length?' done':'');tp.textContent=n+'/'+L.length+(L.length&&n===L.length?' ✓':'')}SHEETS.forEach(s=>{const el=document.getElementById('pl_'+s.id);if(el){el.innerHTML=pill(s.id);el.closest('.task').classList.toggle('sent',!!mine[key(s.id)]);const b=document.getElementById('rb_'+s.id);if(b)b.innerHTML=banner(s.id)}})}
+/* ---- browse other days (read-only) ---- */
+let vD=null;const dayName=D=>new Date(D+'T12:00:00').toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});
+const addDays=(D,n)=>{const t=new Date(D+'T12:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10)};
+function dnavHTML(){const D=vD||today(),df=Math.round((Date.parse(D)-Date.parse(today()))/864e5);
+  return `<div class="dnav rv in"><button class="btn sm" data-dnav="-1" ${df<=-60?'disabled':''}>‹ ${esc(t_('prevDay'))}</button><div class="dnt">${vD?`<b>${esc(dayName(D))}</b><button class="link" data-dnav="0">${esc(t_('backToday'))}</button>`:`<b>${esc(t_('today'))}</b>`}</div><button class="btn sm" data-dnav="1" ${df>=14?'disabled':''}>${esc(t_('nextDay'))} ›</button></div>`}
+function goDay(n){const D=n===0?today():addDays(vD||today(),n);vD=D===today()?null:D;greet();tasks();scrollTo({top:0})}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-dnav]');if(!b||!$('#main').contains(b))return;goDay(+b.dataset.dnav)});
+const dayMsgs={};
+async function dayView(){const D=vD;shownSheets='day:'+D;
+  $('#main').innerHTML=`<div class="stack">${dnavHTML()}<div class="msg">…</div></div>`;
+  try{if(!(D in planD)){const s=await db.doc('plan/'+D).get();if(s.exists)ingestPlan(D,s.data())}}catch(e){}
+  try{if(!(D in dayMsgs)){const s=await db.doc('plan/msg_'+D).get();dayMsgs[D]=s.exists?s.data():null}}catch(e){dayMsgs[D]=null}
+  if(vD!==D)return;
+  const a=planFor(D,myKey),list=needFor(D,myKey,staff),past=D<today(),M=dayMsgs[D];
+  const row=id=>{const s=byId[id],e=mine['d_'+D+'_'+id],rv=mine[rkey(D,id)],st=rstate(e,rv),lm=e?lateMin(e,D):null;
+    const pl=!e?`<span class="pill ${past?'p-bad':'p-mut'}">${esc(past?t_('notSentDay'):t_('notYet'))}</span>`
+      :st==='approved'||st==='self'?`<span class="pill p-ok">${esc(t_('approved'))}</span>`:st==='followup'?`<span class="pill p-bad">${esc(t_('followup'))}</span>`:`<span class="pill p-ok">✓ ${esc(t_('sentDone'))}</span>`;
+    return `<div class="row"><div class="t"><b>${esc(sheetName(s))}</b><small>${e?(e.total?e.done+'/'+e.total+' · ':'')+esc(new Date(e.ts).toLocaleTimeString(loc(),{timeZone:'Asia/Riyadh',hour:'numeric',minute:'2-digit'}))+(lm?' · ⏰ '+(lang==='ar'?fmtLate(lm):'+'+lm+' min'):''):''}</small>${rv&&rv.note?`<small>${esc(rv.note)}</small>`:''}</div>${pl}</div>`};
+  $('#main').innerHTML=`<div class="stack">${dnavHTML()}
+   ${M&&M.text?`<div class="inbox rv in"><div class="staffmsg"><div class="smh">📢 ${esc(t_('dayMsg'))}</div><div class="smt">${esc(M.text)}</div></div></div>`:''}
+   <section class="hsec"><div class="sech rv in"><h2>📝 ${esc(t_('myChecklist'))}</h2></div>
+   ${a&&a.off?`<div class="card rv in" style="text-align:center"><div style="font-size:34px">🌴</div><p class="sub" style="margin:6px 0 0">${esc(t_('dayOff'))}</p></div>`
+     :list.length?`<div class="card rv in stack" style="gap:0">${list.map(row).join('')}</div>`:`<div class="msg rv in">${esc(t_('noAssign'))}</div>`}</section>
+   <section class="hsec"><div class="sech rv in"><h2>👥 ${esc(t_('dayTeam'))}</h2></div><div class="card rv in" id="team"></div></section></div>`;
+  teamView(D);reveal($('#main'))}
 function tasks(){
+  if(vD){dayView();return}
   const ap=approval();
   if(ap!=='ok'){shownSheets='ap:'+ap;
     $('#main').innerHTML=`<div class="card rv in" style="text-align:center"><div style="font-size:40px">${ap==='taken'?'⚠️':'⏳'}</div><p style="margin:8px 0">${esc(t_(ap==='taken'?'takenName':'pendingApp'))}</p>${ap==='taken'||ap==='none'?`<button class="btn" id="repick">${esc(t_('editMe'))}</button>`:''}</div>`;
@@ -942,7 +981,7 @@ function tasks(){
   shownSheets=list.join(',')+'|'+sh+'|'+JSON.stringify(a||{});
   const d=riyadh(Date.now()-3*3600e3).toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});
   const chip=a&&a.off||!(list.length||(a&&(a.st||[]).length))?'':`<span class="shiftchip">${esc(shiftName(sh))} · ${esc(hoursOf(a,sh,lang))}</span>`;
-  $('#main').innerHTML=`<div class="stack">
+  $('#main').innerHTML=`<div class="stack">${dnavHTML()}
    ${award&&award.winners&&award.winners[0]?`<div class="award rv">🏆 <div><small>${esc(t_('empMonth'))}</small><b>${esc((()=>{const w=award.winners[0],p=rosterById()[w.key];return p?(lang==='ar'?(p.ar||p.name):(p.name||p.ar)):w.name})())}</b></div>${award.winners[0].key===myKey?'<span>🎉</span>':''}</div>`:''}
    <div class="pushc rv in" id="pushc" hidden></div>
    <div class="inbox rv in" id="inbox" hidden><div class="staffmsg" id="staffMsg" hidden></div><div class="staffmsg vipmsg" id="vipMsg" hidden></div></div>
@@ -956,7 +995,7 @@ function tasks(){
   teamView();refreshPills();showMsg();showVip();pushCard();reveal($('#main'));
   autoOpen();
 }
-function teamView(){const box=$('#team');if(!box)return;const d=today(),nm=p=>lang==='ar'?(p.ar||p.name):(p.name||p.ar);let h='';
+function teamView(d0){const box=$('#team');if(!box)return;const d=d0||today(),nm=p=>lang==='ar'?(p.ar||p.name):(p.name||p.ar);let h='';
   for(const k of ['am','pm']){const rows=roster.filter(p=>{const a=planFor(d,p.id);return a&&!a.off&&(a.st||[]).length&&(a.sh||'am')===k});if(!rows.length)continue;
     h+=`<div class="sec">${esc(shiftName(k))} · ${esc(shiftHours(k))}</div>`+rows.map(p=>{const a=planFor(d,p.id);return `<div class="trow${p.id===myKey?' me':''}"><b>${esc(nm(p))}</b><span>${esc(a.st.map(roleName).join(' + '))}${a.tm&&a.tm!==SHDEF[k]?`<small class="tmh">${esc(fmtTm(a.tm,lang))}</small>`:''}</span></div>`}).join('')}
   const off=roster.filter(p=>{const a=planFor(d,p.id);return a&&a.off});if(off.length)h+=`<div class="sec">${esc(t_('offList'))} 🌴</div><div class="sub" style="padding:4px 2px">${off.map(p=>esc(nm(p))).join('، ')}</div>`;
