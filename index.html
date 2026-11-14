@@ -309,6 +309,10 @@ details.dday[data-empty]>summary{cursor:default}
 .rvq{display:flex;flex-direction:column;gap:6px;margin-top:8px}.rvq textarea{min-height:64px}
 .rban.qb{background:#EEF3FB;border-color:#C9D7EE;color:var(--fg);display:flex;flex-direction:column;gap:6px}.rban.qb textarea{min-height:56px}.rban.qb .btn{align-self:flex-start}
 tr.slate td{color:var(--bad);font-weight:700}
+/*../patch31.css*/.dpick{position:relative;flex:1;min-width:0;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:0 10px;min-height:44px;font-weight:700;font-size:14px;color:var(--fg);cursor:pointer;white-space:nowrap;overflow:hidden}
+.dpick::before{content:'📅'}.dpick span{overflow:hidden;text-overflow:ellipsis}
+.dpick input{position:absolute;inset:0;opacity:0;width:100%;height:100%;border:0;padding:0;cursor:pointer}
+/*../patch32.css*/.datebar{flex-wrap:wrap}.datebar .dpick{flex:1 1 100%;order:-1}.datebar>.btn{flex:1}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -328,7 +332,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v39</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v40</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -972,7 +976,7 @@ function banner0(id){const e=mine[key(id)],r=mine[rkey(today(),id)],st=rstate(e,
   if(st==='resubmitted')return `<div class="rban warn">${esc(t_('resub'))}</div>`;return ''}
 function refreshPills(){const tp=$('#tprog');if(tp){const L=mySheets(),n=L.filter(id=>mine[key(id)]).length;tp.hidden=!L.length;tp.className='tprog'+(L.length&&n===L.length?' done':'');tp.textContent=n+'/'+L.length+(L.length&&n===L.length?' ✓':'')}SHEETS.forEach(s=>{const el=document.getElementById('pl_'+s.id);if(el){el.innerHTML=pill(s.id);el.closest('.task').classList.toggle('sent',!!mine[key(s.id)]);const b=document.getElementById('rb_'+s.id);if(b){const ta=b.querySelector('[data-qa]');if(!(ta&&(ta.value||document.activeElement===ta)))b.innerHTML=banner(s.id)}}})}
 /* ---- browse other days (read-only) ---- */
-let vD=null;const dayName=D=>new Date(D+'T12:00:00').toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});
+let vD=null;const dayName=D=>{const o={weekday:'long',day:'numeric',month:'long',calendar:'gregory'};try{return new Date(D+'T12:00:00').toLocaleDateString(loc(),o)}catch(e){return D}};
 const addDays=(D,n)=>{const t=new Date(D+'T12:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10)};
 function dnavHTML(){const D=vD||today(),df=Math.round((Date.parse(D)-Date.parse(today()))/864e5);
   return `<div class="dnav rv in"><button class="btn sm" data-dnav="-1" ${df<=-60?'disabled':''}>‹ ${esc(t_('prevDay'))}</button><div class="dnt">${vD?`<b>${esc(dayName(D))}</b><button class="link" data-dnav="0">${esc(t_('backToday'))}</button>`:`<b>${esc(t_('today'))}</b>`}</div><button class="btn sm" data-dnav="1" ${df>=14?'disabled':''}>${esc(t_('nextDay'))} ›</button></div>`}
@@ -1197,13 +1201,13 @@ function openDash(){
   if(!['sheets','staff','plan','month','reports'].includes(dtab))dtab='sheets';dashOK=true;dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);
   d.innerHTML=`<div class="fade">${hello()}
    <div class="tabs"><button data-t="sheets">القوائم</button><button data-t="staff">الموظفين</button><button data-t="plan">التوزيع</button><button data-t="month">الشهر</button></div>
-   <div class="datebar" id="dayBar"><button class="btn" id="dprev" aria-label="اليوم السابق">→</button><input type="date" id="ddate"><button class="btn" id="dnext" aria-label="اليوم التالي">←</button><button class="btn" id="dtoday">اليوم</button></div>
+   <div class="datebar" id="dayBar"><button class="btn" id="dprev" aria-label="اليوم السابق">‹ السابق</button><label class="dpick"><span id="ddlbl"></span><input type="date" id="ddate" aria-label="اختر اليوم"></label><button class="btn" id="dnext" aria-label="اليوم التالي">التالي ›</button><button class="btn" id="dtoday">اليوم</button></div>
    <div class="datebar" id="monBar" hidden><button class="btn" id="mprev" aria-label="الشهر السابق">→</button><input type="month" id="dmonth"><button class="btn" id="mnext" aria-label="الشهر التالي">←</button></div>
    <div class="tiles" id="tiles"></div>
    <div id="dbody"><div class="msg">جاري التحميل…</div></div>
    </div>`;
-  $('#ddate').value=boardDate;$('#dmonth').value=boardMonth;
-  const setD=v=>{boardDate=v;$('#ddate').value=v;renderDash()};
+  $('#ddate').value=boardDate;$('#dmonth').value=boardMonth;$('#ddlbl').textContent=dayName(boardDate);
+  const setD=v=>{boardDate=v;$('#ddate').value=v;$('#ddlbl').textContent=dayName(v);renderDash()};
   $('#dprev').onclick=()=>setD(shiftDay(boardDate,-1));$('#dnext').onclick=()=>setD(shiftDay(boardDate,1));$('#dtoday').onclick=()=>setD(today());
   $('#ddate').onchange=e=>{if(e.target.value)setD(e.target.value)};
   const setM=k=>{const [y,m]=boardMonth.split('-').map(Number);const t=new Date(y,m-1+k,1);boardMonth=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0');$('#dmonth').value=boardMonth;renderDash()};
@@ -1479,12 +1483,12 @@ function openMgmt(){
   dashDir();const greetM=pureMgr()?`<div class="mhello"><span>أهلاً <b>${esc(meMgr.ar)}</b> 👋</span><small>${esc(meMgr.title)}</small></div>`:'';$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);dtab='mgmt';if(!['day','month','targets'].includes(mtab))mtab='day';
   d.innerHTML=`<div class="fade">${greetM}${hello()}
    <div class="tabs"><button data-m="day">اليوم</button><button data-m="month">الشهر</button><button data-m="targets">الأهداف</button></div>
-   <div class="datebar" id="mdBar"><button class="btn" id="mdprev">→</button><input type="date" id="mddate"><button class="btn" id="mdnext">←</button><button class="btn" id="mdtoday">اليوم</button></div>
+   <div class="datebar" id="mdBar"><button class="btn" id="mdprev">‹ السابق</button><label class="dpick"><span id="mddlbl"></span><input type="date" id="mddate" aria-label="اختر اليوم"></label><button class="btn" id="mdnext">التالي ›</button><button class="btn" id="mdtoday">اليوم</button></div>
    <div class="datebar" id="mmBar" hidden><button class="btn" id="mmprev">→</button><input type="month" id="mmonth"><button class="btn" id="mmnext">←</button></div>
    <div id="mbody"><div class="msg">جاري التحميل…</div></div></div>`;
-  $('#mddate').value=boardDate;$('#mmonth').value=boardMonth;
+  $('#mddate').value=boardDate;$('#mmonth').value=boardMonth;$('#mddlbl').textContent=dayName(boardDate);
 
-  const setD=v=>{boardDate=v;$('#mddate').value=v;renderMgmt()};
+  const setD=v=>{boardDate=v;$('#mddate').value=v;$('#mddlbl').textContent=dayName(v);renderMgmt()};
   $('#mdprev').onclick=()=>setD(shiftDay(boardDate,-1));$('#mdnext').onclick=()=>setD(shiftDay(boardDate,1));$('#mdtoday').onclick=()=>setD(today());
   $('#mddate').onchange=e=>{if(e.target.value)setD(e.target.value)};
   const setM=k=>{const [y,m]=boardMonth.split('-').map(Number);const t=new Date(y,m-1+k,1);boardMonth=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0');$('#mmonth').value=boardMonth;renderMgmt()};
