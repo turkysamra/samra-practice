@@ -305,6 +305,10 @@ details.dday[data-empty]>summary{cursor:default}
 .ddr{padding:6px 0;border-bottom:1px dashed var(--line)}.ddr span{display:block;font-size:12px;color:var(--brown);font-weight:700}.ddr div{white-space:pre-wrap}
 .ddn{margin-top:6px;color:var(--mut);font-size:13.5px;white-space:pre-wrap}
 .tblx{overflow-x:auto}.avt{width:100%;border-collapse:collapse;font-size:13px}.avt th,.avt td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:center}
+/*../patch30.css*/.qbox{margin-top:8px;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:8px 10px;display:flex;flex-direction:column;gap:4px;font-size:13.5px}.qbox small{color:var(--mut)}.qans{color:#2F5F3A}
+.rvq{display:flex;flex-direction:column;gap:6px;margin-top:8px}.rvq textarea{min-height:64px}
+.rban.qb{background:#EEF3FB;border-color:#C9D7EE;color:var(--fg);display:flex;flex-direction:column;gap:6px}.rban.qb textarea{min-height:56px}.rban.qb .btn{align-self:flex-start}
+tr.slate td{color:var(--bad);font-weight:700}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -324,7 +328,7 @@ details.dday[data-empty]>summary{cursor:default}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v38</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v39</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -403,7 +407,7 @@ window.__push={
     const subs=((data&&data.data&&data.data.subs)||[]).filter(x=>x.endpoint!==j.endpoint);subs.push(j);
     const {error}=await sb.from('docs').upsert({path,data:{subs:subs.slice(-5)}},{onConflict:'path'});if(error)throw error;return true},
   async notify(uid,title,body){try{const {data}=await sb.functions.invoke('notify',{body:{uid,title,body}});return data}catch(e){return null}},
-  async submitted(sheet,date,label,resend){try{const {data}=await sb.functions.invoke('submitted',{body:{sheet,date,label,resend}});return data}catch(e){return null}}
+  async submitted(sheet,date,label,resend,reply){try{const {data}=await sb.functions.invoke('submitted',{body:{sheet,date,label,resend,...(reply?{reply}:{})}});return data}catch(e){return null}}
 };
 if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 window.claude={use:async n=>{await authReady;if(!SESSION)return null;if(n==='db')return DB;if(n==='user')return USER;return null}};
@@ -704,6 +708,11 @@ today:['اليوم','Today','आज','আজ'],
 dayOff:['إجازة','Day off','छुट्टी','ছুটি'],
 notSentDay:['ما انرسلت','Not sent','नहीं भेजी','পাঠানো হয়নি'],
 notYet:['لسّا','Not yet','अभी नहीं','এখনো না'],
+qFrom:['💬 سؤال من المدير','💬 Question from the manager','💬 मैनेजर का सवाल','💬 ম্যানেজারের প্রশ্ন'],
+qReplyPh:['اكتب ردك…','Write your reply…','अपना जवाब लिखें…','আপনার উত্তর লিখুন…'],
+qSend:['إرسال الرد','Send reply','जवाब भेजें','উত্তর পাঠান'],
+qYour:['ردك','Your reply','आपका जवाब','আপনার উত্তর'],
+qSent:['انرسل ردك ✓','Reply sent ✓','जवाब भेजा ✓','উত্তর পাঠানো হয়েছে ✓'],
 dayMsg:['رسالة المشرف','Supervisor message','सुपरवाइज़र का संदेश','সুপারভাইজারের বার্তা'],
 dayTeam:['توزيع الموظفين','Staff assignment','स्टाफ़ की ड्यूटी','স্টাফের দায়িত্ব'],
 pushTitle:['فعّل التنبيهات','Turn on notifications','सूचनाएं चालू करें','নোটিফিকেশন চালু করুন'],
@@ -768,8 +777,8 @@ const riyadh=ms=>{const p={};RFMT.formatToParts(new Date(ms)).forEach(x=>{p[x.ty
 /* safe merge-write: create the document only when it truly does not exist */
 async function upsert(ref,f){try{await ref.update(f)}catch(e1){let s=null;try{s=await ref.get()}catch(e2){}if(s&&!s.exists)await ref.set(f);else throw e1}}
 /* entries store checks/vals/slots as arrays so un-ticking replaces the old value */
-function packE(e){const o={...e};if(e.xs)o.xs=Object.entries(e.xs).map(([i,r])=>[+i,r]);o.checks=Object.keys(e.checks||{}).map(Number);o.vals=Object.entries(e.vals||{}).map(([i,v])=>[+i,v]);if(e.slots)o.slots=Object.entries(e.slots).map(([i,x])=>[+i,x.o,x.s,x.a||'']);return o}
-function unpackE(e){if(!e||typeof e!=='object')return e;const o={...e};if(Array.isArray(e.xs)){o.xs={};e.xs.forEach(([i,r])=>{o.xs[i]=r})}if(Array.isArray(e.checks)){o.checks={};e.checks.forEach(i=>{o.checks[i]=true})}if(Array.isArray(e.vals)){o.vals={};e.vals.forEach(([i,v])=>{o.vals[i]=v})}if(Array.isArray(e.slots)){o.slots={};e.slots.forEach(([i,a,b,c])=>{o.slots[i]={o:a,s:b,a:c||''}})}return o}
+function packE(e){const o={...e};if(e.xs)o.xs=Object.entries(e.xs).map(([i,r])=>[+i,r]);o.checks=Object.keys(e.checks||{}).map(Number);o.vals=Object.entries(e.vals||{}).map(([i,v])=>[+i,v]);if(e.slots)o.slots=Object.entries(e.slots).map(([i,x])=>[+i,x.o,x.s,x.a||'',x.t||0]);return o}
+function unpackE(e){if(!e||typeof e!=='object')return e;const o={...e};if(Array.isArray(e.xs)){o.xs={};e.xs.forEach(([i,r])=>{o.xs[i]=r})}if(Array.isArray(e.checks)){o.checks={};e.checks.forEach(i=>{o.checks[i]=true})}if(Array.isArray(e.vals)){o.vals={};e.vals.forEach(([i,v])=>{o.vals[i]=v})}if(Array.isArray(e.slots)){o.slots={};e.slots.forEach(([i,a,b,c,t])=>{o.slots[i]={o:a,s:b,a:c||'',t:t||0}})}return o}
 function unpackDoc(d){const o={};for(const [k,v] of Object.entries(d||{}))o[k]=k.startsWith('d_')?unpackE(v):v;return o}
 const today=()=>ymd(riyadh(Date.now()-3*3600e3));
 const shiftDay=(d,k)=>{const t=new Date(d+'T12:00:00');t.setDate(t.getDate()+k);return ymd(t)};
@@ -952,11 +961,16 @@ const key=id=>'d_'+today()+'_'+id;
 function pill(id){const e=mine[key(id)],sh=myShift(),tm=tmFor(today(),myKey),dl=lang==='ar'?dlAr(sh,id,tm):dlEn(sh,id,tm);
   if(!e){if(!timed(id))return `<span class="pill p-warn">${esc(t_('notSent'))}</span>`;return Date.now()>dueTs(today(),sh,id,tm)?`<span class="pill p-bad">⏰ ${esc(t_('late'))}</span>`:`<span class="pill p-warn">${esc(t_('due'))} ${esc(dl)}</span>`}
   const lm=lateMin(e,today(),sh);if(lm)return `<span class="pill p-bad">✓ ${e.done}/${e.total} · ⏰ ${esc(t_('late'))}</span>`;return `<span class="pill ${e.done===e.total?'p-ok':'p-warn'}">✓ ${esc(t_('sentDone'))} · ${e.done}/${e.total}</span>`}
-function banner(id){const e=mine[key(id)],r=mine[rkey(today(),id)],st=rstate(e,r);
+function qBanner(id){const q=mine['q_'+today()+'_'+id],a=mine['a_'+today()+'_'+id];if(!q)return '';
+  return `<div class="rban qb"><b>${esc(t_('qFrom'))}</b><div>${esc(q.q)}</div>${a?`<small>${esc(t_('qYour'))}: ${esc(a.a)}</small>`:`<textarea data-qa="${id}" maxlength="300" placeholder="${esc(t_('qReplyPh'))}"></textarea><button class="btn sm pri" data-qsend="${id}">${esc(t_('qSend'))}</button>`}</div>`}
+document.addEventListener('click',async ev=>{const b=ev.target.closest('[data-qsend]');if(!b)return;const id=b.dataset.qsend,t=document.querySelector(`[data-qa="${id}"]`),a=(t&&t.value||'').trim().slice(0,300);if(!a)return;b.disabled=true;
+  const k='a_'+today()+'_'+id;try{await upsert(db.doc('submissions/'+uid),{[k]:{a,ts:Date.now()}});mine={...mine,[k]:{a,ts:Date.now()}};toast(t_('qSent'));if(t)t.value='';refreshPills();if(window.__push&&window.__push.submitted)window.__push.submitted(id,today(),byId[id].ar,false,a)}catch(x){b.disabled=false;toast(t_('sendErr'))}});
+function banner(id){const qb=qBanner(id);return qb+banner0(id)}
+function banner0(id){const e=mine[key(id)],r=mine[rkey(today(),id)],st=rstate(e,r);
   if(st==='approved')return `<div class="rban ok">${esc(t_('approved'))}${r.note?' — '+esc(r.note):''}</div>`;
   if(st==='followup')return `<div class="rban bad"><b>${esc(t_('followup'))}</b>${r.note?'<br>'+esc(r.note):''}<br><small>${esc(t_('fixResend'))}</small></div>`;
   if(st==='resubmitted')return `<div class="rban warn">${esc(t_('resub'))}</div>`;return ''}
-function refreshPills(){const tp=$('#tprog');if(tp){const L=mySheets(),n=L.filter(id=>mine[key(id)]).length;tp.hidden=!L.length;tp.className='tprog'+(L.length&&n===L.length?' done':'');tp.textContent=n+'/'+L.length+(L.length&&n===L.length?' ✓':'')}SHEETS.forEach(s=>{const el=document.getElementById('pl_'+s.id);if(el){el.innerHTML=pill(s.id);el.closest('.task').classList.toggle('sent',!!mine[key(s.id)]);const b=document.getElementById('rb_'+s.id);if(b)b.innerHTML=banner(s.id)}})}
+function refreshPills(){const tp=$('#tprog');if(tp){const L=mySheets(),n=L.filter(id=>mine[key(id)]).length;tp.hidden=!L.length;tp.className='tprog'+(L.length&&n===L.length?' done':'');tp.textContent=n+'/'+L.length+(L.length&&n===L.length?' ✓':'')}SHEETS.forEach(s=>{const el=document.getElementById('pl_'+s.id);if(el){el.innerHTML=pill(s.id);el.closest('.task').classList.toggle('sent',!!mine[key(s.id)]);const b=document.getElementById('rb_'+s.id);if(b){const ta=b.querySelector('[data-qa]');if(!(ta&&(ta.value||document.activeElement===ta)))b.innerHTML=banner(s.id)}}})}
 /* ---- browse other days (read-only) ---- */
 let vD=null;const dayName=D=>new Date(D+'T12:00:00').toLocaleDateString(loc(),{weekday:'long',day:'numeric',month:'long'});
 const addDays=(D,n)=>{const t=new Date(D+'T12:00:00Z');t.setUTCDate(t.getUTCDate()+n);return t.toISOString().slice(0,10)};
@@ -987,7 +1001,7 @@ async function dayView(){const D=vD;shownSheets='day:'+D;
     const pl=!e?`<span class="pill ${past?'p-bad':'p-mut'}">${esc(past?t_('notSentDay'):t_('notYet'))}</span>`
       :st==='approved'||st==='self'?`<span class="pill p-ok">${esc(t_('approved'))}</span>`:st==='followup'?`<span class="pill p-bad">${esc(t_('followup'))}</span>`:`<span class="pill p-ok">✓ ${esc(t_('sentDone'))}</span>`;
     const body=e?entryDetail(s,e):'';
-    return `<details class="row dday" ${body?'':'data-empty'}><summary><div class="t"><b>${esc(sheetName(s))}</b><small>${e?(e.total?e.done+'/'+e.total+' · ':'')+esc(new Date(e.ts).toLocaleTimeString(loc(),{timeZone:'Asia/Riyadh',hour:'numeric',minute:'2-digit'}))+(lm?' · ⏰ '+(lang==='ar'?fmtLate(lm):'+'+(lm>=60?Math.floor(lm/60)+'h '+(lm%60?lm%60+'m':''):lm+'m')):''):''}</small>${rv&&rv.note?`<small>${esc(rv.note)}</small>`:''}</div>${pl}</summary>${body?`<div class="ddb">${body}</div>`:''}</details>`};
+    return `<details class="row dday" ${body?'':'data-empty'}><summary><div class="t"><b>${esc(sheetName(s))}</b><small>${e?(e.total?e.done+'/'+e.total+' · ':'')+esc(new Date(e.ts).toLocaleTimeString(loc(),{timeZone:'Asia/Riyadh',hour:'numeric',minute:'2-digit'}))+(lm?' · ⏰ '+(lang==='ar'?fmtLate(lm):'+'+(lm>=60?Math.floor(lm/60)+'h '+(lm%60?lm%60+'m':''):lm+'m')):''):''}</small>${rv&&rv.note?`<small>${esc(rv.note)}</small>`:''}${mine['q_'+D+'_'+id]?`<small>💬 ${esc(mine['q_'+D+'_'+id].q)}${mine['a_'+D+'_'+id]?' ↩ '+esc(mine['a_'+D+'_'+id].a):''}</small>`:''}</div>${pl}</summary>${body?`<div class="ddb">${body}</div>`:''}</details>`};
   $('#main').innerHTML=`<div class="stack">${dnavHTML()}
    ${M&&M.text?`<div class="inbox rv in"><div class="staffmsg"><div class="smh">📢 ${esc(t_('dayMsg'))}</div><div class="smt">${esc(M.text)}</div></div></div>`:''}
    <section class="hsec"><div class="sech rv in"><h2>📝 ${esc(t_('myChecklist'))}</h2></div>
@@ -1085,7 +1099,7 @@ async function save(id,box,silent){
   if(saving){if(silent)pendSave=[id,box];return}saving=true;
   const s=byId[id],sh=myShift(),b=box.querySelector('[data-send]'),er=box.querySelector('[data-err]');if(!silent)b.disabled=true;er.textContent='';
   const checks={},vals={};let slots=null;
-  if(s.type==='avg'){slots=readSlots(box);Object.entries(slots).forEach(([i,x])=>{if(num(x.o)&&num(x.s)!=null)checks[i]=true})}
+  if(s.type==='avg'){slots=readSlots(box);{const ps=((mine[key(id)]||{}).slots)||{};Object.entries(slots).forEach(([i,x])=>{const p=ps[i];x.t=p&&p.t?p.t:Date.now()})}Object.entries(slots).forEach(([i,x])=>{if(num(x.o)&&num(x.s)!=null)checks[i]=true})}
   box.querySelectorAll('[data-i]').forEach(c=>{if(c.checked)checks[c.dataset.i]=true});
   box.querySelectorAll('[data-v]').forEach(c=>{if(c.value.trim())vals[c.dataset.v]=c.value.trim().slice(0,20)});
   const xs={};let xmiss=null;box.querySelectorAll('.item.isx [data-xr]').forEach(r=>{const v=r.value.trim().slice(0,200);if(!v&&!xmiss)xmiss=r;xs[r.dataset.xr]=v});
@@ -1211,21 +1225,31 @@ function openDash(){
 function people(){const R=rosterById(),byRid={};for(const [u,s] of Object.entries(staffAll)){if(s.rid&&R[s.rid]&&(!R[s.rid].uid||R[s.rid].uid===u))byRid[s.rid]=u}for(const p of roster){if(p.uid&&staffAll[p.uid])byRid[p.id]=p.uid}
   const out=roster.map(p=>({key:p.id,name:p.ar||p.name,en:p.name,uid:byRid[p.id]||null,s:byRid[p.id]?staffAll[byRid[p.id]]:null}));
   for(const [u,s] of Object.entries(staffAll)){if(!(s.rid&&R[s.rid]))out.push({key:'u_'+u,name:s.name||'—',en:'',uid:u,s})}return out}
-function entriesFor(date){const out={};for(const [u,doc] of Object.entries(subs)){for(const [k,v] of Object.entries(doc)){if(k.startsWith('d_'+date+'_')&&v&&byId[v.sheet]){(out[v.sheet]=out[v.sheet]||[]).push({...v,by:u,review:doc[rkey(date,v.sheet)]||null})}}}return out}
+function entriesFor(date){const out={};for(const [u,doc] of Object.entries(subs)){for(const [k,v] of Object.entries(doc)){if(k.startsWith('d_'+date+'_')&&v&&byId[v.sheet]){(out[v.sheet]=out[v.sheet]||[]).push({...v,by:u,review:doc[rkey(date,v.sheet)]||null,q:doc['q_'+date+'_'+v.sheet]||null,ans:doc['a_'+date+'_'+v.sheet]||null})}}}return out}
 function who(u){const s=staffAll[u];if(!s)return 'موظف غير مسجّل';const p=s.rid&&rosterById()[s.rid];return p?(p.ar||p.name):(s.name||'—')}
 function rpill(e){const st=rstate(e,e.review);const [c,t]=RS[st];return `<span class="pill ${c}">${t}</span>`}
 /* sales & average: approval opens only once the shift's last reading is in */
 function avgLast(e){const s=byId[e.sheet];if(!s||s.type!=='avg')return null;const ix=visIdx(s,e.shift);const li=ix[ix.length-1];if(li==null)return null;const x=(e.slots||{})[li];return {done:!!(x&&num(x.a)!=null),at:s.items[li][1].replace('الساعة ','')}}
+const slotLate=(s,e,i,date)=>{const x=(e.slots||{})[i],it=s.items[i];if(!x||!x.t||!it||it[3]==null)return 0;const due=new Date(date+'T00:00:00+03:00').getTime()+(it[3]+30)*60000;return x.t>due?Math.round((x.t-due)/60000)+30:0};
+const lateSlots=(e,date)=>{const s=byId[e.sheet];if(!s||s.type!=='avg')return [];return visIdx(s,e.shift).filter(i=>slotLate(s,e,i,date)).map(i=>s.items[i][1].replace('الساعة ',''))};
+const qBox=e=>e.q?`<div class="qbox"><div>💬 <b>سؤالك:</b> ${esc(e.q.q)} <small>${hm(e.q.ts)}</small></div>${e.ans?`<div class="qans">↩ <b>رده:</b> ${esc(e.ans.a)} <small>${hm(e.ans.ts)}</small></div>`:'<div class="sub">⏳ بانتظار رده</div>'}</div>`:'';
+const askForm=e=>{const ls=lateSlots(e,boardDate);const pre=ls.length?`ليش تأخرت في تسجيل أفرج الساعة ${ls.join(' و')}؟`:'';
+  return `<div class="rvq" hidden><textarea maxlength="300" placeholder="اكتب سؤالك للموظف…">${esc(pre)}</textarea><button class="btn sm" data-act="sendq">إرسال السؤال</button></div>`};
 function reviewBox(e){const st=rstate(e,e.review),r=e.review,al=avgLast(e);
   if(st==='self')return `<div class="rvbox">${rpill(e)}</div>`;
-  if(al&&!al.done&&st!=='approved')return `<div class="rvbox" data-u="${esc(e.by)}" data-s="${esc(e.sheet)}">${rpill(e)}<div class="sub" style="margin-top:6px">🔒 الاعتماد يفتح بعد آخر أفرج (${esc(al.at)})</div></div>`;
+  if(al&&!al.done&&st!=='approved')return `<div class="rvbox" data-u="${esc(e.by)}" data-s="${esc(e.sheet)}">${rpill(e)}<div class="sub" style="margin-top:6px">🔒 الاعتماد يفتح بعد آخر أفرج (${esc(al.at)})</div>${qBox(e)}${can('act')?`<div class="rvbtns"><button class="btn sm" data-act="ask">💬 اسأله${lateSlots(e,boardDate).length?' (متأخر ⏰)':''}</button></div>${askForm(e)}`:''}</div>`;
   return `<div class="rvbox" data-u="${esc(e.by)}" data-s="${esc(e.sheet)}">${rpill(e)}${r?`<div class="sub" style="margin-top:4px">${r.status==='approved'?'اعتمدها':'طلب الإعادة'}: ${esc(mgrName(r.by))} · ${hm(r.ts)}${r.note?' — '+esc(r.note):''}</div>`:''}
-   ${can('act')?'':'<!--'}<div class="rvbtns"><button class="btn sm okb" data-act="approve" ${st==='approved'?'disabled':''}>اعتماد ✓</button><button class="btn sm badb" data-act="follow">طلب إعادة متابعة</button></div>
+   ${qBox(e)}${can('act')?'':'<!--'}<div class="rvbtns"><button class="btn sm okb" data-act="approve" ${st==='approved'?'disabled':''}>اعتماد ✓</button><button class="btn sm badb" data-act="follow">طلب إعادة متابعة</button><button class="btn sm" data-act="ask">💬 اسأله${lateSlots(e,boardDate).length?' (متأخر ⏰)':''}</button></div>${askForm(e)}
    <div class="rvf" hidden><textarea maxlength="300" placeholder="مثلاً: تابعت وطلع مو كويس — أعد تنظيف الدسبلاي"></textarea><button class="btn sm badb" data-act="sendf">إرسال الطلب للموظف</button></div>${can('act')?'':'-->'}</div>`}
 async function reviewClick(ev){if(!can('act'))return;
   const b=ev.target.closest('[data-act]');if(!b)return;const box=b.closest('.rvbox'),u=box.dataset.u,s=box.dataset.s,act=b.dataset.act;
   if(act==='follow'){const f=box.querySelector('.rvf');f.hidden=!f.hidden;if(!f.hidden)f.querySelector('textarea').focus();return}
-  const note=act==='sendf'?box.querySelector('textarea').value.trim():'';
+  if(act==='ask'){const f=box.querySelector('.rvq');f.hidden=!f.hidden;if(!f.hidden){const t=f.querySelector('textarea');t.focus();t.setSelectionRange(t.value.length,t.value.length)}return}
+  if(act==='sendq'){const q=box.querySelector('.rvq textarea').value.trim().slice(0,300);if(!q){toast('اكتب السؤال');return}b.disabled=true;
+    try{await db.doc('submissions/'+u).update({['q_'+boardDate+'_'+s]:{q,ts:Date.now(),by:uid}});toast('انرسل السؤال ✓');
+      if(window.__push){const L=(staffAll[u]&&staffAll[u].lang)||'ar',sx=byId[s],nm=sx?(L==='ar'?sx.ar:L==='en'?sx.en:((SHEETN[s]||[])[L==='hi'?1:2]||sx.en)):'';const T={ar:'💬 سؤال من المدير',en:'💬 Question from the manager',hi:'💬 मैनेजर का सवाल',bn:'💬 ম্যানেজারের প্রশ্ন'};window.__push.notify(u,T[L]||T.ar,nm+': '+q)}}
+    catch(x){b.disabled=false;toast('ما انرسل — جرب مرة ثانية')}return}
+  const note=act==='sendf'?box.querySelector('.rvf textarea').value.trim():'';
   if(act==='sendf'&&!note){toast('اكتب سبب طلب الإعادة');return}
   b.disabled=true;
   try{await db.doc('submissions/'+u).update({[rkey(boardDate,s)]:{status:act==='approve'?'approved':'followup',note:note.slice(0,300),ts:Date.now(),by:uid}});toast(act==='approve'?'تم الاعتماد ✓':'انرسل طلب الإعادة للموظف');if(act==='approve'&&window.__push){const L=(staffAll[u]&&staffAll[u].lang)||'ar',sx=byId[s],nm=sx?(L==='ar'?sx.ar:L==='en'?sx.en:((SHEETN[s]||[])[L==='hi'?1:2]||sx.en)):'';const T={ar:'✅ قائمتك اعتُمدت',en:'✅ Your checklist was approved',hi:'✅ आपकी चेकलिस्ट मंज़ूर हो गई',bn:'✅ আপনার চেকলিস্ট অনুমোদিত হয়েছে'};window.__push.notify(u,T[L]||T.ar,nm)}if(act!=='approve'&&window.__push){const L=(staffAll[u]&&staffAll[u].lang)||'ar',sx=byId[s],nm=sx?(L==='ar'?sx.ar:L==='en'?sx.en:((SHEETN[s]||[])[L==='hi'?1:2]||sx.en)):'';const T={ar:'⚠ قائمتك رجعت للمتابعة',en:'⚠ Your checklist needs a fix',hi:'⚠ आपकी चेकलिस्ट वापस आई है',bn:'⚠ আপনার চেকলিস্ট ফেরত এসেছে'};window.__push.notify(u,T[L]||T.ar,nm+(note?' — '+note:''))}}
@@ -1261,9 +1285,9 @@ function renderDash(){
       const last=Math.max(...es.map(e=>e.ts));
       const sts=es.map(e=>rstate(e,e.review));const agg=sts.includes('followup')?'followup':sts.every(x=>x==='approved'||x==='self')?'approved':sts.includes('resubmitted')?'resubmitted':'pending';
       const per=es.map(e=>{const sh=SHIFTS[e.shift]?' · '+SHIFTS[e.shift].short:'';
-        if(s.type==='avg'){const idxs=visIdx(s,e.shift);const rows=idxs.map(i=>{const x=(e.slots||{})[i];return x?`<tr><td>${esc(s.items[i][1].replace('الساعة ',''))}</td><td>${esc(x.o||'—')}</td><td>${esc(x.s||'—')}</td><td><b>${esc(x.a||'—')}</b></td></tr>`:''}).join('');
+        if(s.type==='avg'){const idxs=visIdx(s,e.shift);const rows=idxs.map(i=>{const x=(e.slots||{})[i];const lt=x?slotLate(s,e,i,boardDate):0;return x?`<tr class="${lt?'slate':''}"><td>${esc(s.items[i][1].replace('الساعة ',''))}</td><td>${esc(x.o||'—')}</td><td>${esc(x.s||'—')}</td><td><b>${esc(x.a||'—')}</b></td><td>${x.t?hm(x.t)+(lt?' ⏰':''):'—'}</td></tr>`:''}).join('');
           const SO=salesOf(e);
-          return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · ${hm(e.ts)}</div>${SO?`<div class="salesline">🧾 ${SO.o} فاتورة · 💰 <b>${money(SO.s)}</b> ريال · الأفرج <b>${SO.a==null?'—':SO.a}</b></div>`:''}${rows?`<div style="overflow-x:auto"><table class="avt"><tr><th>الوقت</th><th>فواتير</th><th>مبيعات</th><th>الأفرج</th></tr>${rows}</table></div>`:''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}
+          return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · ${hm(e.ts)}</div>${SO?`<div class="salesline">🧾 ${SO.o} فاتورة · 💰 <b>${money(SO.s)}</b> ريال · الأفرج <b>${SO.a==null?'—':SO.a}</b></div>`:''}${rows?`<div style="overflow-x:auto"><table class="avt"><tr><th>الساعة</th><th>فواتير</th><th>مبيعات</th><th>الأفرج</th><th>سُجّل</th></tr>${rows}</table></div>`:''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}
         const L=i=>(Array.isArray(e.lab)&&e.lab[i])||(s.items[i]?s.items[i][1]:'');
         const vals=Object.entries(e.vals||{}).map(([i,v])=>esc(L(i))+': <b class="copy">'+esc(v)+' '+esc(s.items[i]&&s.items[i][2]||'')+'</b>');
         const XS=e.xs||{},xl=Object.keys(XS).filter(i=>L(i)&&!(e.checks||{})[i]).map(i=>esc(L(i))+' — <b>السبب:</b> '+esc(XS[i]||'—'));
