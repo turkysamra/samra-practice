@@ -314,6 +314,7 @@ tr.slate td{color:var(--bad);font-weight:700}
 .dpick input{position:absolute;inset:0;opacity:0;width:100%;height:100%;border:0;padding:0;cursor:pointer}
 /*../patch32.css*/.datebar{flex-wrap:wrap}.datebar .dpick{flex:1 1 100%;order:-1}.datebar>.btn{flex:1}
 /*../patch33.css*/.lockc{text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}.lockc .sub{margin:0}
+/*../patch34.css*/.rv-later .rvh{color:var(--mut)}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -333,7 +334,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v41</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v42</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1289,10 +1290,11 @@ function renderDash(){
   if(dtab==='sheets'){
     const Es=rvSh==='all'?E:Object.fromEntries(Object.entries(E).map(([k,v])=>[k,v.filter(e=>(e.shift||'am')===rvSh)]).filter(([k,v])=>v.length));
     const Pf=rvSh==='all'?P:P.filter(p=>shiftFor(boardDate,p.key,p.s)===rvSh);
+    const nwm=nowWorkMin(),started_=p=>!isToday||nwm>=(startMin(tmFor(boardDate,p.key)||SHDEF[shiftFor(boardDate,p.key,p.s)])??0)-15;
     const items=RSH.map(s=>{const es=Es[s.id];
       if(!es){const asg=Pf.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id));const lateU=timed(s.id)&&asg.some(p=>Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id,tmFor(boardDate,p.key)));
         if(!asg.length)return null;
-        return {cat:'miss',late:lateU,h:`<div class="row ${isToday&&!lateU?'':'miss'}"><div class="t"><b>${esc(s.ar)}</b><small>${asg.length?asg.map(p=>{const sh=shiftFor(boardDate,p.key,p.s);if(!timed(s.id))return esc(first(p.name));const tm_=tmFor(boardDate,p.key),lt=Date.now()>dueTs(boardDate,sh,s.id,tm_);return esc(first(p.name))+' <span class="dlx '+(lt?'bad':'')+'">('+esc((SHIFTS[sh]||SHIFTS.am).short)+' · '+esc(dlAr(sh,s.id,tm_))+(lt?' ⏰':'')+')</span>'}).join('، '):esc(s.en)}</small></div><span class="pill ${lateU?'p-bad':isToday?'p-warn':'p-bad'}">${lateU?'⏰ متأخر – لم تُرسل':isToday?'بانتظار':'لم تُرسل'}</span></div>`}}
+        return {cat:isToday&&!asg.some(started_)?'later':'miss',late:lateU,h:`<div class="row ${isToday&&!lateU?'':'miss'}"><div class="t"><b>${esc(s.ar)}</b><small>${asg.length?asg.map(p=>{const sh=shiftFor(boardDate,p.key,p.s);if(!timed(s.id))return esc(first(p.name));const tm_=tmFor(boardDate,p.key),lt=Date.now()>dueTs(boardDate,sh,s.id,tm_);return esc(first(p.name))+' <span class="dlx '+(lt?'bad':'')+'">('+esc((SHIFTS[sh]||SHIFTS.am).short)+' · '+esc(dlAr(sh,s.id,tm_))+(lt?' ⏰':'')+')</span>'}).join('، '):esc(s.en)}</small></div><span class="pill ${lateU?'p-bad':isToday?'p-warn':'p-bad'}">${lateU?'⏰ متأخر – لم تُرسل':isToday?'بانتظار':'لم تُرسل'}</span></div>`}}
       const miss_=Pf.filter(p=>needFor(boardDate,p.key,p.s).includes(s.id)&&!es.some(e=>e.by===p.uid));
       let merged={},tot=real(s);es.forEach(e=>Object.keys(e.checks||{}).forEach(i=>merged[i]=true));const done=Object.keys(merged).length;
       const last=Math.max(...es.map(e=>e.ts));
@@ -1307,13 +1309,14 @@ function renderDash(){
         const unc=(Array.isArray(e.lab)?e.lab.map((x,i)=>i).filter(i=>e.lab[i]!=='#'):visIdx(s,e.shift)).filter(i=>!(e.checks||{})[i]&&XS[i]==null).map(L);
         const lm=lateMin(e,boardDate);
         return `<div class="entry"><div class="who">${esc(who(e.by))}${sh} · أُرسلت ${hm(e.firstTs||e.ts)} · ${e.done}/${e.total} ${lm?`<span class="pill p-bad">⏰ متأخر ${fmtLate(lm)}</span>`:lm===0?'<span class="pill p-ok">في الوقت</span>':''}</div>${unc.length?'<div class="x">غير مكتمل ('+unc.length+'):<br>• '+unc.slice(0,40).map(esc).join('<br>• ')+'</div>':xl.length?'':'<div style="color:var(--ok)">كل البنود مكتملة ✓</div>'}${xl.length?'<div class="xlist">✗ ما انعمل ('+xl.length+'):<br>• '+xl.join('<br>• ')+'</div>':''}${vals.length?'<div>'+vals.join('<br>')+'</div>':''}${e.notes?'<div style="color:var(--fg)">📝 '+esc(e.notes)+'</div>':''}${reviewBox(e)}</div>`}).join('');
-      const lateAny=es.some(e=>lateMin(e,boardDate)),cat=sts.some(x=>x==='pending'||x==='resubmitted')?'need':miss_.length?'miss':agg==='followup'?'fu':'done';
+      const lateAny=es.some(e=>lateMin(e,boardDate)),cat=sts.some(x=>x==='pending'||x==='resubmitted')?'need':miss_.some(started_)?'miss':agg==='followup'?'fu':'done';
       return {cat,late:lateAny,h:`<details class="row" data-k="s_${s.id}"><summary><div class="t"><b>${esc(s.ar)}</b><small>${es.map(e=>esc(first(who(e.by)))).join('، ')} · آخر تحديث ${hm(last)}${miss_.length?' · <span class="dlx '+(miss_.some(p=>timed(s.id)&&Date.now()>dueTs(boardDate,shiftFor(boardDate,p.key,p.s),s.id,tmFor(boardDate,p.key)))?'bad':'')+'">ما أرسل: '+miss_.map(p=>esc(first(p.name))+' ('+esc((SHIFTS[shiftFor(boardDate,p.key,p.s)]||SHIFTS.am).short)+')').join('، ')+'</span>':''}</small></div><div class="pills"><span class="pill ${done===tot?'p-ok':'p-warn'}">${done}/${tot}</span>${es.some(e=>lateMin(e,boardDate))?'<span class="pill p-bad">⏰ متأخر</span>':''}<span class="pill ${RS[agg][0]}">${RS[agg][1]}</span></div></summary><div class="det">${per}</div></details>`}}).filter(Boolean);
     const sec=(cat,title,cls)=>{const L=items.filter(x=>x.cat===cat).sort((a,b)=>(b.late?1:0)-(a.late?1:0));if(!L.length)return '';return `<div class="rvsec ${cls}"><div class="rvh">${title}<span>${L.length}</span></div>${L.map(x=>x.h).join('')}</div>`};
     const doneL=items.filter(x=>x.cat==='done');
     body.innerHTML=(eom&&isToday?`<button class="award awbtn" data-gomonth="1">🏆 <div><small>نهاية الشهر</small><b>شوف موظف الشهر وأعلنه للموظفين</b></div><span>←</span></button>`:'')
       +`<div class="rvfil">${[['all','الكل'],['am','☀️ الصباحي'],['pm','🌙 المسائي']].map(([k,t])=>`<button class="edchip ${rvSh===k?'on':''}" data-rvsh="${k}">${t}</button>`).join('')}</div>`
       +sec('need','🔔 تحتاج مراجعتك','rv-need')+sec('miss','⏳ ما وصلت أو ناقصة','rv-miss')+sec('fu','↻ رجعتها للموظف','rv-fu')
+      +(()=>{const L=items.filter(x=>x.cat==='later');return L.length?`<details class="rvsec rv-done rv-later" data-k="sec_later"><summary class="rvh">🕒 ورديتهم ما بدأت<span>${L.length}</span></summary>${L.map(x=>x.h).join('')}</details>`:''})()
       +(doneL.length?`<details class="rvsec rv-done" data-k="sec_done"><summary class="rvh">✓ خلصت<span>${doneL.length}</span></summary>${doneL.map(x=>x.h).join('')}</details>`:'')
       +(items.length?'':'<div class="msg">ما فيه قوائم لهذي الوردية.</div>');
   }else{
