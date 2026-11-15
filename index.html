@@ -315,6 +315,25 @@ tr.slate td{color:var(--bad);font-weight:700}
 /*../patch32.css*/.datebar{flex-wrap:wrap}.datebar .dpick{flex:1 1 100%;order:-1}.datebar>.btn{flex:1}
 /*../patch33.css*/.lockc{text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}.lockc .sub{margin:0}
 /*../patch34.css*/.rv-later .rvh{color:var(--mut)}
+/*../patch35.css*/.clh{margin:0;font-size:16px}
+.clden{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.clden label{display:flex;flex-direction:column;gap:3px;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:8px}
+.clden span{font-weight:700;color:var(--brown)}.clden input{min-height:38px;text-align:center}.clden small{color:var(--mut);font-size:12px;min-height:14px;text-align:center}
+.clrow{display:flex;align-items:center;gap:10px;justify-content:space-between}.clrow span{display:flex;flex-direction:column;font-weight:600;flex:1;min-width:0}.clrow span small{font-weight:400;color:var(--mut);font-size:11.5px}
+.clrow input{width:42%;max-width:180px;min-height:40px;text-align:center}
+.clsep{border-top:1px dashed var(--line);margin:2px 0}
+.cltot{font-size:15px;padding-top:6px;border-top:1px solid var(--line)}.cltot b{font-size:18px}.cltot small{display:block;color:var(--mut)}
+.clwarn{background:#FFF3D6;border:1px solid #EBCB86;color:#8A5A00;border-radius:10px;padding:8px 10px;font-size:13.5px}
+.clmatch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.clmatch>div{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:8px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+.clmatch b{font-size:16px}.clmatch small{color:var(--mut);font-size:11.5px}.clmatch .cl-ok{background:#E3F0E6;border-color:#B9D8C1}.clmatch .cl-bad{background:#F8E1DE;border-color:#E6B4AC}.clmatch .cl-warn{background:#FFF3D6;border-color:#EBCB86}
+.cldep{background:#EEF6F0;border-radius:10px;padding:10px;font-size:14.5px}
+.clold{width:100%;text-align:start;font:inherit;cursor:pointer}
+#printArea{display:none}
+@media print{@page{size:A4;margin:12mm}body>*:not(#printArea){display:none!important}#printArea{display:block!important;color:#000;background:#fff}
+ .pf{font-family:inherit;font-size:12px}.pfh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.pfh img{height:46px}.pbox{border:1.5px solid #000;padding:4px 14px;font-weight:700}
+ .pt{width:100%;border-collapse:collapse;margin-bottom:8px}.pt td,.pt th{border:1px solid #000;padding:5px 7px}.pt .en{width:28%;font-weight:700;direction:ltr;text-align:left}.pt .ar{width:28%;font-weight:700;text-align:right}.pt .vl{text-align:center;font-weight:700}
+ .pt tr.tot td{background:#eee}.pt.sm td,.pt.sm th{text-align:center;font-size:11px}.pt.sig td{height:26px}
+ .pnote{border:1px solid #000;padding:6px;text-align:center;margin-bottom:8px;font-size:11px}.pnote span{direction:ltr;display:inline-block}
+ .pnotes{border-top:1px solid #000;padding-top:6px;min-height:60px}}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -334,7 +353,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v44</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v45</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1147,7 +1166,7 @@ const MANAGERS=[
  {id:'moath',ar:'معاذ',title:'المدير التنفيذي',home:'idara',nav:['m_day','m_month']},
  {id:'bassam',ar:'بسام',title:'مدير الفرع',home:'idara',nav:['review','staff','plan','sheets','month','reports','m_day','m_month','m_targets']},
  {id:'hamad',ar:'حمد',title:'R&D',home:'idara',nav:['m_day','m_month']},
- {id:'turki',ar:'تركي',title:'مشرف وردية',home:'manager',staffMgr:true,nav:['review','staff','plan','month','reports','staffmsg','vipmsg','sheets','m_day','m_month','m_targets','act']}];
+ {id:'turki',ar:'تركي',title:'مشرف وردية',home:'manager',staffMgr:true,nav:['review','staff','plan','month','reports','staffmsg','vipmsg','sheets','closing','m_day','m_month','m_targets','act']}];
 let forcePick=false,mgrMap={},meMgr=null,pvId=null;
 /* owner: identity is a local preview choice (default تركي); others: the mapping the owner confirmed */
 function myMgr(){if(isOwnerF())return mgrById('turki');return mgrById(mgrMap[uid])}
@@ -1640,6 +1659,83 @@ function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=v
         const send=roster.filter(p=>V.to.includes(p.id)&&p.uid),miss=roster.filter(p=>V.to.includes(p.id)&&!p.uid).map(p=>p.ar||p.name);
         toast(clear?'انمسحت ✓':(D===today()?'انرسلت لـ ':'انحفظت ليوم '+dayName(D).split('،')[0]+' — تطلع لـ ')+send.map(p=>p.ar||p.name).join('، ')+' ✓'+(miss.length?' — '+miss.join('، ')+' ما سجّل بعد':''));drawVip()}
       catch(x){b.disabled=false;$('#vip_e').textContent='ما انحفظت — جرب مرة ثانية'}}}}
+/* ======================= cashier closing (trial: owner only) ======================= */
+const CL_DEN=[500,200,100,50,20,10,5,1];
+const CL_ROWS=[['inmaa','شبكة الإنماء','INMAA-VISA','pay'],['rajhi','شبكة الراجحي','RAJHI-VISA','pay'],['cash','كاش','CASH','pay'],['transfers','حوالات','TRANSFERS','pay'],
+  ['chefs','شيفز','CHEFS','app'],['hunger','هنقرستيشن','HUNGER STATION','app'],['jahez','جاهز','JAHEZ','app'],['ninja','نينجا','NINJA','app'],['bonat','بونات','BONAT','app'],['nuggtah','نقطة','NUGGTAH','app'],['keeta','كيتا','KEETA','app'],['ermine','إيرماين','ERMINE','app'],['others','أخرى','OTHERS','app'],
+  ['ret','مرتجع','RETURN','ret']];
+const CL_TIME={am:'4:00 م',pm:'12:00 ص'};
+let clD=null;
+const c2=n=>(Math.round((+n||0)*100)/100).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});
+function clCalc(V){const f=k=>num(V.v[k])||0;const counted=CL_DEN.reduce((a,d)=>a+d*(num(V.den[d])||0),0)+(num(V.coins)||0);
+  const pay=CL_ROWS.filter(x=>x[3]==='pay').reduce((a,x)=>a+f(x[0]),0),apps=CL_ROWS.filter(x=>x[3]==='app').reduce((a,x)=>a+f(x[0]),0);
+  const total=pay+apps-f('ret'),flt=num(V.float)||0,expected=flt+f('cash'),diff=Math.round((counted-expected)*100)/100;
+  return {counted,pay,apps,total,flt,expected,diff,deposit:Math.max(0,Math.round((counted-flt)*100)/100)}}
+async function openClose(D,S){closeDash();dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();d.innerHTML='<div class="msg">جاري التحميل…</div>';
+  const nwm=nowWorkMin(),date=D||today(),sh=S||(nwm<16*60+60?'am':'pm');let C=null,cfg=null,list=[];
+  try{const [a,b]=await Promise.all([db.doc('closing/'+date+'_'+sh).get(),db.doc('closing/config').get()]);C=a.exists?a.data():null;cfg=b.exists?b.data():null}catch(e){}
+  try{const ds=[0,-1,-2,-3,-4,-5,-6].map(n=>addDays(today(),n));const got=await Promise.all(ds.flatMap(x=>['am','pm'].map(s=>db.doc('closing/'+x+'_'+s).get().then(r=>r.exists?r.data():null).catch(()=>null))));list=got.filter(Boolean)}catch(e){}
+  if(view!=='closing')return;
+  const cashierOf=s=>{const p=roster.find(p=>{const a=planFor(date,p.id);return a&&!a.off&&(a.st||[]).includes(s==='am'?'cashier_am':'cashier')});return p?p.id:''};
+  clD=C?{...C,v:{...(C.v||{})},den:{...(C.den||{})}}:{date,sh,cashier:cashierOf(sh),v:{},den:{},coins:'',float:String((cfg&&cfg.float)||1000),reason:'',notes:''};clD.date=date;clD.sh=sh;clD.saved=!!C;clD.list=list;clD.baseFloat=(cfg&&cfg.float)||1000;drawClose()}
+function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V=clD,R=clCalc(V),inp=(k,val,ph)=>`<input inputmode="decimal" dir="ltr" data-cl="${k}" value="${esc(val??'')}" placeholder="${ph||'0'}">`;
+  const st=Math.abs(R.diff)<0.01?['ok','✅ مطابق']:R.diff<0?['bad','🔴 عجز '+c2(-R.diff)+' ريال']:['warn','🟡 زيادة '+c2(R.diff)+' ريال'];
+  d.innerHTML=`<div class="fade stack">
+   <div class="card stack"><h2>🧾 إقفال الكاشير</h2><p class="sub" style="margin-top:-6px">تجربة — تطلع لك بس الحين. الصباحي يقفل ${CL_TIME.am}، والمسائي ${CL_TIME.pm}.</p>
+    <div class="datebar"><label class="dpick"><span>${esc(dayName(V.date))}</span><input type="date" id="cl_date" value="${V.date}" max="${today()}"></label>
+     <button class="btn ${V.sh==='am'?'pri':''}" data-clsh="am">☀️ صباحي</button><button class="btn ${V.sh==='pm'?'pri':''}" data-clsh="pm">🌙 مسائي</button></div>
+    <label class="lbl">مسؤول الإقفال (الكاشير)<select data-cl="cashier"><option value="">— اختر —</option>${roster.map(p=>`<option value="${esc(p.id)}" ${p.id===V.cashier?'selected':''}>${esc(p.ar||p.name)}</option>`).join('')}</select></label>
+    ${V.saved?`<div class="sub">✓ محفوظ ${hm(V.ts)} — تقدر تعدّل وتحفظ مرة ثانية</div>`:''}</div>
+   <div class="card stack"><h3 class="clh">1. عد الكاش في الدرج</h3><p class="sub" style="margin:0">اكتب كم ورقة من كل فئة.</p>
+    <div class="clden">${CL_DEN.map(x=>`<label><span>${x}</span><input inputmode="numeric" dir="ltr" data-den="${x}" value="${esc(V.den[x]??'')}" placeholder="0"><small id="dn_${x}">${V.den[x]?c2(x*(num(V.den[x])||0)):''}</small></label>`).join('')}
+     <label><span>هللات</span>${inp('coins',V.coins)}<small></small></label></div>
+    <div class="cltot">إجمالي العد: <b id="cl_counted">${c2(R.counted)}</b> ريال</div></div>
+   <div class="card stack"><h3 class="clh">2. أرقام فودكس</h3>
+    ${CL_ROWS.map(([k,a,e,t],i)=>`${i&&CL_ROWS[i-1][3]!==t?'<div class="clsep"></div>':''}<label class="clrow"><span>${esc(a)}<small>${esc(e)}</small></span>${inp(k,V.v[k])}</label>`).join('')}
+    <div class="clsep"></div><label class="clrow"><span>عهدة الكاشير<small>PETTY CASH</small></span>${inp('float',V.float,'1000')}</label>
+    <div id="cl_fw" class="clwarn" ${R.flt>0&&R.flt<1000?'':'hidden'}>⚠️ العهدة ناقصة ${c2(1000-R.flt)} ريال عن 1000</div>
+    <div class="cltot">الإجمالي: <b id="cl_total">${c2(R.total)}</b> ريال <small>(شبكات وحوالات ${c2(R.pay-(num(V.v.cash)||0))} · كاش ${c2(num(V.v.cash)||0)} · تطبيقات ${c2(R.apps)})</small></div></div>
+   <div class="card stack"><h3 class="clh">3. المطابقة</h3>
+    <div class="clmatch"><div><small>المفروض في الدرج</small><b id="cl_exp">${c2(R.expected)}</b><small>العهدة + كاش فودكس</small></div><div><small>المعدود</small><b id="cl_cnt2">${c2(R.counted)}</b></div><div class="cl-${st[0]}" id="cl_res"><small>النتيجة</small><b>${st[1]}</b></div></div>
+    <div class="cldep">💵 يسلّم للمالية: <b id="cl_dep">${c2(R.deposit)}</b> ريال · ويبقى في الدرج العهدة ${c2(R.flt)}</div>
+    <label class="lbl" id="cl_rsn" ${Math.abs(R.diff)>=5?'':'hidden'}>سبب الفرق (إلزامي)<textarea data-cl="reason" maxlength="300">${esc(V.reason||'')}</textarea></label>
+    <label class="lbl">ملاحظات<textarea data-cl="notes" maxlength="500">${esc(V.notes||'')}</textarea></label>
+    <p class="sub" style="margin:0">📎 أرفق تقارير التطبيقات وإيصالات الحوالات مع الورقة.</p>
+    <div class="err" id="cl_e"></div>
+    <div class="edbar"><button class="btn pri" id="cl_save">💾 حفظ الإقفال</button><button class="btn" id="cl_print">🖨️ طباعة الورقة</button></div></div>
+   ${V.list&&V.list.length?`<div class="card stack"><h3 class="clh">آخر الإقفالات</h3>${V.list.map(x=>{const r=clCalc(x);return `<button class="row clold" data-clopen="${x.date}|${x.sh}"><div class="t"><b>${esc(dayName(x.date))} · ${x.sh==='am'?'صباحي':'مسائي'}</b><small>${esc(((roster.find(p=>p.id===x.cashier)||{}).ar)||'')} · الإجمالي ${c2(r.total)}</small></div><span class="pill ${Math.abs(r.diff)<0.01?'p-ok':r.diff<0?'p-bad':'p-warn'}">${Math.abs(r.diff)<0.01?'مطابق':(r.diff<0?'عجز ':'زيادة ')+c2(Math.abs(r.diff))}</span></button>`}).join('')}</div>`:''}
+  </div>`;
+  const upd=()=>{const R=clCalc(V),s=Math.abs(R.diff)<0.01?['ok','✅ مطابق']:R.diff<0?['bad','🔴 عجز '+c2(-R.diff)+' ريال']:['warn','🟡 زيادة '+c2(R.diff)+' ريال'];
+    $('#cl_counted').textContent=c2(R.counted);$('#cl_cnt2').textContent=c2(R.counted);$('#cl_total').textContent=c2(R.total);$('#cl_exp').textContent=c2(R.expected);$('#cl_dep').textContent=c2(R.deposit);
+    const rs=$('#cl_res');rs.className='cl-'+s[0];rs.querySelector('b').textContent=s[1];$('#cl_rsn').hidden=Math.abs(R.diff)<5;$('#cl_fw').hidden=!(R.flt>0&&R.flt<1000);
+    CL_DEN.forEach(x=>{const e=$('#dn_'+x);if(e)e.textContent=num(V.den[x])?c2(x*num(V.den[x])):''})};
+  d.oninput=e=>{const t=e.target;if(t.dataset.den){V.den[t.dataset.den]=t.value;upd()}else if(t.dataset.cl){const k=t.dataset.cl;if(['coins','float','cashier','reason','notes'].includes(k))V[k]=t.value;else V.v[k]=t.value;upd()}};
+  d.onchange=e=>{if(e.target.id==='cl_date'&&e.target.value)openClose(e.target.value>today()?today():e.target.value,V.sh);if(e.target.dataset.cl==='cashier')V.cashier=e.target.value};
+  d.onclick=async e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.clsh){openClose(V.date,b.dataset.clsh);return}
+    if(b.dataset.clopen){const [x,s]=b.dataset.clopen.split('|');openClose(x,s);return}
+    if(b.id==='cl_print'){clPrint(V);return}
+    if(b.id==='cl_save'){const R=clCalc(V),er=$('#cl_e');er.textContent='';if(!V.cashier){er.textContent='اختر الكاشير';return}if(R.counted<=0&&!CL_ROWS.some(x=>num(V.v[x[0]]))){er.textContent='ما فيه أرقام';return}
+      if(Math.abs(R.diff)>=5&&!String(V.reason||'').trim()){er.textContent='اكتب سبب الفرق';$('#cl_rsn textarea').focus();return}
+      b.disabled=true;const doc={date:V.date,sh:V.sh,cashier:V.cashier,v:V.v,den:V.den,coins:V.coins,float:V.float,reason:String(V.reason||'').trim(),notes:String(V.notes||'').trim(),calc:R,by:uid,ts:Date.now()};
+      try{await db.doc('closing/'+V.date+'_'+V.sh).set(doc);if(num(V.float)&&num(V.float)!==clD.baseFloat){await db.doc('closing/config').set({float:num(V.float),ts:Date.now()});clD.baseFloat=num(V.float)}V.saved=true;V.ts=doc.ts;toast('انحفظ الإقفال ✓');openClose(V.date,V.sh)}catch(x){b.disabled=false;er.textContent='ما انحفظ — جرب مرة ثانية'}}}}
+function clPrint(V){const R=clCalc(V),cash=num(V.v.cash)||0,nm=((roster.find(p=>p.id===V.cashier)||{}).ar)||'';
+  const row=(e,a,val)=>`<tr><td class="en">${e}</td><td class="vl">${val===''||val==null?'':c2(val)}</td><td class="ar">${a}</td></tr>`;
+  let pa=document.getElementById('printArea');if(!pa){pa=document.createElement('div');pa.id='printArea';document.body.appendChild(pa)}
+  const [y,mo,dd]=V.date.split('-');
+  pa.innerHTML=`<div class="pf"><div class="pfh"><div class="pbox">SHIFT CLOSING</div><img src="${document.querySelector('.logo').src}" alt=""><div class="pbox">إقفال اليومية</div></div>
+   <table class="pt"><tr><td class="en">DATE</td><td class="vl">${dd} / ${mo} / ${y}</td><td class="ar">التاريخ</td></tr>
+   <tr><td class="en">SHIFT TIME</td><td class="vl">${V.sh==='am'?'☑ AM / ص &nbsp;&nbsp; ☐ PM / م':'☐ AM / ص &nbsp;&nbsp; ☑ PM / م'}</td><td class="ar">موعد الشفت</td></tr></table>
+   <table class="pt">${CL_ROWS.filter(x=>x[3]!=='ret').map(([k,a,e])=>row(e,a,num(V.v[k])??'')).join('')}${row('RETURN','مرتجع',num(V.v.ret)??'')}${row('PETTY CASH','عهدة الكاشير',num(V.float)??'')}
+   <tr class="tot"><td class="en">TOTAL</td><td class="vl">${c2(R.total)}</td><td class="ar">الإجمالي</td></tr></table>
+   <table class="pt sm"><tr><th>الفئة</th>${CL_DEN.map(x=>`<th>${x}</th>`).join('')}<th>هللات</th><th>المعدود</th></tr><tr><td>العدد</td>${CL_DEN.map(x=>`<td>${esc(V.den[x]||'')}</td>`).join('')}<td>${esc(V.coins||'')}</td><td><b>${c2(R.counted)}</b></td></tr></table>
+   <table class="pt sm"><tr><td>المفروض في الدرج (العهدة + الكاش)</td><td><b>${c2(R.expected)}</b></td><td>المعدود</td><td><b>${c2(R.counted)}</b></td><td>${Math.abs(R.diff)<0.01?'مطابق':R.diff<0?'عجز':'زيادة'}</td><td><b>${Math.abs(R.diff)<0.01?'—':c2(Math.abs(R.diff))}</b></td></tr>
+   <tr><td colspan="2">المبلغ المسلّم للمالية (المعدود − العهدة)</td><td colspan="4"><b>${c2(R.deposit)} ريال</b></td></tr></table>
+   <div class="pnote">يرجى إرفاق تقارير المبيعات للتطبيقات وكذلك إيصالات الحوالات البنكية<br><span>please attach (chefs, hunger station and jahez) reports as well as bank transfers receipts</span></div>
+   <table class="pt sig"><tr><td class="en">Supervisor /</td><td class="vl">${esc(nm)}</td><td class="ar">مسؤول الإقفال /</td></tr><tr><td class="en">Signature /</td><td class="vl"></td><td class="ar">التوقيع /</td></tr></table>
+   <table class="pt sig"><tr><td class="en">Manager /</td><td class="vl"></td><td class="ar">مدير الفرع /</td></tr><tr><td class="en">Signature /</td><td class="vl"></td><td class="ar">التوقيع /</td></tr></table>
+   <div class="pnotes"><b>ملاحظات / Notes</b><div>${esc([V.reason?'سبب الفرق: '+V.reason:'',V.notes||''].filter(Boolean).join(' — '))}</div></div></div>`;
+  setTimeout(()=>window.print(),50)}
 /* ======================= weekly schedule (everyone) ======================= */
 function openWeek(){closeDash();if(lang==='ar'||isAdmin)dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();
   const ar=lang==='ar'||isAdmin,DN=ar?DOW:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],tdow=dowOf(today());
@@ -1690,8 +1786,8 @@ function drawSheets(){const d=$('#dash');if(view!=='sheets')return;let n=0;
   }}
 /* ======================= app shell: ☰ menu ======================= */
 const isOwnerF=()=>ownerFlag;
-const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين'],['vipmsg','📣','المعلنين (السعوديين)'],['sheets','📝','القوائم والمهام']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
-const TITLES={vipmsg:'المعلنين',sheets:'القوائم والمهام',staffmsg:'رسالة اليوم للموظفين',reports:'التقارير اليومية',review:'مراجعة القوائم',staff:'الموظفين اليوم',plan:'التوزيع',month:'ملخص الموظفين الشهري',m_day:'المبيعات واليوم',m_month:'أداء الشهر',m_targets:'الأهداف'};
+const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين'],['vipmsg','📣','المعلنين (السعوديين)'],['sheets','📝','القوائم والمهام'],['closing','🧾','إقفال الكاشير (تجربة)']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
+const TITLES={closing:'إقفال الكاشير',vipmsg:'المعلنين',sheets:'القوائم والمهام',staffmsg:'رسالة اليوم للموظفين',reports:'التقارير اليومية',review:'مراجعة القوائم',staff:'الموظفين اليوم',plan:'التوزيع',month:'ملخص الموظفين الشهري',m_day:'المبيعات واليوم',m_month:'أداء الشهر',m_targets:'الأهداف'};
 let view='home';
 function setTitle(){const t=$('#tbTitle');if(!t)return;t.textContent=TITLES[view]||({week:t_('weekSched'),home:t_('home'),checklist:t_('myChecklist'),team:t_('team'),me:t_('myDetails')}[view])||''}
 function renderDrawer(){
@@ -1718,6 +1814,7 @@ function go(v){closeDrawer();
   if(v==='staffmsg'){ensureMgr(openReport);return}
   if(v==='sheets'){ensureMgr(openSheets);return}
   if(v==='vipmsg'){ensureMgr(openVip);return}
+  if(v==='closing'){ensureMgr(()=>openClose());return}
   if(v==='week'){openWeek();return}
   if(['home','checklist','team','me'].includes(v)){try{if(location.hash)history.replaceState(null,'',location.pathname+location.search)}catch(e){}
     closeDash();setTitle();
