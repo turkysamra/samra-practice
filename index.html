@@ -374,7 +374,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v54</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v55</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1686,7 +1686,7 @@ function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=v
 const CL_DEN=[500,200,100,50,20,10,5,1];
 const CL_ROWS=[['inmaa','شبكة الإنماء','INMAA-VISA','pay'],['rajhi','شبكة الراجحي','RAJHI-VISA','pay'],['cash','كاش','CASH','pay'],['transfers','حوالات','TRANSFERS','pay'],['gifts','بطاقات هدايا / قسائم','GIFTS','pay'],
   ['chefs','شيفز','CHEFS','app'],['hunger','هنقرستيشن','HUNGER STATION','app'],['jahez','جاهز','JAHEZ','app'],['ninja','نينجا','NINJA','app'],['nuggtah','نقطة','NUGGTAH','app'],['keeta','كيتا','KEETA','app'],['yalla','يلا','YALLA','app'],['ermine','إيرماين','ERMINE','app'],['others','أخرى','OTHERS','app'],
-  ['bonat','بونات','BONAT','disc'],['ret','مرتجع','RETURN','ret']];
+  ['bonat','بونات','BONAT','disc'],['ret','مرتجع شبكة','RETURN (MADA)','ret']];
 const CL_DISC=[['meals','وجبات موظفين','Employee Meals'],['comp','تعويضات عملاء','Customer Compensation'],['mkt','تسويق (عروض / تجربة منتج)','Marketing'],['hosp','ضيافة','Hospitality'],
   ['ownm','وجبات الملاك — معاذ','Owner Mouath'],['owna','وجبات الملاك — عزيز','Owner Azeez'],['ownf','وجبات الملاك — العائلة','Owner Family'],['sup','خصم إداري استثنائي (بموافقة المشرف)','Discount Approved By Supervisor'],['coupon','كوبونات وأكواد خصم','Coupon'],['waste','تالف / هالك مرصود بالقيمة','Waste']];
 const CL_VAT=1.15,CL_TIME={am:'4:00 م',pm:'12:00 ص'},CL_FIXED=1000,CL_USERS=['tauquir'];
@@ -1699,7 +1699,8 @@ const clEx=s=>{const t=String(s??'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩
 const clIsEx=s=>/[+\-*×x]/.test(String(s||'').replace(/^-/,''));
 function clCalc(V){V=V||{};const vv=V.v||{},f=k=>clEx(vv[k])||0;const counted=CL_DEN.reduce((a,d)=>a+d*(num((V.den||{})[d])||0),0)+(clEx(V.coins)||0);
   /* cash = Foodics total − every non-cash payment (Bonat is a discount) */
-  const nonCash=CL_ROWS.filter(x=>x[0]!=='cash'&&x[3]!=='ret'&&x[3]!=='disc').reduce((a,x)=>a+f(x[0]),0),apps=CL_ROWS.filter(x=>x[3]==='app').reduce((a,x)=>a+f(x[0]),0);
+  /* a return (Return MADA) is refunded on the card, so it reduces the card total — Foodics TOTAL is already net of it */
+  const nonCash=CL_ROWS.filter(x=>x[0]!=='cash'&&x[3]!=='ret'&&x[3]!=='disc').reduce((a,x)=>a+f(x[0]),0)-f('ret'),apps=CL_ROWS.filter(x=>x[3]==='app').reduce((a,x)=>a+f(x[0]),0);
   const total=clEx(vv.ftotal)||0,cash=Math.round((total-nonCash)*100)/100,pay=nonCash-apps+cash;
   /* the whole drawer is counted once; Foodics cash goes to finance; what stays must be the 1000 petty cash */
   const expected=CL_FIXED+cash,diff=Math.round((counted-expected)*100)/100;
@@ -1734,8 +1735,8 @@ function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V
     <div class="clden">${CL_DEN.map(x=>`<label><span>${x}</span><input inputmode="numeric" dir="ltr" data-den="${x}" value="${esc(V.den[x]??'')}" placeholder="0"><small id="dn_${x}">${V.den[x]?c2(x*(num(V.den[x])||0)):''}</small></label>`).join('')}
      <label><span>هللات · Coins</span>${inp('coins',V.coins)}<small></small></label></div>
     <div class="cltot">إجمالي الدرج · Drawer total: <b id="cl_counted">${c2(R.counted)}</b> ريال</div></div>
-   <div class="card stack"><h3 class="clh">2. أرقام فودكس <small class="cle">Foodics figures</small></h3><p class="sub" style="margin:0">🧮 تقدر تجمع داخل الخانة: مثلاً <b dir="ltr">788+32</b>. <b>والكاش يحسبه الموقع:</b> الإجمالي − الشبكات والحوالات والهدايا والتطبيقات.<span class="ltrl">You can add inside a box (e.g. 788+32). Cash is calculated: Total − cards, transfers, gifts and apps.</span></p>
-    <label class="clrow cltop"><span>إجمالي فودكس<small>FOODICS TOTAL</small></span>${inp('ftotal',V.v.ftotal)}</label><div class="clsep"></div>
+   <div class="card stack"><h3 class="clh">2. أرقام فودكس <small class="cle">Foodics figures</small></h3><p class="sub" style="margin:0">🧮 تقدر تجمع داخل الخانة: مثلاً <b dir="ltr">788+32</b>. <b>والكاش يحسبه الموقع:</b> الإجمالي − الشبكات والحوالات والهدايا والتطبيقات (+ المرتجع). <b>خذ كل الأرقام من تقرير فودكس، مو من جهاز الشبكة.</b><span class="ltrl">You can add inside a box (e.g. 788+32). Cash is calculated: Net payments − cards, transfers, gifts and apps (+ returns). Take every figure from the Foodics report.</span></p>
+    <label class="clrow cltop"><span>إجمالي فودكس<small>NET PAYMENTS (صافي المدفوعات)</small></span>${inp('ftotal',V.v.ftotal)}</label><div class="clsep"></div>
     ${CL_ROWS.map(([k,a,e,t],i)=>`${i&&CL_ROWS[i-1][3]!==t&&!(t==='disc'||CL_ROWS[i-1][3]==='disc')?'<div class="clsep"></div>':''}${k==='cash'?`<div class="clrow clcash"><span>${esc(a)}<small>CASH · calculated</small></span><b id="cl_cash" class="${R.cash<0?'neg':''}">${V.v.ftotal?c2(R.cash):'—'}</b></div>`:`<label class="clrow"><span>${esc(a)}<small>${esc(e)}${t==='disc'?' · discount, not counted':''}</small></span>${inp(k,V.v[k])}</label>`}`).join('')}
     <div class="cltot clnet">💰 البيع بدون ضريبة · Sales excl. VAT: <b id="cl_net">${c2(R.total/CL_VAT)}</b> ريال <small>(الإجمالي ÷ 1.15)</small></div><div class="cltot">الإجمالي شامل الضريبة · Total incl. VAT: <b id="cl_total">${c2(R.total)}</b> ريال <small id="cl_split">(شبكات وحوالات ${c2(R.nonCash-R.apps)} · تطبيقات ${c2(R.apps)} · كاش ${c2(R.cash)})</small></div></div>
    <div class="card stack"><h3 class="clh">3. الخصومات <small class="cle">Discounts (Foodics)</small></h3>
