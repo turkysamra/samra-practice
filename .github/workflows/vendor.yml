@@ -1,0 +1,18 @@
+name: vendor supabase-js
+on:
+  push:
+    paths: ['.github/workflows/vendor.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          curl -fsSL https://registry.npmjs.org/@supabase/supabase-js/-/supabase-js-2.45.4.tgz -o s.tgz
+          tar xzf s.tgz package/dist/umd/supabase.min.js
+          mv package/dist/umd/supabase.min.js supabase.min.js && rm -rf package s.tgz
+          git config user.name turkysamra && git config user.email turkysamra@users.noreply.github.com
+          git add supabase.min.js && git commit -m "Vendor supabase-js 2.45.4" && git push || echo nothing
