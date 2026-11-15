@@ -352,6 +352,8 @@ tr.slate td{color:var(--bad);font-weight:700}
 @media print{.pf .pnotes{min-height:34px}.pf:not(.pg) .pt.sig td{height:22px}}
 @media print{.pf:not(.pg){font-size:11px}.pf:not(.pg) .pfh img{height:38px}.pf:not(.pg) .pt td,.pf:not(.pg) .pt th{padding:2px 6px}}
 /*../patch41.css*/.clpetty{border-radius:12px;padding:10px 12px;background:var(--card2,rgba(166,128,63,.08));font-weight:600}.clpetty small{font-weight:400;color:var(--mut)}
+/*../patch42.css*/.cle{font-size:.62em;font-weight:500;color:var(--mut);margin-inline-start:6px}h3 .cle{font-size:.75em}
+/*../patch43.css*/.ltrl{display:block;direction:ltr;text-align:right;unicode-bidi:isolate}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -371,7 +373,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v52</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v53</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1714,38 +1716,38 @@ async function openClose(D,S){closeDash();dashDir();$('#emp').hidden=true;const 
   clD.date=date;clD.sh=sh;clD.saved=!!C;clD.edit=!C;clD.list=list;clD.baseFloat=(cfg&&cfg.float)||CL_FIXED;drawClose()}
 function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V=clD,R=clCalc(V),lock=!V.edit;
   const inp=(k,val,ph,attr)=>`<span class="clin"><input inputmode="text" dir="ltr" ${attr||'data-cl'}="${k}" value="${esc(val??'')}" placeholder="${ph||'0'}"><small data-eq="${k}">${clIsEx(val)?'= '+c2(clEx(val)):''}</small></span>`;
-  const st=Math.abs(R.diff)<0.01?['ok','✅ العهدة كاملة']:R.diff<0?['bad','🔴 عجز بالعهدة '+c2(-R.diff)+' ريال']:['warn','🟡 زيادة '+c2(R.diff)+' ريال'];
-  const sel=(k,cur)=>`<select data-cl="${k}"><option value="">— اختر —</option>${roster.map(p=>`<option value="${esc(p.id)}" ${p.id===cur?'selected':''}>${esc(p.ar||p.name)}</option>`).join('')}</select>`;
+  const st=Math.abs(R.diff)<0.01?['ok','✅ العهدة كاملة · Petty cash complete']:R.diff<0?['bad','🔴 عجز بالعهدة · Short '+c2(-R.diff)+' SAR']:['warn','🟡 زيادة · Over '+c2(R.diff)+' SAR'];
+  const sel=(k,cur)=>`<select data-cl="${k}"><option value="">— اختر · Select —</option>${roster.map(p=>`<option value="${esc(p.id)}" ${p.id===cur?'selected':''}>${esc((p.ar||p.name)+(p.ar&&p.name&&p.name!==p.ar?' · '+p.name:''))}</option>`).join('')}</select>`;
   d.innerHTML=`<div class="fade stack">
-   <div class="card stack"><h2>🧾 إقفال الكاشير</h2><p class="sub" style="margin-top:-6px">الصباحي يقفل ${CL_TIME.am}، والمسائي ${CL_TIME.pm}.</p>
+   <div class="card stack"><h2>🧾 إقفال الكاشير <small class="cle">Cashier Closing</small></h2><p class="sub" style="margin-top:-6px">الصباحي يقفل ${CL_TIME.am}، والمسائي ${CL_TIME.pm}.<span class="ltrl">Morning closes at 4:00 PM, evening at 12:00 AM.</span></p>
     <div class="datebar"><label class="dpick"><span>${esc(dayName(V.date))}</span><input type="date" id="cl_date" value="${V.date}" max="${today()}"></label>
-     <button class="btn ${V.sh==='am'?'pri':''}" data-clsh="am">☀️ صباحي</button><button class="btn ${V.sh==='pm'?'pri':''}" data-clsh="pm">🌙 مسائي</button></div>
-    ${V.saved?`<div class="clsaved">✓ محفوظ ${hm(V.ts)}${lock?` <button class="btn sm" id="cl_edit">✏️ تعديل الإقفال</button>`:' — تعدّل الحين'}</div>`:''}</div>
+     <button class="btn ${V.sh==='am'?'pri':''}" data-clsh="am">☀️ صباحي · AM</button><button class="btn ${V.sh==='pm'?'pri':''}" data-clsh="pm">🌙 مسائي · PM</button></div>
+    ${V.saved?`<div class="clsaved">✓ محفوظ · Saved ${hm(V.ts)}${lock?` <button class="btn sm" id="cl_edit">✏️ تعديل · Edit</button>`:' — تعدّل الحين · editing'}</div>`:''}</div>
    <fieldset class="clfs" ${lock?'disabled':''}>
-   <div class="card stack"><label class="lbl">الكاشير (مسؤول الإقفال)${sel('cashier',V.cashier)}</label><label class="lbl">مشرف الوردية${sel('supervisor',V.supervisor)}</label></div>
-   <div class="card stack"><h3 class="clh">1. عد كل اللي في الدرج</h3><p class="sub" style="margin:0">اعدّ الدرج كامل (العهدة + البيع) — اكتب كم ورقة من كل فئة.</p>
+   <div class="card stack"><label class="lbl">الكاشير · Cashier${sel('cashier',V.cashier)}</label><label class="lbl">مشرف الوردية · Supervisor${sel('supervisor',V.supervisor)}</label></div>
+   <div class="card stack"><h3 class="clh">1. عد كل اللي في الدرج <small class="cle">Count the whole drawer</small></h3><p class="sub" style="margin:0">اعدّ الدرج كامل (العهدة + البيع) — اكتب كم ورقة من كل فئة.<span class="ltrl">Count everything in the drawer (petty cash + sales) — enter how many notes of each.</span></p>
     <div class="clden">${CL_DEN.map(x=>`<label><span>${x}</span><input inputmode="numeric" dir="ltr" data-den="${x}" value="${esc(V.den[x]??'')}" placeholder="0"><small id="dn_${x}">${V.den[x]?c2(x*(num(V.den[x])||0)):''}</small></label>`).join('')}
-     <label><span>هللات</span>${inp('coins',V.coins)}<small></small></label></div>
-    <div class="cltot">إجمالي الدرج: <b id="cl_counted">${c2(R.counted)}</b> ريال</div></div>
-   <div class="card stack"><h3 class="clh">2. أرقام فودكس</h3><p class="sub" style="margin:0">🧮 تقدر تجمع داخل الخانة: مثلاً <b dir="ltr">788+32</b>. <b>والكاش يحسبه الموقع:</b> الإجمالي − الشبكات والحوالات والهدايا والتطبيقات.</p>
-    <label class="clrow cltop"><span>إجمالي فودكس<small>TOTAL (من تقرير فودكس)</small></span>${inp('ftotal',V.v.ftotal)}</label><div class="clsep"></div>
-    ${CL_ROWS.map(([k,a,e,t],i)=>`${i&&CL_ROWS[i-1][3]!==t&&!(t==='disc'||CL_ROWS[i-1][3]==='disc')?'<div class="clsep"></div>':''}${k==='cash'?`<div class="clrow clcash"><span>${esc(a)}<small>CASH · يحسبه الموقع</small></span><b id="cl_cash" class="${R.cash<0?'neg':''}">${V.v.ftotal?c2(R.cash):'—'}</b></div>`:`<label class="clrow"><span>${esc(a)}<small>${esc(e)}${t==='disc'?' · خصم، ما ينحسب':''}</small></span>${inp(k,V.v[k])}</label>`}`).join('')}
-    <div class="cltot">الإجمالي: <b id="cl_total">${c2(R.total)}</b> ريال <small id="cl_split">(شبكات وحوالات ${c2(R.nonCash-R.apps)} · تطبيقات ${c2(R.apps)} · كاش ${c2(R.cash)})</small></div></div>
-   <div class="card stack"><h3 class="clh">3. الخصومات (من تقرير فودكس)</h3>
+     <label><span>هللات · Coins</span>${inp('coins',V.coins)}<small></small></label></div>
+    <div class="cltot">إجمالي الدرج · Drawer total: <b id="cl_counted">${c2(R.counted)}</b> ريال</div></div>
+   <div class="card stack"><h3 class="clh">2. أرقام فودكس <small class="cle">Foodics figures</small></h3><p class="sub" style="margin:0">🧮 تقدر تجمع داخل الخانة: مثلاً <b dir="ltr">788+32</b>. <b>والكاش يحسبه الموقع:</b> الإجمالي − الشبكات والحوالات والهدايا والتطبيقات.<span class="ltrl">You can add inside a box (e.g. 788+32). Cash is calculated: Total − cards, transfers, gifts and apps.</span></p>
+    <label class="clrow cltop"><span>إجمالي فودكس<small>FOODICS TOTAL</small></span>${inp('ftotal',V.v.ftotal)}</label><div class="clsep"></div>
+    ${CL_ROWS.map(([k,a,e,t],i)=>`${i&&CL_ROWS[i-1][3]!==t&&!(t==='disc'||CL_ROWS[i-1][3]==='disc')?'<div class="clsep"></div>':''}${k==='cash'?`<div class="clrow clcash"><span>${esc(a)}<small>CASH · calculated</small></span><b id="cl_cash" class="${R.cash<0?'neg':''}">${V.v.ftotal?c2(R.cash):'—'}</b></div>`:`<label class="clrow"><span>${esc(a)}<small>${esc(e)}${t==='disc'?' · discount, not counted':''}</small></span>${inp(k,V.v[k])}</label>`}`).join('')}
+    <div class="cltot">الإجمالي · Total: <b id="cl_total">${c2(R.total)}</b> ريال <small id="cl_split">(شبكات وحوالات ${c2(R.nonCash-R.apps)} · تطبيقات ${c2(R.apps)} · كاش ${c2(R.cash)})</small></div></div>
+   <div class="card stack"><h3 class="clh">3. الخصومات <small class="cle">Discounts (Foodics)</small></h3>
     ${CL_DISC.map(([k,a,e])=>`<label class="clrow"><span>${esc(a)}<small>${esc(e)}</small></span>${inp(k,V.dsc[k],'0','data-cld')}</label>`).join('')}
-    <div class="cltot">إجمالي الخصومات: <b id="cl_disc">${c2(R.disc)}</b> ريال</div></div>
-   <div class="card stack"><h3 class="clh">4. التسليم والعهدة</h3>
-    <div class="cldep">💵 سلّم للمالية (كاش البيع من فودكس): <b id="cl_dep">${c2(R.deposit)}</b> ريال<br>🗄️ يبقى في الدرج (العهدة): <b id="cl_pret">${c2(R.pret)}</b> من ${c2(CL_FIXED)}</div>
-    <div class="clmatch"><div><small>المفروض في الدرج</small><b id="cl_exp">${c2(R.expected)}</b><small>عهدة ${c2(CL_FIXED)} + كاش البيع</small></div><div><small>المعدود</small><b id="cl_cnt2">${c2(R.counted)}</b></div><div class="cl-${st[0]}" id="cl_res"><small>النتيجة</small><b>${st[1]}</b></div></div>
-    <label class="lbl" id="cl_rsn" ${Math.abs(R.diff)>=5?'':'hidden'}>سبب العجز / الزيادة (إلزامي)<textarea data-cl="reason" maxlength="300">${esc(V.reason||'')}</textarea></label>
-    <label class="lbl">ملاحظات<textarea data-cl="notes" maxlength="500">${esc(V.notes||'')}</textarea></label></div>
-   <div class="card stack"><h3 class="clh">5. توقيع الكاشير</h3>
-    ${lock&&V.sig?`<img class="clsigimg" src="${V.sig}" alt="توقيع">`:`<canvas id="cl_sig" class="clsig"></canvas><div class="edbar"><button type="button" class="btn sm" id="cl_sigclr">مسح التوقيع</button><span class="sub">وقّع بإصبعك داخل المربع</span></div>`}</div>
+    <div class="cltot">إجمالي الخصومات · Total discount: <b id="cl_disc">${c2(R.disc)}</b> ريال</div></div>
+   <div class="card stack"><h3 class="clh">4. التسليم والعهدة <small class="cle">Hand-over &amp; petty cash</small></h3>
+    <div class="cldep">💵 سلّم للمالية · Hand to finance (Foodics cash sales): <b id="cl_dep">${c2(R.deposit)}</b> ريال<br>🗄️ يبقى في الدرج · Stays in drawer (petty cash): <b id="cl_pret">${c2(R.pret)}</b> من ${c2(CL_FIXED)}</div>
+    <div class="clmatch"><div><small>المفروض في الدرج · Expected</small><b id="cl_exp">${c2(R.expected)}</b><small>Petty ${c2(CL_FIXED)} + cash sales</small></div><div><small>المعدود · Counted</small><b id="cl_cnt2">${c2(R.counted)}</b></div><div class="cl-${st[0]}" id="cl_res"><small>النتيجة · Result</small><b>${st[1]}</b></div></div>
+    <label class="lbl" id="cl_rsn" ${Math.abs(R.diff)>=5?'':'hidden'}>سبب العجز / الزيادة · Reason (required)<textarea data-cl="reason" maxlength="300">${esc(V.reason||'')}</textarea></label>
+    <label class="lbl">ملاحظات · Notes<textarea data-cl="notes" maxlength="500">${esc(V.notes||'')}</textarea></label></div>
+   <div class="card stack"><h3 class="clh">5. توقيع الكاشير <small class="cle">Cashier signature</small></h3>
+    ${lock&&V.sig?`<img class="clsigimg" src="${V.sig}" alt="توقيع">`:`<canvas id="cl_sig" class="clsig"></canvas><div class="edbar"><button type="button" class="btn sm" id="cl_sigclr">مسح · Clear</button><span class="sub">وقّع بإصبعك داخل المربع · Sign with your finger</span></div>`}</div>
    </fieldset>
    <div class="card stack"><div class="err" id="cl_e"></div>
-    <div class="edbar">${lock?'':`<button class="btn pri" id="cl_save">💾 حفظ الإقفال</button>`}${V.sh==='pm'?`<button class="btn" id="cl_print">🖨️ طباعة أوراق اليوم</button>`:''}</div>
-    <p class="sub" style="margin:0">${V.sh==='pm'?'تنطبع: ورقة الصباح + ورقة المساء + نموذج الإقفال اليومي.':'شفت الصباح ما يطبع — أوراقه تنطبع مع إقفال المساء.'} 📎 أرفق تقارير التطبيقات وإيصالات الحوالات.</p></div>
-   ${V.list&&V.list.length?`<div class="card stack"><h3 class="clh">آخر الإقفالات</h3>${V.list.map(x=>{const r=clCalc(x);return `<button class="row clold" data-clopen="${x.date}|${x.sh}"><div class="t"><b>${esc(dayName(x.date))} · ${x.sh==='am'?'صباحي':'مسائي'}</b><small>${esc(clName(x.cashier))} · الإجمالي ${c2(r.total)}</small></div><span class="pill ${Math.abs(r.diff)<0.01?'p-ok':r.diff<0?'p-bad':'p-warn'}">${Math.abs(r.diff)<0.01?'مطابق':(r.diff<0?'عجز ':'زيادة ')+c2(Math.abs(r.diff))}</span></button>`}).join('')}</div>`:''}
+    <div class="edbar">${lock?'':`<button class="btn pri" id="cl_save">💾 حفظ · Save</button>`}${V.sh==='pm'?`<button class="btn" id="cl_print">🖨️ طباعة أوراق اليوم · Print</button>`:''}</div>
+    <p class="sub" style="margin:0">${V.sh==='pm'?'تنطبع: ورقة الصباح + ورقة المساء + نموذج الإقفال اليومي.<span class="ltrl">Prints morning + evening sheets + daily form.</span>':'شفت الصباح ما يطبع — أوراقه تنطبع مع إقفال المساء.<span class="ltrl">Morning is printed with the evening closing.</span>'} 📎 أرفق تقارير التطبيقات وإيصالات الحوالات.<span class="ltrl">Attach app reports &amp; transfer receipts.</span></p></div>
+   ${V.list&&V.list.length?`<div class="card stack"><h3 class="clh">آخر الإقفالات · Recent</h3>${V.list.map(x=>{const r=clCalc(x);return `<button class="row clold" data-clopen="${x.date}|${x.sh}"><div class="t"><b>${esc(dayName(x.date))} · ${x.sh==='am'?'صباحي':'مسائي'}</b><small>${esc(clName(x.cashier))} · الإجمالي ${c2(r.total)}</small></div><span class="pill ${Math.abs(r.diff)<0.01?'p-ok':r.diff<0?'p-bad':'p-warn'}">${Math.abs(r.diff)<0.01?'مطابق':(r.diff<0?'عجز ':'زيادة ')+c2(Math.abs(r.diff))}</span></button>`}).join('')}</div>`:''}
   </div>`;
   // signature pad
   const cv=$('#cl_sig');if(cv){const ctx=cv.getContext('2d'),dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*dpr;cv.height=h*dpr;ctx.scale(dpr,dpr);ctx.lineWidth=2.2;ctx.lineCap='round';ctx.strokeStyle='#111';
@@ -1755,7 +1757,7 @@ function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V
     cv.onpointermove=e=>{if(!dn)return;const [x,y]=pt(e);ctx.lineTo(x,y);ctx.stroke()};
     cv.onpointerup=cv.onpointercancel=()=>{if(!dn)return;dn=false;V.sig=cv.toDataURL('image/png')};
     $('#cl_sigclr').onclick=()=>{ctx.clearRect(0,0,w,h);V.sig=''}}
-  const upd=()=>{const R=clCalc(V),s=Math.abs(R.diff)<0.01?['ok','✅ العهدة كاملة']:R.diff<0?['bad','🔴 عجز بالعهدة '+c2(-R.diff)+' ريال']:['warn','🟡 زيادة '+c2(R.diff)+' ريال'];
+  const upd=()=>{const R=clCalc(V),s=Math.abs(R.diff)<0.01?['ok','✅ العهدة كاملة · Petty cash complete']:R.diff<0?['bad','🔴 عجز بالعهدة · Short '+c2(-R.diff)+' SAR']:['warn','🟡 زيادة · Over '+c2(R.diff)+' SAR'];
     $('#cl_counted').textContent=c2(R.counted);$('#cl_cnt2').textContent=c2(R.counted);$('#cl_total').textContent=c2(R.total);$('#cl_exp').textContent=c2(R.expected);$('#cl_dep').textContent=c2(R.deposit);$('#cl_pret').textContent=c2(R.pret);$('#cl_disc').textContent=c2(R.disc);
     const ce=$('#cl_cash');if(ce){ce.textContent=V.v.ftotal?c2(R.cash):'—';ce.className=R.cash<0?'neg':''}const sp=$('#cl_split');if(sp)sp.textContent=`(شبكات وحوالات ${c2(R.nonCash-R.apps)} · تطبيقات ${c2(R.apps)} · كاش ${c2(R.cash)})`;
     const rs=$('#cl_res');rs.className='cl-'+s[0];rs.querySelector('b').textContent=s[1];$('#cl_rsn').hidden=Math.abs(R.diff)<5;
@@ -1768,12 +1770,12 @@ function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V
     if(b.dataset.clopen){const [x,s]=b.dataset.clopen.split('|');openClose(x,s);return}
     if(b.id==='cl_edit'){V.edit=true;drawClose();return}
     if(b.id==='cl_print'){clPrintDay(V);return}
-    if(b.id==='cl_save'){const R=clCalc(V),er=$('#cl_e');er.textContent='';if(!V.cashier){er.textContent='اختر الكاشير';return}
-      if(!clEx(V.v.ftotal)){er.textContent='اكتب إجمالي فودكس';return}if(R.cash<0){er.textContent='الكاش طلع بالسالب — راجع الأرقام';return}
-      if(Math.abs(R.diff)>=5&&!String(V.reason||'').trim()){er.textContent='اكتب سبب الفرق';$('#cl_rsn textarea').focus();return}
-      if(!V.sig){er.textContent='الكاشير لازم يوقّع';return}
+    if(b.id==='cl_save'){const R=clCalc(V),er=$('#cl_e');er.textContent='';if(!V.cashier){er.textContent='اختر الكاشير · Select the cashier';return}
+      if(!clEx(V.v.ftotal)){er.textContent='اكتب إجمالي فودكس · Enter the Foodics total';return}if(R.cash<0){er.textContent='الكاش طلع بالسالب — راجع الأرقام · Cash is negative, check the numbers';return}
+      if(Math.abs(R.diff)>=5&&!String(V.reason||'').trim()){er.textContent='اكتب سبب الفرق · Write the reason';$('#cl_rsn textarea').focus();return}
+      if(!V.sig){er.textContent='الكاشير لازم يوقّع · The cashier must sign';return}
       b.disabled=true;const doc={date:V.date,sh:V.sh,cashier:V.cashier,supervisor:V.supervisor||'',v:V.v,den:V.den,dsc:V.dsc,coins:V.coins,float:V.float,reason:String(V.reason||'').trim(),notes:String(V.notes||'').trim(),sig:V.sig,calc:R,by:uid,ts:Date.now(),...(V.saved?{edited:Date.now()}:{})};
-      try{await db.doc('closing/'+V.date+'_'+V.sh).set(doc);toast('انحفظ الإقفال ✓');openClose(V.date,V.sh)}catch(x){b.disabled=false;er.textContent='ما انحفظ — جرب مرة ثانية'}}}}
+      try{await db.doc('closing/'+V.date+'_'+V.sh).set(doc);toast('انحفظ الإقفال ✓ Saved');openClose(V.date,V.sh)}catch(x){b.disabled=false;er.textContent='ما انحفظ — جرب مرة ثانية · Not saved, try again'}}}}
 /* ---- printing: morning sheet + evening sheet + daily form ---- */
 function clPettyTxt(V,R){if(String(V.float||'').trim()==='')return '<small>اعدّ العهدة لحالها — لازم تكون '+c2(CL_FIXED)+'</small>';const d=R.pdiff;return Math.abs(d)<0.01?'✅ العهدة كاملة '+c2(CL_FIXED):d<0?'🔴 نقص بالعهدة <b>'+c2(-d)+'</b> ريال (لقيت '+c2(R.flt)+' من '+c2(CL_FIXED)+')':'🟡 زيادة بالعهدة <b>'+c2(d)+'</b> ريال'}
 function clSheet(V){const R=clCalc(V),[y,mo,dd]=V.date.split('-');
@@ -1811,9 +1813,9 @@ function clDaily(A,P){const RA=A?clCalc(A):null,RP=P?clCalc(P):null,D=(A||P).dat
    <tr><td class="ar">اعتماد المحاسب (الاسم + التوقيع + التاريخ)<br><span>Accountant Name &amp; Sign &amp; Date</span></td><td class="vl"></td><td class="vl"></td></tr></table></section>`;
   return p1+p2}
 async function clPrintDay(V){let A=null,P=null;try{const [a,p]=await Promise.all([db.doc('closing/'+V.date+'_am').get(),db.doc('closing/'+V.date+'_pm').get()]);A=a.exists?a.data():null;P=p.exists?p.data():null}catch(e){}
-  if(!P&&V.sh==='pm')P=V;if(!A&&!P){toast('ما فيه إقفال محفوظ لهذا اليوم');return}
+  if(!P&&V.sh==='pm')P=V;if(!A&&!P){toast('ما فيه إقفال محفوظ لهذا اليوم · No saved closing for this day');return}
   let pa=document.getElementById('printArea');if(!pa){pa=document.createElement('div');pa.id='printArea';document.body.appendChild(pa)}
-  pa.innerHTML=(A?clSheet(A):'')+(P?clSheet(P):'')+clDaily(A,P);if(!A)toast('تنبيه: إقفال الصباح لهذا اليوم مو محفوظ');
+  pa.innerHTML=(A?clSheet(A):'')+(P?clSheet(P):'')+clDaily(A,P);if(!A)toast('إقفال الصباح مو محفوظ · Morning closing not saved');
   const ims=[...pa.querySelectorAll('img')];await Promise.all(ims.map(i=>(i.complete&&i.naturalWidth)?0:new Promise(r=>{i.onload=i.onerror=r;setTimeout(r,3000)})));await Promise.all(ims.map(i=>i.decode?i.decode().catch(()=>{}):0));setTimeout(()=>window.print(),400)}
 /* ======================= weekly schedule (everyone) ======================= */
 function openWeek(){closeDash();if(lang==='ar'||isAdmin)dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();
