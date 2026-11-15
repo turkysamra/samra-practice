@@ -382,8 +382,8 @@ tr.slate td{color:var(--bad);font-weight:700}
    سمراء — ربط الموقع بـ Supabase (تسجيل الدخول + قاعدة البيانات)
    يوفّر نفس واجهة claude.use('db') و claude.use('user') اللي يستخدمها الموقع
    ============================================================ */
-const SB_URL='__SB_URL__';
-const SB_KEY='__SB_KEY__';
+const SB_URL='https://ddkhtmquslpwsobwfzai.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRka2h0bXF1c2xwd3NvYndmemFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQyODkzOTIsImV4cCI6MjEwOTg2NTM5Mn0.2mQWRIeYfodHW7ExZpUtFnUYqjxVzOBAF1AyaMBwgYs';
 const sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
 let SESSION=null,MEMBER=null,authResolve;const authReady=new Promise(r=>authResolve=r);
 
