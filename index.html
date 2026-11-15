@@ -337,6 +337,19 @@ tr.slate td{color:var(--bad);font-weight:700}
 /*../patch36.css*/.clrow .clin{width:46%;max-width:200px;display:flex;flex-direction:column;align-items:stretch;gap:2px}.clrow .clin input{width:100%;max-width:none}.clrow .clin small{color:var(--ok);font-weight:700;font-size:12.5px;text-align:center;min-height:0}
 /*../patch37.css*/.clcash b{width:46%;max-width:200px;text-align:center;background:#EEF6F0;border:1px solid #B9D8C1;border-radius:12px;padding:9px 6px;font-size:16px}.clcash b.neg{background:#F8E1DE;border-color:#E6B4AC;color:var(--bad)}
 .cltop span{color:var(--brown)}
+/*../patch38.css*/.clfs{border:0;padding:0;margin:0;min-width:0;display:flex;flex-direction:column;gap:12px}.clfs[disabled] input,.clfs[disabled] select,.clfs[disabled] textarea{opacity:.75}
+.clsaved{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--ok);font-weight:600}
+.clsig{width:100%;height:150px;border:1.5px dashed var(--gold);border-radius:12px;background:#fff;touch-action:none}.clsigimg{max-width:100%;height:120px;object-fit:contain;background:#fff;border:1px solid var(--line);border-radius:12px}
+@media print{.pf{page-break-after:always;break-after:page}.pf:last-child{page-break-after:auto}
+ .ptitle{border:1.5px solid #000;text-align:center;font-weight:800;padding:6px;margin-bottom:8px;font-size:14px}.pwarn{border:1px solid #000;padding:6px;font-weight:700;margin-bottom:8px;font-size:11.5px}
+ .pt .ar2{text-align:right;font-weight:700;width:44%}.pt .ar2 span,.pt .ar span{font-weight:400;font-size:10px;direction:ltr;display:inline-block}.pt th{font-size:11px;background:#f3f3f3}
+ .psig{display:block;height:34px;margin:2px auto;object-fit:contain}.sig3 td{height:46px}.sig3 small{display:block;font-size:10px}}
+/*../patch39.css*/@media print{.pf{page-break-after:auto!important;break-after:auto!important}.pf+.pf{page-break-before:always;break-before:page}
+ .pg{font-size:10.5px}.pg .pt{margin-bottom:6px}.pg .pt td,.pg .pt th{padding:2px 6px;line-height:1.25}.pg .ar2 br{display:none}.pg .ar2 span{margin-inline-start:6px;color:#444}.pg .ptitle{padding:4px;margin-bottom:6px}
+ .pg .sig3 td{height:52px}.pg .sig3 br{display:inline}}
+/*../patch40.css*/@media print{.pf:not(.pg) .pt td,.pf:not(.pg) .pt th{padding:2.5px 6px}.pf:not(.pg) .pt{margin-bottom:6px}.pf:not(.pg) .pfh{margin-bottom:5px}.pf:not(.pg) .pnote{margin:5px 0;padding:4px}.pg .ar2 span{float:left;margin:0}}
+@media print{.pf .pnotes{min-height:34px}.pf:not(.pg) .pt.sig td{height:22px}}
+@media print{.pf:not(.pg){font-size:11px}.pf:not(.pg) .pfh img{height:38px}.pf:not(.pg) .pt td,.pf:not(.pg) .pt th{padding:2px 6px}}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -356,7 +369,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v48</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v49</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -368,8 +381,8 @@ tr.slate td{color:var(--bad);font-weight:700}
    سمراء — ربط الموقع بـ Supabase (تسجيل الدخول + قاعدة البيانات)
    يوفّر نفس واجهة claude.use('db') و claude.use('user') اللي يستخدمها الموقع
    ============================================================ */
-const SB_URL='https://ddkhtmquslpwsobwfzai.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRka2h0bXF1c2xwd3NvYndmemFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQyODkzOTIsImV4cCI6MjEwOTg2NTM5Mn0.2mQWRIeYfodHW7ExZpUtFnUYqjxVzOBAF1AyaMBwgYs';
+const SB_URL='__SB_URL__';
+const SB_KEY='__SB_KEY__';
 const sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
 let SESSION=null,MEMBER=null,authResolve;const authReady=new Promise(r=>authResolve=r);
 
@@ -1664,88 +1677,139 @@ function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=v
       catch(x){b.disabled=false;$('#vip_e').textContent='ما انحفظت — جرب مرة ثانية'}}}}
 /* ======================= cashier closing (trial: owner only) ======================= */
 const CL_DEN=[500,200,100,50,20,10,5,1];
-const CL_ROWS=[['inmaa','شبكة الإنماء','INMAA-VISA','pay'],['rajhi','شبكة الراجحي','RAJHI-VISA','pay'],['cash','كاش','CASH','pay'],['transfers','حوالات','TRANSFERS','pay'],
-  ['chefs','شيفز','CHEFS','app'],['hunger','هنقرستيشن','HUNGER STATION','app'],['jahez','جاهز','JAHEZ','app'],['ninja','نينجا','NINJA','app'],['bonat','بونات','BONAT','disc'],['nuggtah','نقطة','NUGGTAH','app'],['keeta','كيتا','KEETA','app'],['ermine','إيرماين','ERMINE','app'],['others','أخرى','OTHERS','app'],
-  ['ret','مرتجع','RETURN','ret']];
-const CL_TIME={am:'4:00 م',pm:'12:00 ص'};
+const CL_ROWS=[['inmaa','شبكة الإنماء','INMAA-VISA','pay'],['rajhi','شبكة الراجحي','RAJHI-VISA','pay'],['cash','كاش','CASH','pay'],['transfers','حوالات','TRANSFERS','pay'],['gifts','بطاقات هدايا / قسائم','GIFTS','pay'],
+  ['chefs','شيفز','CHEFS','app'],['hunger','هنقرستيشن','HUNGER STATION','app'],['jahez','جاهز','JAHEZ','app'],['ninja','نينجا','NINJA','app'],['nuggtah','نقطة','NUGGTAH','app'],['keeta','كيتا','KEETA','app'],['yalla','يلا','YALLA','app'],['ermine','إيرماين','ERMINE','app'],['others','أخرى','OTHERS','app'],
+  ['bonat','بونات','BONAT','disc'],['ret','مرتجع','RETURN','ret']];
+const CL_DISC=[['meals','وجبات موظفين','Employee Meals'],['comp','تعويضات عملاء','Customer Compensation'],['mkt','تسويق (عروض / تجربة منتج)','Marketing'],['hosp','ضيافة','Hospitality'],
+  ['ownm','وجبات الملاك — معاذ','Owner Mouath'],['owna','وجبات الملاك — عزيز','Owner Azeez'],['ownf','وجبات الملاك — العائلة','Owner Family'],['sup','خصم إداري استثنائي (بموافقة المشرف)','Discount Approved By Supervisor'],['coupon','كوبونات وأكواد خصم','Coupon'],['waste','تالف / هالك مرصود بالقيمة','Waste']];
+const CL_TIME={am:'4:00 م',pm:'12:00 ص'},CL_FIXED=1000;
 let clD=null;
 const c2=n=>(Math.round((+n||0)*100)/100).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});
 /* amount fields accept sums like "788+32-5" */
 const clEx=s=>{const t=String(s??'').replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٫,]/g,'.').replace(/\s+/g,'').replace(/[×x]/gi,'*');if(!t)return null;
   if(!/^[-+*\d.]+$/.test(t))return num(t);let tot=0,ok=false;for(const term of t.match(/[+-]?[^+-]+/g)||[]){const sg=term[0]==='-'?-1:1,body=term.replace(/^[+-]/,'');const v=body.split('*').reduce((a,x)=>a*(parseFloat(x)||0),1);if(body)ok=true;tot+=sg*v}return ok?Math.round(tot*100)/100:null};
 const clIsEx=s=>/[+\-*×x]/.test(String(s||'').replace(/^-/,''));
-function clCalc(V){const f=k=>clEx(V.v[k])||0;const counted=CL_DEN.reduce((a,d)=>a+d*(num(V.den[d])||0),0)+(clEx(V.coins)||0);
-  /* cash = Foodics total − every non-cash payment */
+function clCalc(V){V=V||{};const vv=V.v||{},f=k=>clEx(vv[k])||0;const counted=CL_DEN.reduce((a,d)=>a+d*(num((V.den||{})[d])||0),0)+(clEx(V.coins)||0);
+  /* cash = Foodics total − every non-cash payment (Bonat is a discount) */
   const nonCash=CL_ROWS.filter(x=>x[0]!=='cash'&&x[3]!=='ret'&&x[3]!=='disc').reduce((a,x)=>a+f(x[0]),0),apps=CL_ROWS.filter(x=>x[3]==='app').reduce((a,x)=>a+f(x[0]),0);
-  const total=clEx(V.v.ftotal)||0,cash=Math.round((total-nonCash)*100)/100,pay=nonCash-apps+cash;
+  const total=clEx(vv.ftotal)||0,cash=Math.round((total-nonCash)*100)/100,pay=nonCash-apps+cash;
   const flt=clEx(V.float)||0,expected=flt+cash,diff=Math.round((counted-expected)*100)/100;
-  return {counted,pay,apps,total,cash,nonCash,flt,expected,diff,deposit:Math.max(0,Math.round((counted-flt)*100)/100)}}
+  const deposit=Math.max(0,Math.round((counted-CL_FIXED)*100)/100),pret=Math.round((counted-deposit)*100)/100;
+  const disc=CL_DISC.reduce((a,[k])=>a+(clEx((V.dsc||{})[k])||0),0);
+  return {counted,pay,apps,total,cash,nonCash,flt,expected,diff,deposit,pret,disc,visa:f('inmaa')+f('rajhi')}}
+const clName=id=>((roster.find(p=>p.id===id)||{}).ar)||'';
 async function openClose(D,S){closeDash();dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();d.innerHTML='<div class="msg">جاري التحميل…</div>';
-  const nwm=nowWorkMin(),date=D||today(),sh=S||(nwm<16*60+60?'am':'pm');let C=null,cfg=null,list=[];
+  const nwm=nowWorkMin(),date=D||today(),sh=S||(nwm<17*60?'am':'pm');let C=null,cfg=null,list=[];
   try{const [a,b]=await Promise.all([db.doc('closing/'+date+'_'+sh).get(),db.doc('closing/config').get()]);C=a.exists?a.data():null;cfg=b.exists?b.data():null}catch(e){}
   try{const ds=[0,-1,-2,-3,-4,-5,-6].map(n=>addDays(today(),n));const got=await Promise.all(ds.flatMap(x=>['am','pm'].map(s=>db.doc('closing/'+x+'_'+s).get().then(r=>r.exists?r.data():null).catch(()=>null))));list=got.filter(Boolean)}catch(e){}
   if(view!=='closing')return;
-  const cashierOf=s=>{const p=roster.find(p=>{const a=planFor(date,p.id);return a&&!a.off&&(a.st||[]).includes(s==='am'?'cashier_am':'cashier')});return p?p.id:''};
-  clD=C?{...C,v:{...(C.v||{})},den:{...(C.den||{})}}:{date,sh,cashier:cashierOf(sh),v:{},den:{},coins:'',float:String((cfg&&cfg.float)||1000),reason:'',notes:''};clD.date=date;clD.sh=sh;clD.saved=!!C;clD.list=list;clD.baseFloat=(cfg&&cfg.float)||1000;drawClose()}
-function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V=clD,R=clCalc(V),inp=(k,val,ph)=>`<span class="clin"><input inputmode="text" dir="ltr" data-cl="${k}" value="${esc(val??'')}" placeholder="${ph||'0'}"><small data-eq="${k}">${clIsEx(val)?'= '+c2(clEx(val)):''}</small></span>`;
+  const whoHas=r=>{const p=roster.find(p=>{const a=planFor(date,p.id);return a&&!a.off&&(a.sh||'am')===sh&&(a.st||[]).includes(r)});return p?p.id:''};
+  clD=C?{...C,v:{...(C.v||{})},den:{...(C.den||{})},dsc:{...(C.dsc||{})}}:{date,sh,cashier:whoHas(sh==='am'?'cashier_am':'cashier'),supervisor:whoHas('supervisor'),v:{},den:{},dsc:{},coins:'',float:String((cfg&&cfg.float)||CL_FIXED),reason:'',notes:'',sig:''};
+  clD.date=date;clD.sh=sh;clD.saved=!!C;clD.edit=!C;clD.list=list;clD.baseFloat=(cfg&&cfg.float)||CL_FIXED;drawClose()}
+function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V=clD,R=clCalc(V),lock=!V.edit;
+  const inp=(k,val,ph,attr)=>`<span class="clin"><input inputmode="text" dir="ltr" ${attr||'data-cl'}="${k}" value="${esc(val??'')}" placeholder="${ph||'0'}"><small data-eq="${k}">${clIsEx(val)?'= '+c2(clEx(val)):''}</small></span>`;
   const st=Math.abs(R.diff)<0.01?['ok','✅ مطابق']:R.diff<0?['bad','🔴 عجز '+c2(-R.diff)+' ريال']:['warn','🟡 زيادة '+c2(R.diff)+' ريال'];
+  const sel=(k,cur)=>`<select data-cl="${k}"><option value="">— اختر —</option>${roster.map(p=>`<option value="${esc(p.id)}" ${p.id===cur?'selected':''}>${esc(p.ar||p.name)}</option>`).join('')}</select>`;
   d.innerHTML=`<div class="fade stack">
    <div class="card stack"><h2>🧾 إقفال الكاشير</h2><p class="sub" style="margin-top:-6px">تجربة — تطلع لك بس الحين. الصباحي يقفل ${CL_TIME.am}، والمسائي ${CL_TIME.pm}.</p>
     <div class="datebar"><label class="dpick"><span>${esc(dayName(V.date))}</span><input type="date" id="cl_date" value="${V.date}" max="${today()}"></label>
      <button class="btn ${V.sh==='am'?'pri':''}" data-clsh="am">☀️ صباحي</button><button class="btn ${V.sh==='pm'?'pri':''}" data-clsh="pm">🌙 مسائي</button></div>
-    <label class="lbl">مسؤول الإقفال (الكاشير)<select data-cl="cashier"><option value="">— اختر —</option>${roster.map(p=>`<option value="${esc(p.id)}" ${p.id===V.cashier?'selected':''}>${esc(p.ar||p.name)}</option>`).join('')}</select></label>
-    ${V.saved?`<div class="sub">✓ محفوظ ${hm(V.ts)} — تقدر تعدّل وتحفظ مرة ثانية</div>`:''}</div>
+    ${V.saved?`<div class="clsaved">✓ محفوظ ${hm(V.ts)}${lock?` <button class="btn sm" id="cl_edit">✏️ تعديل الإقفال</button>`:' — تعدّل الحين'}</div>`:''}</div>
+   <fieldset class="clfs" ${lock?'disabled':''}>
+   <div class="card stack"><label class="lbl">الكاشير (مسؤول الإقفال)${sel('cashier',V.cashier)}</label><label class="lbl">مشرف الوردية${sel('supervisor',V.supervisor)}</label></div>
    <div class="card stack"><h3 class="clh">1. عد الكاش في الدرج</h3><p class="sub" style="margin:0">اكتب كم ورقة من كل فئة.</p>
     <div class="clden">${CL_DEN.map(x=>`<label><span>${x}</span><input inputmode="numeric" dir="ltr" data-den="${x}" value="${esc(V.den[x]??'')}" placeholder="0"><small id="dn_${x}">${V.den[x]?c2(x*(num(V.den[x])||0)):''}</small></label>`).join('')}
      <label><span>هللات</span>${inp('coins',V.coins)}<small></small></label></div>
     <div class="cltot">إجمالي العد: <b id="cl_counted">${c2(R.counted)}</b> ريال</div></div>
-   <div class="card stack"><h3 class="clh">2. أرقام فودكس</h3><p class="sub" style="margin:0">🧮 تقدر تجمع داخل الخانة: مثلاً شبكة الإنماء <b dir="ltr">788+32</b> (مدى + فيزا). <b>والكاش يحسبه الموقع:</b> الإجمالي − الشبكات والحوالات والتطبيقات.</p>
+   <div class="card stack"><h3 class="clh">2. أرقام فودكس</h3><p class="sub" style="margin:0">🧮 تقدر تجمع داخل الخانة: مثلاً <b dir="ltr">788+32</b>. <b>والكاش يحسبه الموقع:</b> الإجمالي − الشبكات والحوالات والهدايا والتطبيقات.</p>
     <label class="clrow cltop"><span>إجمالي فودكس<small>TOTAL (من تقرير فودكس)</small></span>${inp('ftotal',V.v.ftotal)}</label><div class="clsep"></div>
     ${CL_ROWS.map(([k,a,e,t],i)=>`${i&&CL_ROWS[i-1][3]!==t&&!(t==='disc'||CL_ROWS[i-1][3]==='disc')?'<div class="clsep"></div>':''}${k==='cash'?`<div class="clrow clcash"><span>${esc(a)}<small>CASH · يحسبه الموقع</small></span><b id="cl_cash" class="${R.cash<0?'neg':''}">${V.v.ftotal?c2(R.cash):'—'}</b></div>`:`<label class="clrow"><span>${esc(a)}<small>${esc(e)}${t==='disc'?' · خصم، ما ينحسب':''}</small></span>${inp(k,V.v[k])}</label>`}`).join('')}
-    <div class="clsep"></div><label class="clrow"><span>عهدة الكاشير<small>PETTY CASH</small></span>${inp('float',V.float,'1000')}</label>
-    <div id="cl_fw" class="clwarn" ${R.flt>0&&R.flt<1000?'':'hidden'}>⚠️ العهدة ناقصة ${c2(1000-R.flt)} ريال عن 1000</div>
     <div class="cltot">الإجمالي: <b id="cl_total">${c2(R.total)}</b> ريال <small id="cl_split">(شبكات وحوالات ${c2(R.nonCash-R.apps)} · تطبيقات ${c2(R.apps)} · كاش ${c2(R.cash)})</small></div></div>
-   <div class="card stack"><h3 class="clh">3. المطابقة</h3>
+   <div class="card stack"><h3 class="clh">3. الخصومات (من تقرير فودكس)</h3>
+    ${CL_DISC.map(([k,a,e])=>`<label class="clrow"><span>${esc(a)}<small>${esc(e)}</small></span>${inp(k,V.dsc[k],'0','data-cld')}</label>`).join('')}
+    <div class="cltot">إجمالي الخصومات: <b id="cl_disc">${c2(R.disc)}</b> ريال</div></div>
+   <div class="card stack"><h3 class="clh">4. العهدة والمطابقة</h3>
+    <label class="clrow"><span>العهدة المعدودة في بداية الوردية<small>ACTUAL PETTY CASH · المقررة ${c2(CL_FIXED)}</small></span>${inp('float',V.float,String(CL_FIXED))}</label>
+    <div id="cl_fw" class="clwarn" ${R.flt>0&&R.flt<CL_FIXED?'':'hidden'}>⚠️ العهدة ناقصة ${c2(CL_FIXED-R.flt)} ريال عن ${c2(CL_FIXED)}</div>
     <div class="clmatch"><div><small>المفروض في الدرج</small><b id="cl_exp">${c2(R.expected)}</b><small>العهدة + الكاش المحسوب</small></div><div><small>المعدود</small><b id="cl_cnt2">${c2(R.counted)}</b></div><div class="cl-${st[0]}" id="cl_res"><small>النتيجة</small><b>${st[1]}</b></div></div>
-    <div class="cldep">💵 يسلّم للمالية: <b id="cl_dep">${c2(R.deposit)}</b> ريال · ويبقى في الدرج العهدة ${c2(R.flt)}</div>
+    <div class="cldep">💵 المبلغ المودع للمالية: <b id="cl_dep">${c2(R.deposit)}</b> ريال · والعهدة المعادة في الدرج: <b id="cl_pret">${c2(R.pret)}</b></div>
     <label class="lbl" id="cl_rsn" ${Math.abs(R.diff)>=5?'':'hidden'}>سبب الفرق (إلزامي)<textarea data-cl="reason" maxlength="300">${esc(V.reason||'')}</textarea></label>
-    <label class="lbl">ملاحظات<textarea data-cl="notes" maxlength="500">${esc(V.notes||'')}</textarea></label>
-    <p class="sub" style="margin:0">📎 أرفق تقارير التطبيقات وإيصالات الحوالات مع الورقة.</p>
-    <div class="err" id="cl_e"></div>
-    <div class="edbar"><button class="btn pri" id="cl_save">💾 حفظ الإقفال</button><button class="btn" id="cl_print">🖨️ طباعة الورقة</button></div></div>
-   ${V.list&&V.list.length?`<div class="card stack"><h3 class="clh">آخر الإقفالات</h3>${V.list.map(x=>{const r=clCalc(x);return `<button class="row clold" data-clopen="${x.date}|${x.sh}"><div class="t"><b>${esc(dayName(x.date))} · ${x.sh==='am'?'صباحي':'مسائي'}</b><small>${esc(((roster.find(p=>p.id===x.cashier)||{}).ar)||'')} · الإجمالي ${c2(r.total)}</small></div><span class="pill ${Math.abs(r.diff)<0.01?'p-ok':r.diff<0?'p-bad':'p-warn'}">${Math.abs(r.diff)<0.01?'مطابق':(r.diff<0?'عجز ':'زيادة ')+c2(Math.abs(r.diff))}</span></button>`}).join('')}</div>`:''}
+    <label class="lbl">ملاحظات<textarea data-cl="notes" maxlength="500">${esc(V.notes||'')}</textarea></label></div>
+   <div class="card stack"><h3 class="clh">5. توقيع الكاشير</h3>
+    ${lock&&V.sig?`<img class="clsigimg" src="${V.sig}" alt="توقيع">`:`<canvas id="cl_sig" class="clsig"></canvas><div class="edbar"><button type="button" class="btn sm" id="cl_sigclr">مسح التوقيع</button><span class="sub">وقّع بإصبعك داخل المربع</span></div>`}</div>
+   </fieldset>
+   <div class="card stack"><div class="err" id="cl_e"></div>
+    <div class="edbar">${lock?'':`<button class="btn pri" id="cl_save">💾 حفظ الإقفال</button>`}${V.sh==='pm'?`<button class="btn" id="cl_print">🖨️ طباعة أوراق اليوم</button>`:''}</div>
+    <p class="sub" style="margin:0">${V.sh==='pm'?'تنطبع: ورقة الصباح + ورقة المساء + نموذج الإقفال اليومي.':'شفت الصباح ما يطبع — أوراقه تنطبع مع إقفال المساء.'} 📎 أرفق تقارير التطبيقات وإيصالات الحوالات.</p></div>
+   ${V.list&&V.list.length?`<div class="card stack"><h3 class="clh">آخر الإقفالات</h3>${V.list.map(x=>{const r=clCalc(x);return `<button class="row clold" data-clopen="${x.date}|${x.sh}"><div class="t"><b>${esc(dayName(x.date))} · ${x.sh==='am'?'صباحي':'مسائي'}</b><small>${esc(clName(x.cashier))} · الإجمالي ${c2(r.total)}</small></div><span class="pill ${Math.abs(r.diff)<0.01?'p-ok':r.diff<0?'p-bad':'p-warn'}">${Math.abs(r.diff)<0.01?'مطابق':(r.diff<0?'عجز ':'زيادة ')+c2(Math.abs(r.diff))}</span></button>`}).join('')}</div>`:''}
   </div>`;
+  // signature pad
+  const cv=$('#cl_sig');if(cv){const ctx=cv.getContext('2d'),dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*dpr;cv.height=h*dpr;ctx.scale(dpr,dpr);ctx.lineWidth=2.2;ctx.lineCap='round';ctx.strokeStyle='#111';
+    if(V.sig){const im=new Image();im.onload=()=>ctx.drawImage(im,0,0,w,h);im.src=V.sig}
+    let dn=false;const pt=e=>{const r=cv.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]};
+    cv.onpointerdown=e=>{dn=true;cv.setPointerCapture(e.pointerId);const [x,y]=pt(e);ctx.beginPath();ctx.moveTo(x,y)};
+    cv.onpointermove=e=>{if(!dn)return;const [x,y]=pt(e);ctx.lineTo(x,y);ctx.stroke()};
+    cv.onpointerup=cv.onpointercancel=()=>{if(!dn)return;dn=false;V.sig=cv.toDataURL('image/png')};
+    $('#cl_sigclr').onclick=()=>{ctx.clearRect(0,0,w,h);V.sig=''}}
   const upd=()=>{const R=clCalc(V),s=Math.abs(R.diff)<0.01?['ok','✅ مطابق']:R.diff<0?['bad','🔴 عجز '+c2(-R.diff)+' ريال']:['warn','🟡 زيادة '+c2(R.diff)+' ريال'];
-    $('#cl_counted').textContent=c2(R.counted);const ce=$('#cl_cash');if(ce){ce.textContent=V.v.ftotal?c2(R.cash):'—';ce.className=R.cash<0?'neg':''}const sp=$('#cl_split');if(sp)sp.textContent=`(شبكات وحوالات ${c2(R.nonCash-R.apps)} · تطبيقات ${c2(R.apps)} · كاش ${c2(R.cash)})`;$('#cl_cnt2').textContent=c2(R.counted);$('#cl_total').textContent=c2(R.total);$('#cl_exp').textContent=c2(R.expected);$('#cl_dep').textContent=c2(R.deposit);
-    const rs=$('#cl_res');rs.className='cl-'+s[0];rs.querySelector('b').textContent=s[1];$('#cl_rsn').hidden=Math.abs(R.diff)<5;$('#cl_fw').hidden=!(R.flt>0&&R.flt<1000);
+    $('#cl_counted').textContent=c2(R.counted);$('#cl_cnt2').textContent=c2(R.counted);$('#cl_total').textContent=c2(R.total);$('#cl_exp').textContent=c2(R.expected);$('#cl_dep').textContent=c2(R.deposit);$('#cl_pret').textContent=c2(R.pret);$('#cl_disc').textContent=c2(R.disc);
+    const ce=$('#cl_cash');if(ce){ce.textContent=V.v.ftotal?c2(R.cash):'—';ce.className=R.cash<0?'neg':''}const sp=$('#cl_split');if(sp)sp.textContent=`(شبكات وحوالات ${c2(R.nonCash-R.apps)} · تطبيقات ${c2(R.apps)} · كاش ${c2(R.cash)})`;
+    const rs=$('#cl_res');rs.className='cl-'+s[0];rs.querySelector('b').textContent=s[1];$('#cl_rsn').hidden=Math.abs(R.diff)<5;$('#cl_fw').hidden=!(R.flt>0&&R.flt<CL_FIXED);
     CL_DEN.forEach(x=>{const e=$('#dn_'+x);if(e)e.textContent=num(V.den[x])?c2(x*num(V.den[x])):''})};
-  d.oninput=e=>{const t=e.target;if(t.dataset.den){V.den[t.dataset.den]=t.value;upd()}else if(t.dataset.cl){const k=t.dataset.cl;if(['coins','float','cashier','reason','notes'].includes(k))V[k]=t.value;else V.v[k]=t.value;const q=d.querySelector(`[data-eq="${k}"]`);if(q)q.textContent=clIsEx(t.value)?'= '+c2(clEx(t.value)):'';upd()}};
-  d.onchange=e=>{if(e.target.id==='cl_date'&&e.target.value)openClose(e.target.value>today()?today():e.target.value,V.sh);if(e.target.dataset.cl==='cashier')V.cashier=e.target.value};
+  d.oninput=e=>{const t=e.target;let k=null;if(t.dataset.den){V.den[t.dataset.den]=t.value}else if(t.dataset.cld){k=t.dataset.cld;V.dsc[k]=t.value}else if(t.dataset.cl){k=t.dataset.cl;if(['coins','float','cashier','supervisor','reason','notes'].includes(k))V[k]=t.value;else V.v[k]=t.value}else return;
+    if(k){const q=d.querySelector(`[data-eq="${k}"]`);if(q)q.textContent=clIsEx(t.value)?'= '+c2(clEx(t.value)):''}upd()};
+  d.onchange=e=>{if(e.target.id==='cl_date'&&e.target.value)openClose(e.target.value>today()?today():e.target.value,V.sh);const k=e.target.dataset.cl;if(k==='cashier'||k==='supervisor')V[k]=e.target.value};
   d.onclick=async e=>{const b=e.target.closest('button');if(!b)return;
     if(b.dataset.clsh){openClose(V.date,b.dataset.clsh);return}
     if(b.dataset.clopen){const [x,s]=b.dataset.clopen.split('|');openClose(x,s);return}
-    if(b.id==='cl_print'){clPrint(V);return}
-    if(b.id==='cl_save'){const R=clCalc(V),er=$('#cl_e');er.textContent='';if(!V.cashier){er.textContent='اختر الكاشير';return}if(!clEx(V.v.ftotal)){er.textContent='اكتب إجمالي فودكس';return}if(R.cash<0){er.textContent='الكاش طلع بالسالب — راجع الأرقام';return}
+    if(b.id==='cl_edit'){V.edit=true;drawClose();return}
+    if(b.id==='cl_print'){clPrintDay(V);return}
+    if(b.id==='cl_save'){const R=clCalc(V),er=$('#cl_e');er.textContent='';if(!V.cashier){er.textContent='اختر الكاشير';return}
+      if(!clEx(V.v.ftotal)){er.textContent='اكتب إجمالي فودكس';return}if(R.cash<0){er.textContent='الكاش طلع بالسالب — راجع الأرقام';return}
       if(Math.abs(R.diff)>=5&&!String(V.reason||'').trim()){er.textContent='اكتب سبب الفرق';$('#cl_rsn textarea').focus();return}
-      b.disabled=true;const doc={date:V.date,sh:V.sh,cashier:V.cashier,v:V.v,den:V.den,coins:V.coins,float:V.float,reason:String(V.reason||'').trim(),notes:String(V.notes||'').trim(),calc:R,by:uid,ts:Date.now()};
-      try{await db.doc('closing/'+V.date+'_'+V.sh).set(doc);if(clEx(V.float)&&clEx(V.float)!==clD.baseFloat){await db.doc('closing/config').set({float:clEx(V.float),ts:Date.now()});clD.baseFloat=clEx(V.float)}V.saved=true;V.ts=doc.ts;toast('انحفظ الإقفال ✓');openClose(V.date,V.sh)}catch(x){b.disabled=false;er.textContent='ما انحفظ — جرب مرة ثانية'}}}}
-function clPrint(V){const R=clCalc(V),cash=num(V.v.cash)||0,nm=((roster.find(p=>p.id===V.cashier)||{}).ar)||'';
+      if(!V.sig){er.textContent='الكاشير لازم يوقّع';return}
+      b.disabled=true;const doc={date:V.date,sh:V.sh,cashier:V.cashier,supervisor:V.supervisor||'',v:V.v,den:V.den,dsc:V.dsc,coins:V.coins,float:V.float,reason:String(V.reason||'').trim(),notes:String(V.notes||'').trim(),sig:V.sig,calc:R,by:uid,ts:Date.now(),...(V.saved?{edited:Date.now()}:{})};
+      try{await db.doc('closing/'+V.date+'_'+V.sh).set(doc);if(clEx(V.float)&&clEx(V.float)!==clD.baseFloat){await db.doc('closing/config').set({float:clEx(V.float),ts:Date.now()});clD.baseFloat=clEx(V.float)}toast('انحفظ الإقفال ✓');openClose(V.date,V.sh)}catch(x){b.disabled=false;er.textContent='ما انحفظ — جرب مرة ثانية'}}}}
+/* ---- printing: morning sheet + evening sheet + daily form ---- */
+function clSheet(V){const R=clCalc(V),[y,mo,dd]=V.date.split('-');
   const row=(e,a,val)=>`<tr><td class="en">${e}</td><td class="vl">${val===''||val==null?'':c2(val)}</td><td class="ar">${a}</td></tr>`;
-  let pa=document.getElementById('printArea');if(!pa){pa=document.createElement('div');pa.id='printArea';document.body.appendChild(pa)}
-  const [y,mo,dd]=V.date.split('-');
-  pa.innerHTML=`<div class="pf"><div class="pfh"><div class="pbox">SHIFT CLOSING</div><img src="${document.querySelector('.logo').src}" alt=""><div class="pbox">إقفال اليومية</div></div>
+  return `<section class="pf"><div class="pfh"><div class="pbox">SHIFT CLOSING</div><img src="${document.querySelector('.logo').src}" alt=""><div class="pbox">إقفال اليومية</div></div>
    <table class="pt"><tr><td class="en">DATE</td><td class="vl">${dd} / ${mo} / ${y}</td><td class="ar">التاريخ</td></tr>
    <tr><td class="en">SHIFT TIME</td><td class="vl">${V.sh==='am'?'☑ AM / ص &nbsp;&nbsp; ☐ PM / م':'☐ AM / ص &nbsp;&nbsp; ☑ PM / م'}</td><td class="ar">موعد الشفت</td></tr></table>
-   <table class="pt">${CL_ROWS.filter(x=>x[3]!=='ret').map(([k,a,e])=>row(e,a,k==='cash'?R.cash:(clEx(V.v[k])??''))).join('')}${row('RETURN','مرتجع',clEx(V.v.ret)??'')}${row('PETTY CASH','عهدة الكاشير',clEx(V.float)??'')}
+   <table class="pt">${CL_ROWS.filter(x=>x[3]!=='ret').map(([k,a,e])=>row(e,a,k==='cash'?R.cash:(clEx((V.v||{})[k])??''))).join('')}${row('RETURN','مرتجع',clEx((V.v||{}).ret)??'')}${row('PETTY CASH','عهدة الكاشير',clEx(V.float)??'')}
    <tr class="tot"><td class="en">TOTAL</td><td class="vl">${c2(R.total)}</td><td class="ar">الإجمالي</td></tr></table>
-   <table class="pt sm"><tr><th>الفئة</th>${CL_DEN.map(x=>`<th>${x}</th>`).join('')}<th>هللات</th><th>المعدود</th></tr><tr><td>العدد</td>${CL_DEN.map(x=>`<td>${esc(V.den[x]||'')}</td>`).join('')}<td>${esc(V.coins||'')}</td><td><b>${c2(R.counted)}</b></td></tr></table>
-   <table class="pt sm"><tr><td>المفروض في الدرج (العهدة + الكاش)</td><td><b>${c2(R.expected)}</b></td><td>المعدود</td><td><b>${c2(R.counted)}</b></td><td>${Math.abs(R.diff)<0.01?'مطابق':R.diff<0?'عجز':'زيادة'}</td><td><b>${Math.abs(R.diff)<0.01?'—':c2(Math.abs(R.diff))}</b></td></tr>
-   <tr><td colspan="2">المبلغ المسلّم للمالية (المعدود − العهدة)</td><td colspan="4"><b>${c2(R.deposit)} ريال</b></td></tr></table>
+   <table class="pt sm"><tr><th>الفئة</th>${CL_DEN.map(x=>`<th>${x}</th>`).join('')}<th>هللات</th><th>المعدود</th></tr><tr><td>العدد</td>${CL_DEN.map(x=>`<td>${esc((V.den||{})[x]||'')}</td>`).join('')}<td>${esc(V.coins||'')}</td><td><b>${c2(R.counted)}</b></td></tr></table>
+   <table class="pt sm"><tr><td>المفروض في الدرج (العهدة + الكاش)</td><td><b>${c2(R.expected)}</b></td><td>المعدود</td><td><b>${c2(R.counted)}</b></td><td>${Math.abs(R.diff)<0.01?'مطابق':R.diff<0?'عجز':'زيادة'}</td><td><b>${Math.abs(R.diff)<0.01?'—':c2(Math.abs(R.diff))}</b></td></tr></table>
    <div class="pnote">يرجى إرفاق تقارير المبيعات للتطبيقات وكذلك إيصالات الحوالات البنكية<br><span>please attach (chefs, hunger station and jahez) reports as well as bank transfers receipts</span></div>
-   <table class="pt sig"><tr><td class="en">Supervisor /</td><td class="vl">${esc(nm)}</td><td class="ar">مسؤول الإقفال /</td></tr><tr><td class="en">Signature /</td><td class="vl"></td><td class="ar">التوقيع /</td></tr></table>
+   <table class="pt sig"><tr><td class="en">Supervisor /</td><td class="vl">${esc(clName(V.cashier))}</td><td class="ar">مسؤول الإقفال /</td></tr><tr><td class="en">Signature /</td><td class="vl">${V.sig?`<img class="psig" src="${V.sig}">`:''}</td><td class="ar">التوقيع /</td></tr></table>
    <table class="pt sig"><tr><td class="en">Manager /</td><td class="vl"></td><td class="ar">مدير الفرع /</td></tr><tr><td class="en">Signature /</td><td class="vl"></td><td class="ar">التوقيع /</td></tr></table>
-   <div class="pnotes"><b>ملاحظات / Notes</b><div>${esc([V.reason?'سبب الفرق: '+V.reason:'',V.notes||''].filter(Boolean).join(' — '))}</div></div></div>`;
-  setTimeout(()=>window.print(),50)}
+   <div class="pnotes"><b>ملاحظات / Notes</b><div>${esc([V.reason?'سبب الفرق: '+V.reason:'',V.notes||''].filter(Boolean).join(' — '))}</div></div></section>`}
+function clDaily(A,P){const RA=A?clCalc(A):null,RP=P?clCalc(P):null,D=(A||P).date,[y,mo,dd]=D.split('-');
+  const v=(X,k)=>X?(clEx((X.v||{})[k])||''):'',dv=(X,k)=>X?(clEx((X.dsc||{})[k])||''):'',cv=x=>x===''||x==null?'':c2(x);
+  const r3=(a,e,va,vp,b)=>`<tr${b?' class="tot"':''}><td class="ar2">${a}<br><span>${e}</span></td><td class="vl">${cv(va)}</td><td class="vl">${cv(vp)}</td></tr>`;
+  const head=`<tr><th class="ar2">${'%'}</th><th>الوردية الصباحية (ريال) / morning</th><th>الوردية المسائية (ريال) / evening</th></tr>`;
+  const pays=[['فيزا','Visa',X=>X?clCalc(X).visa:''],['كاش','Cash',X=>X?clCalc(X).cash:''],['ذا شيفز','The Chefs',X=>v(X,'chefs')],['جاهز','Jahez',X=>v(X,'jahez')],['هنقرستيشن','Hunger Station',X=>v(X,'hunger')],['كيتا','Keeta',X=>v(X,'keeta')],['نينجا','Ninja',X=>v(X,'ninja')],['نقطة','Nuggtah',X=>v(X,'nuggtah')],['بونات','Bonat',X=>v(X,'bonat')],['يلا','YALLA',X=>v(X,'yalla')],['إيرماين / أخرى','Ermine / Others',X=>X?((clEx((X.v||{}).ermine)||0)+(clEx((X.v||{}).others)||0))||'':''],['حوالات','Transfers',X=>v(X,'transfers')],['بطاقات هدايا / قسائم مستردة','Gifts',X=>v(X,'gifts')]];
+  const p1=`<section class="pf pg"><div class="ptitle">نموذج إقفال الوردية اليومي — DAILY SHIFT CLOSING</div>
+   <table class="pt"><tr><td class="ar">الفرع / BRANCH</td><td class="vl" colspan="2">سمراء كافيه</td></tr><tr><td class="ar">التاريخ / DATE</td><td class="vl" colspan="2">${dd} / ${mo} / ${y}</td></tr>
+   <tr><td class="ar">الوردية / SHIFT</td><td class="vl">صباحية</td><td class="vl">مسائية</td></tr><tr><td class="ar">اسم الكاشير / CASHIER NAME</td><td class="vl">${esc(A?clName(A.cashier):'')}</td><td class="vl">${esc(P?clName(P.cashier):'')}</td></tr>
+   <tr><td class="ar">اسم المشرف المسؤول / SUPERVISOR</td><td class="vl">${esc(A?clName(A.supervisor):'')}</td><td class="vl">${esc(P?clName(P.supervisor):'')}</td></tr></table>
+   <table class="pt">${head.replace('%','طريقة الدفع / المنصة<br><span>Payment Method</span>')}${pays.map(([a,e,fn])=>r3(a,e,fn(A),fn(P))).join('')}${r3('إجمالي المبيعات','Total Sales',RA?RA.total:'',RP?RP.total:'',1)}</table>
+   <table class="pt">${head.replace('%','نوع الخصم<br><span>Discount Type</span>')}${CL_DISC.map(([k,a,e])=>r3(a,e,dv(A,k),dv(P,k))).join('')}${r3('إجمالي الخصومات','Total Discount',RA?RA.disc:'',RP?RP.disc:'',1)}</table></section>`;
+  const p2=`<section class="pf pg"><div class="pwarn">⚠ العهدة النقدية الثابتة للفرع = 1,000 ريال — يجب التأكد من اكتمالها وإقفالها في الدرج/الخزنة قبل مغادرة الوردية</div>
+   <table class="pt">${head.replace('%','بند التسوية')}${r3('العهدة الثابتة المقررة للفرع','Fixed Petty Cash (Float)',CL_FIXED,CL_FIXED)}${r3('العهدة المعدودة فعليًا في بداية الوردية','Actual Petty Cash',RA?RA.flt:'',RP?RP.flt:'')}
+   ${r3('المبيعات النقدية حسب النظام','Cash Sales (POS)',RA?RA.cash:'',RP?RP.cash:'')}${r3('إجمالي الكاش الفعلي المعدود في نهاية الوردية','Actual Cash',RA?RA.counted:'',RP?RP.counted:'')}
+   ${r3('المبلغ المودع في الخزنة / البنك','Deposited',RA?RA.deposit:'',RP?RP.deposit:'')}${r3('العهدة المُعادة وإقفالها (يجب أن تساوي 1,000 ريال)','Petty Cash Return',RA?RA.pret:'',RP?RP.pret:'',1)}
+   ${r3('الفرق (عجز − / زيادة +)','Difference',RA?RA.diff:'',RP?RP.diff:'')}</table>
+   <table class="pt"><tr><td class="ar">ملاحظات: Notes</td><td class="vl">${esc(A?[A.reason,A.notes].filter(Boolean).join(' — '):'')}</td><td class="vl">${esc(P?[P.reason,P.notes].filter(Boolean).join(' — '):'')}</td></tr></table>
+   <table class="pt sig3"><tr><td class="ar">الكاشير (الاسم + التوقيع + الوقت)<br><span>Cashier name &amp; sign &amp; time</span></td><td class="vl">${A?esc(clName(A.cashier))+(A.sig?`<img class="psig" src="${A.sig}">`:'')+'<small>'+hm(A.ts)+'</small>':''}</td><td class="vl">${P?esc(clName(P.cashier))+(P.sig?`<img class="psig" src="${P.sig}">`:'')+'<small>'+hm(P.ts)+'</small>':''}</td></tr>
+   <tr><td class="ar">مشرف الوردية (الاسم + التوقيع)<br><span>Supervisor Name &amp; Sign</span></td><td class="vl">${esc(A?clName(A.supervisor):'')}</td><td class="vl">${esc(P?clName(P.supervisor):'')}</td></tr>
+   <tr><td class="ar">اعتماد المحاسب (الاسم + التوقيع + التاريخ)<br><span>Accountant Name &amp; Sign &amp; Date</span></td><td class="vl"></td><td class="vl"></td></tr></table></section>`;
+  return p1+p2}
+async function clPrintDay(V){let A=null,P=null;try{const [a,p]=await Promise.all([db.doc('closing/'+V.date+'_am').get(),db.doc('closing/'+V.date+'_pm').get()]);A=a.exists?a.data():null;P=p.exists?p.data():null}catch(e){}
+  if(!P&&V.sh==='pm')P=V;if(!A&&!P){toast('ما فيه إقفال محفوظ لهذا اليوم');return}
+  let pa=document.getElementById('printArea');if(!pa){pa=document.createElement('div');pa.id='printArea';document.body.appendChild(pa)}
+  pa.innerHTML=(A?clSheet(A):'')+(P?clSheet(P):'')+clDaily(A,P);if(!A)toast('تنبيه: إقفال الصباح لهذا اليوم مو محفوظ');
+  setTimeout(()=>window.print(),80)}
 /* ======================= weekly schedule (everyone) ======================= */
 function openWeek(){closeDash();if(lang==='ar'||isAdmin)dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();
   const ar=lang==='ar'||isAdmin,DN=ar?DOW:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],tdow=dowOf(today());
