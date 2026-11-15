@@ -359,6 +359,7 @@ tr.slate td{color:var(--bad);font-weight:700}
 .lockbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--okbg,rgba(46,125,50,.08));color:var(--ok,#2e7d32);font-weight:600}
 .lockbar .btn{flex:none}
 /*../patch46.css*/.lockbar{margin:0 0 12px}
+/*../patch47.css*/.rhint{display:block;font-weight:400;font-size:.82em;color:var(--mut);margin-top:2px}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -378,7 +379,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v57</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v58</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1050,7 +1051,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-dnav]');if
 const dayMsgs={};
 /* read-only contents of a sent checklist */
 function entryDetail(s,e){const ar=lang==='ar';
-  if(s.type==='report'){const r=e.rep||{};return repFlat(r.__v).map(([k,a])=>`<div class="ddr"><span>${esc(a)}</span><div>${esc(r[k]||'—')}</div></div>`).join('')}
+  if(s.type==='report'){const r=e.rep||{};return repFlat(r.__v).map(([k,a,h])=>`<div class="ddr"><span>${esc(a)}${h&&lang==='ar'?`<small class="rhint">${esc(h)}</small>`:''}</span><div>${esc(r[k]||'—')}</div></div>`).join('')}
   if(s.type==='avg'){const ix=visIdx(s,e.shift),sl=e.slots||{};const rows=ix.filter(i=>sl[i]).map(i=>`<tr><td>${esc(itemText(s,s.items[i]))}</td><td>${esc(sl[i].o||'—')}</td><td>${esc(sl[i].s||'—')}</td><td><b>${esc(sl[i].a||'—')}</b></td></tr>`).join('');
     return rows?`<div class="tblx"><table class="avt"><tr><th></th><th>${esc(t_('orders'))}</th><th>${esc(t_('sales'))}</th><th>${esc(t_('avg'))}</th></tr>${rows}</table></div>`:''}
   const lab=Array.isArray(e.lab)?e.lab:null,n=lab?lab.length:s.items.length,C=e.checks||{},X=e.xs||{},V=e.vals||{};let h='',k=0;
@@ -1140,7 +1141,7 @@ const BARSEC=[['op','حالة التشغيل','Operation',[['bar','حالة ال
  ['stock','المخزون','Stock',[['stock','','','',1]]],
  ['custn','ملاحظات العملاء','Customer notes',[['custn','','','',1]]]];
 const repSecs=v=>v==='bar'?BARSEC.map(([k,a,e,f])=>({k,a,e,h:'',he:'',f})):REPSEC.map(([k,a,e,h,he,def])=>({k,a,e,h,he,f:[[k,'','',def,1]]}));
-const repFlat=v=>repSecs(v).flatMap(S=>S.f.map(([k,a])=>[k,S.a+(a?' · '+a:'')]));
+const repFlat=v=>repSecs(v).flatMap(S=>S.f.map(([k,a])=>[k,S.a+(a?' · '+a:''),S.h||'']));
 const myRepV=()=>{const a=myAssign(),st=(a&&a.st)||[];return st.includes('bar_sup')&&!st.includes('supervisor')?'bar':''};
 function reportForm(id,box,prev){const r=prev.rep||{},ar=lang==='ar',v=r.__v!==undefined?r.__v:myRepV();box.dataset.rv=v;
   box.innerHTML=`<p class="sub" style="margin:0 0 8px">${ar?'يُرفع نهاية اليوم من 12 الليل إلى 2 الليل، وبعدها يُسجّل تأخير. يوصل لمدير الفرع.':'Send it at the end of the day, 12–2 AM. After 2 AM it counts as late. It goes to the branch manager.'}</p>`
@@ -1430,7 +1431,7 @@ let monthRank=[];
 function renderReports(){
   const body=$('#dbody'),E=entriesFor(boardDate),es=E.dreport||[],P=people().filter(p=>needFor(boardDate,p.key,p.s).includes('dreport'));
   $('#tiles').innerHTML=`<div class="tile"><b style="color:var(--ok)">${es.length}</b>تقارير وصلت</div><div class="tile"><b style="color:${P.length>es.length?'var(--warn)':'var(--ok)'}">${Math.max(0,P.length-es.filter(e=>P.some(p=>p.uid===e.by)).length)}</b>ما وصل</div><div class="tile"><b>${esc(dayLabel(boardDate).split(' ')[0])}</b>اليوم</div>`;
-  const card=e=>{const r=e.rep||{};return `<div class="card repcard"><div class="rch"><b>${esc(who(e.by))}</b><small>${(()=>{const lm=lateMin(e,boardDate);return lm?`<span class="pill p-bad">⏰ متأخر ${fmtLate(lm)}</span> `:lm===0?'<span class="pill p-ok">في الوقت</span> ':''})()}${esc((()=>{const s=staffAll[e.by];const pa=s&&planFor(boardDate,pkey(e.by,s));return pa&&pa.st?pa.st.map(x=>roleById[x]?roleById[x].ar:x).join(' + '):''})())} · ${hm(e.ts)}</small></div>${repFlat(r.__v).map(([k,a])=>`<div class="rsv"><span>${esc(a)}</span><div>${esc(r[k]||'—')}</div></div>`).join('')}</div>`};
+  const card=e=>{const r=e.rep||{};return `<div class="card repcard"><div class="rch"><b>${esc(who(e.by))}</b><small>${(()=>{const lm=lateMin(e,boardDate);return lm?`<span class="pill p-bad">⏰ متأخر ${fmtLate(lm)}</span> `:lm===0?'<span class="pill p-ok">في الوقت</span> ':''})()}${esc((()=>{const s=staffAll[e.by];const pa=s&&planFor(boardDate,pkey(e.by,s));return pa&&pa.st?pa.st.map(x=>roleById[x]?roleById[x].ar:x).join(' + '):''})())} · ${hm(e.ts)}</small></div>${repFlat(r.__v).map(([k,a,h])=>`<div class="rsv"><span>${esc(a)}${h?`<small class="rhint">${esc(h)}</small>`:''}</span><div>${esc(r[k]||'—')}</div></div>`).join('')}</div>`};
   const missing=P.filter(p=>!es.some(e=>e.by===p.uid));
   body.innerHTML=(es.length?es.map(card).join(''):'')+missing.map(p=>`<div class="row"><div class="t"><b>${esc(p.name)}</b><small>${p.uid?'':'لم يسجّل بعد'}</small></div><span class="pill ${Date.now()>dueTs(boardDate,'pm','dreport')?'p-bad':'p-warn'}">${Date.now()>dueTs(boardDate,'pm','dreport')?'⏰ متأخر – ما رفع التقرير':'بانتظار (12 – 2 الليل)'}</span></div>`).join('')||'<div class="msg">ما فيه تقارير لهذا اليوم.</div>';
 }
