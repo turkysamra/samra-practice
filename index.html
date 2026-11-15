@@ -334,7 +334,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v43</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v44</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -947,7 +947,13 @@ function watchPlan(){
 }
 let dayUnsub=null,msgUnsub=null,staffMsg=null,vipMsg=null;
 const inboxSync=()=>{const ib=$('#inbox');if(ib)ib.hidden=$('#staffMsg').hidden&&$('#vipMsg').hidden};
-function showVip(){const b=$('#vipMsg');if(!b)return;setTimeout(inboxSync,0);const v=vipMsg,ok=v&&v.date===today()&&((v.items||[]).length||v.note);b.hidden=!ok;if(!ok)return;
+const vipGet=(V,D)=>(V&&V.days&&V.days[D])||(V&&V.date===D?V:null);
+function vipHTML(v,title){const its=v.items||[],chips=t=>String(t||'').split(/\s*[+،,\n]\s*/).filter(Boolean).map(x=>`<span class="vpc">${esc(x)}</span>`).join('');
+  return `<div class="vph"><span>📣 ${esc(title)}</span>${its.length>1?`<span class="vpn">${its.length}</span>`:''}</div>`
+   +its.map(x=>`<div class="vpi"><div class="vpt"><b><bdi>${esc(x.n||'—')}</bdi></b>${x.t?`<span class="vptm">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}</div>${x.p?`<div class="vpcs">${chips(x.p)}</div>`:''}</div>`).join('')
+   +(v.note?`<div class="vpnote">📝 ${esc(v.note)}</div>`:'')}
+function showVip(){const b=$('#vipMsg');if(!b)return;setTimeout(inboxSync,0);const v=vipGet(vipMsg,today()),ok=v&&((v.items||[]).length||v.note);b.hidden=!ok;if(!ok)return;
+  b.innerHTML=vipHTML(v,'معلنين اليوم');return;
   const its=v.items||[],chips=t=>String(t||'').split(/\s*[+،,\n]\s*/).filter(Boolean).map(x=>`<span class="vpc">${esc(x)}</span>`).join('');
   b.innerHTML=`<div class="vph"><span>📣 معلنين اليوم</span>${its.length>1?`<span class="vpn">${its.length}</span>`:''}</div>`
    +its.map(x=>`<div class="vpi"><div class="vpt"><b><bdi>${esc(x.n||'—')}</bdi></b>${x.t?`<span class="vptm">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}</div>${x.p?`<div class="vpcs">${chips(x.p)}</div>`:''}</div>`).join('')
@@ -1011,7 +1017,7 @@ async function dayView(){const D=vD;shownSheets='day:'+D;
     const body=e?entryDetail(s,e):'';
     return `<details class="row dday" ${body?'':'data-empty'}><summary><div class="t"><b>${esc(sheetName(s))}</b><small>${e?(e.total?e.done+'/'+e.total+' · ':'')+esc(new Date(e.ts).toLocaleTimeString(loc(),{timeZone:'Asia/Riyadh',hour:'numeric',minute:'2-digit'}))+(lm?' · ⏰ '+(lang==='ar'?fmtLate(lm):'+'+(lm>=60?Math.floor(lm/60)+'h '+(lm%60?lm%60+'m':''):lm+'m')):''):''}</small>${rv&&rv.note?`<small>${esc(rv.note)}</small>`:''}${mine['q_'+D+'_'+id]?`<small>💬 ${esc(mine['q_'+D+'_'+id].q)}${mine['a_'+D+'_'+id]?' ↩ '+esc(mine['a_'+D+'_'+id].a):''}</small>`:''}</div>${pl}</summary>${body?`<div class="ddb">${body}</div>`:''}</details>`};
   $('#main').innerHTML=`<div class="stack">${dnavHTML()}
-   ${M&&M.text?`<div class="inbox rv in"><div class="staffmsg"><div class="smh">📢 ${esc(t_('dayMsg'))}</div><div class="smt">${esc(M.text)}</div></div></div>`:''}
+   ${(()=>{const V=vipGet(vipMsg,D),hv=V&&((V.items||[]).length||V.note);if(!(M&&M.text)&&!hv)return '';return `<div class="inbox rv in">${M&&M.text?`<div class="staffmsg"><div class="smh">📢 ${esc(t_('dayMsg'))}</div><div class="smt">${esc(M.text)}</div></div>`:''}${hv?`<div class="staffmsg vipmsg">${vipHTML(V,'المعلنين')}</div>`:''}</div>`})()}
    <section class="hsec"><div class="sech rv in"><h2>📝 ${esc(t_('myChecklist'))}</h2></div>
    ${a&&a.off?`<div class="card rv in" style="text-align:center"><div style="font-size:34px">🌴</div><p class="sub" style="margin:6px 0 0">${esc(t_('dayOff'))}</p></div>`
      :list.length?`<div class="stack" style="gap:10px">${list.map(row).join('')}</div>`:`<div class="msg rv in">${esc(t_('noAssign'))}</div>`}</section>
@@ -1590,12 +1596,19 @@ async function openReport(){
 }
 /* ======================= today's advertisers — private to chosen staff ======================= */
 const VIPDEF=['youssef','fahad','azzam'];let vipD=null;
-async function openVip(){closeDash();dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();d.innerHTML='<div class="msg">جاري التحميل…</div>';
-  let M=null;try{const s=await db.doc('admin/vipday').get();M=s.exists?s.data():null}catch(e){}if(view!=='vipmsg')return;
-  const day=today();vipD={date:day,to:(M&&M.to)||VIPDEF.filter(id=>roster.some(p=>p.id===id)),items:M&&M.date===day?(M.items||[]):[],note:M&&M.date===day?(M.note||''):'',prevTo:(M&&M.to)||[],sent:!!(M&&M.date===day&&M.ts),ts:M&&M.ts};
+async function openVip(D){closeDash();dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();d.innerHTML='<div class="msg">جاري التحميل…</div>';
+  const day=D||(vipD&&vipD.date>=today()?vipD.date:today());let M=null,L=null,IX=null;
+  try{const [a,b,c]=await Promise.all([db.doc('admin/vip_'+day).get(),db.doc('admin/vipday').get(),db.doc('admin/vipidx').get()]);M=a.exists?a.data():null;L=b.exists?b.data():null;IX=c.exists?c.data():null}catch(e){}
+  if(view!=='vipmsg')return;if(!M&&L&&L.date===day)M=L;
+  const lastTo=(M&&M.to)||(IX&&IX.to)||(L&&L.to)||VIPDEF.filter(id=>roster.some(p=>p.id===id));
+  vipD={date:day,to:[...lastTo],items:M?(M.items||[]):[],note:M?(M.note||''):'',prevTo:M?(M.to||[]):[],sent:!!(M&&M.ts&&((M.items||[]).length||M.note)),ts:M&&M.ts,idx:(IX&&IX.dates)||{}};
+  if(L&&L.date&&L.ts&&((L.items||[]).length||L.note)&&!vipD.idx[L.date])vipD.idx[L.date]=(L.items||[]).length||1;
   if(!vipD.items.length)vipD.items=[{n:'',t:'',p:''}];drawVip()}
-function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=vipD;
-  d.innerHTML=`<div class="fade stack"><div class="card stack"><h2>📣 معلنين اليوم</h2><p class="sub" style="margin-top:-6px">${esc(dayLabel(V.date))} — تطلع بس للي تختارهم تحت، أعلى صفحتهم اليوم.</p>
+function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=vipD,isT=V.date===today();
+  const up=Object.entries(V.idx||{}).filter(([k,n])=>k>=today()&&n).sort(([a],[b])=>a<b?-1:1);
+  d.innerHTML=`<div class="fade stack"><div class="card stack"><h2>📣 المعلنين</h2><p class="sub" style="margin-top:-6px">اختر اليوم، واكتب المعلنين. يطلعون في ذاك اليوم بس، فوق صفحة اللي تختارهم.</p>
+    <div class="datebar"><button class="btn" data-vday="-1">‹ السابق</button><label class="dpick"><span>${esc(dayName(V.date))}${isT?' · اليوم':''}</span><input type="date" id="vip_date" value="${V.date}" min="${today()}"></label><button class="btn" data-vday="1">التالي ›</button><button class="btn" data-vday="0">اليوم</button></div>
+    ${up.length?`<div class="sub">المجدول:</div><div class="edchips">${up.map(([k,n])=>`<button class="edchip ${k===V.date?'on':''}" data-vgo="${k}">${esc(dayName(k))} · ${n}</button>`).join('')}</div>`:''}
     <div class="sub">يوصل لـ:</div><div class="edchips">${roster.map(p=>`<button class="edchip ${V.to.includes(p.id)?'on':''}" data-vto="${esc(p.id)}">${esc(p.ar||p.name)}${p.uid?'':' ·  ما سجّل'}</button>`).join('')}</div></div>
    ${V.items.map((x,i)=>`<div class="card stack vipe"><div class="vh"><b>معلن ${i+1}</b>${V.items.length>1?`<button class="btn sm badb" data-vdel="${i}">🗑</button>`:''}</div>
      <label class="lbl">اسم المعلن<input data-vf="n" data-vi="${i}" maxlength="80" value="${esc(x.n)}" placeholder="مثلاً: @name"></label>
@@ -1603,21 +1616,30 @@ function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=v
      <label class="lbl">المنتجات<textarea data-vf="p" data-vi="${i}" maxlength="1000" placeholder="مثلاً: لاتيه بارد + كيكة التمر + سبانش">${esc(x.p)}</textarea></label></div>`).join('')}
    <button class="btn" id="vip_add">＋ معلن ثاني</button>
    <div class="card stack"><label class="lbl">ملاحظة (اختياري)<textarea id="vip_note" maxlength="1000" placeholder="مثلاً: جهزوا الطاولة اللي جنب الشباك">${esc(V.note)}</textarea></label>
-    <div class="err" id="vip_e"></div><button class="btn pri" id="vip_s">${V.sent?'تحديث':'إرسال'}</button>${V.sent?`<button class="link" id="vip_c">مسح رسالة اليوم</button><p class="sub" style="margin:0">آخر تحديث ${hm(V.ts)}</p>`:''}</div></div>`;
+    <div class="err" id="vip_e"></div><button class="btn pri" id="vip_s">${V.sent?'تحديث':isT?'إرسال':'حفظ ليوم '+esc(dayName(V.date).split('،')[0])}</button>${V.sent?`<button class="link" id="vip_c">مسح معلنين هذا اليوم</button><p class="sub" style="margin:0">آخر تحديث ${hm(V.ts)}</p>`:''}</div></div>`;
+  const di=$('#vip_date');if(di)di.onchange=()=>{if(di.value)openVip(di.value<today()?today():di.value)};
   d.oninput=e=>{const t=e.target;if(t.dataset.vf){V.items[+t.dataset.vi][t.dataset.vf]=t.value}if(t.id==='vip_note')V.note=t.value};
   d.onclick=async e=>{const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.vday!=null){const n=+b.dataset.vday,nd=n===0?today():addDays(V.date,n);openVip(nd<today()?today():nd);return}
+    if(b.dataset.vgo){openVip(b.dataset.vgo);return}
     if(b.dataset.vto){const id=b.dataset.vto,i=V.to.indexOf(id);if(i>=0)V.to.splice(i,1);else V.to.push(id);drawVip();return}
     if(b.dataset.vdel!=null){V.items.splice(+b.dataset.vdel,1);drawVip();return}
     if(b.id==='vip_add'){V.items.push({n:'',t:'',p:''});drawVip();const ins=d.querySelectorAll('[data-vf=n]');ins[ins.length-1].focus();return}
     if(b.id==='vip_s'||b.id==='vip_c'){const clear=b.id==='vip_c';const items=clear?[]:V.items.map(x=>({n:x.n.trim(),t:x.t.trim(),p:x.p.trim()})).filter(x=>x.n||x.p);const note=clear?'':V.note.trim();
       if(!clear&&!items.length&&!note){$('#vip_e').textContent='اكتب معلن واحد على الأقل';return}if(!clear&&!V.to.length){$('#vip_e').textContent='اختر مين يوصله';return}
-      b.disabled=true;const ts=Date.now(),msg={date:V.date,items,note,by:uid,ts};
-      try{const send=roster.filter(p=>V.to.includes(p.id)&&p.uid),drop=roster.filter(p=>!V.to.includes(p.id)&&p.uid&&V.prevTo.includes(p.id));
-        await Promise.all([...send.map(p=>db.doc('vip/'+p.uid).set(clear?{date:'',items:[],ts}:msg)),...drop.map(p=>db.doc('vip/'+p.uid).set({date:'',items:[],ts}))]);
-        await db.doc('admin/vipday').set({...msg,to:[...V.to]});V.prevTo=[...V.to];V.sent=!clear;V.ts=ts;if(clear){V.items=[{n:'',t:'',p:''}];V.note=''}
-        const miss=roster.filter(p=>V.to.includes(p.id)&&!p.uid).map(p=>p.ar||p.name);
-        toast(clear?'انمسحت ✓':'انرسلت لـ '+send.map(p=>p.ar||p.name).join('، ')+' ✓'+(miss.length?' — '+miss.join('، ')+' ما سجّل بعد':''));drawVip()}
-      catch(x){b.disabled=false;$('#vip_e').textContent='ما انرسلت — جرب مرة ثانية'}}}}
+      b.disabled=true;const ts=Date.now(),D=V.date,msg={items,note,ts},keep=addDays(today(),-7);
+      try{const ppl=roster.filter(p=>p.uid&&(V.to.includes(p.id)||V.prevTo.includes(p.id)));
+        await Promise.all(ppl.map(async p=>{let cur={};try{const s=await db.doc('vip/'+p.uid).get();cur=s.exists?(s.data()||{}):{}}catch(x){}
+          const days={...(cur.days||{})};if(cur.date&&!days[cur.date]&&((cur.items||[]).length||cur.note))days[cur.date]={items:cur.items||[],note:cur.note||'',ts:cur.ts||0};
+          if(!clear&&V.to.includes(p.id))days[D]=msg;else delete days[D];Object.keys(days).forEach(k=>{if(k<keep)delete days[k]});
+          await db.doc('vip/'+p.uid).set({days,ts})}));
+        await db.doc('admin/vip_'+D).set({date:D,...msg,by:uid,to:[...V.to]});
+        const idx={...(V.idx||{})};if(clear||!items.length&&!note)delete idx[D];else idx[D]=items.length||1;Object.keys(idx).forEach(k=>{if(k<keep)delete idx[k]});
+        await db.doc('admin/vipidx').set({dates:idx,to:[...V.to],ts});V.idx=idx;
+        V.prevTo=clear?[]:[...V.to];V.sent=!clear;V.ts=ts;if(clear){V.items=[{n:'',t:'',p:''}];V.note=''}
+        const send=roster.filter(p=>V.to.includes(p.id)&&p.uid),miss=roster.filter(p=>V.to.includes(p.id)&&!p.uid).map(p=>p.ar||p.name);
+        toast(clear?'انمسحت ✓':(D===today()?'انرسلت لـ ':'انحفظت ليوم '+dayName(D).split('،')[0]+' — تطلع لـ ')+send.map(p=>p.ar||p.name).join('، ')+' ✓'+(miss.length?' — '+miss.join('، ')+' ما سجّل بعد':''));drawVip()}
+      catch(x){b.disabled=false;$('#vip_e').textContent='ما انحفظت — جرب مرة ثانية'}}}}
 /* ======================= weekly schedule (everyone) ======================= */
 function openWeek(){closeDash();if(lang==='ar'||isAdmin)dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();
   const ar=lang==='ar'||isAdmin,DN=ar?DOW:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],tdow=dowOf(today());
@@ -1668,8 +1690,8 @@ function drawSheets(){const d=$('#dash');if(view!=='sheets')return;let n=0;
   }}
 /* ======================= app shell: ☰ menu ======================= */
 const isOwnerF=()=>ownerFlag;
-const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين'],['vipmsg','📣','معلنين اليوم (السعوديين)'],['sheets','📝','القوائم والمهام']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
-const TITLES={vipmsg:'معلنين اليوم',sheets:'القوائم والمهام',staffmsg:'رسالة اليوم للموظفين',reports:'التقارير اليومية',review:'مراجعة القوائم',staff:'الموظفين اليوم',plan:'التوزيع',month:'ملخص الموظفين الشهري',m_day:'المبيعات واليوم',m_month:'أداء الشهر',m_targets:'الأهداف'};
+const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين'],['vipmsg','📣','المعلنين (السعوديين)'],['sheets','📝','القوائم والمهام']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
+const TITLES={vipmsg:'المعلنين',sheets:'القوائم والمهام',staffmsg:'رسالة اليوم للموظفين',reports:'التقارير اليومية',review:'مراجعة القوائم',staff:'الموظفين اليوم',plan:'التوزيع',month:'ملخص الموظفين الشهري',m_day:'المبيعات واليوم',m_month:'أداء الشهر',m_targets:'الأهداف'};
 let view='home';
 function setTitle(){const t=$('#tbTitle');if(!t)return;t.textContent=TITLES[view]||({week:t_('weekSched'),home:t_('home'),checklist:t_('myChecklist'),team:t_('team'),me:t_('myDetails')}[view])||''}
 function renderDrawer(){
