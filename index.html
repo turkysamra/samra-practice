@@ -351,6 +351,7 @@ tr.slate td{color:var(--bad);font-weight:700}
 /*../patch40.css*/@media print{.pf:not(.pg) .pt td,.pf:not(.pg) .pt th{padding:2.5px 6px}.pf:not(.pg) .pt{margin-bottom:6px}.pf:not(.pg) .pfh{margin-bottom:5px}.pf:not(.pg) .pnote{margin:5px 0;padding:4px}.pg .ar2 span{float:left;margin:0}}
 @media print{.pf .pnotes{min-height:34px}.pf:not(.pg) .pt.sig td{height:22px}}
 @media print{.pf:not(.pg){font-size:11px}.pf:not(.pg) .pfh img{height:38px}.pf:not(.pg) .pt td,.pf:not(.pg) .pt th{padding:2px 6px}}
+/*../patch41.css*/.clpetty{border-radius:12px;padding:10px 12px;background:var(--card2,rgba(166,128,63,.08));font-weight:600}.clpetty small{font-weight:400;color:var(--mut)}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -370,7 +371,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v50</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v51</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1699,7 +1700,8 @@ function clCalc(V){V=V||{};const vv=V.v||{},f=k=>clEx(vv[k])||0;const counted=CL
   const flt=clEx(V.float)||0,expected=cash,diff=Math.round((counted-expected)*100)/100;
   const deposit=Math.round(counted*100)/100,pret=flt;
   const disc=CL_DISC.reduce((a,[k])=>a+(clEx((V.dsc||{})[k])||0),0);
-  return {counted,pay,apps,total,cash,nonCash,flt,expected,diff,deposit,pret,disc,visa:f('inmaa')+f('rajhi')}}
+  const pdiff=Math.round((flt-CL_FIXED)*100)/100;
+  return {counted,pay,apps,total,cash,nonCash,flt,pdiff,expected,diff,deposit,pret,disc,visa:f('inmaa')+f('rajhi')}}
 const clName=id=>((roster.find(p=>p.id===id)||{}).ar)||'';
 async function openClose(D,S){closeDash();dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();d.innerHTML='<div class="msg">جاري التحميل…</div>';
   const nwm=nowWorkMin(),date=D||today(),sh=S||(nwm<17*60?'am':'pm');let C=null,cfg=null,list=[];
@@ -1707,7 +1709,7 @@ async function openClose(D,S){closeDash();dashDir();$('#emp').hidden=true;const 
   try{const ds=[0,-1,-2,-3,-4,-5,-6].map(n=>addDays(today(),n));const got=await Promise.all(ds.flatMap(x=>['am','pm'].map(s=>db.doc('closing/'+x+'_'+s).get().then(r=>r.exists?r.data():null).catch(()=>null))));list=got.filter(Boolean)}catch(e){}
   if(view!=='closing')return;
   const whoHas=r=>{const p=roster.find(p=>{const a=planFor(date,p.id);return a&&!a.off&&(a.sh||'am')===sh&&(a.st||[]).includes(r)});return p?p.id:''};
-  clD=C?{...C,v:{...(C.v||{})},den:{...(C.den||{})},dsc:{...(C.dsc||{})}}:{date,sh,cashier:whoHas(sh==='am'?'cashier_am':'cashier'),supervisor:whoHas('supervisor'),v:{},den:{},dsc:{},coins:'',float:String((cfg&&cfg.float)||CL_FIXED),reason:'',notes:'',sig:''};
+  clD=C?{...C,v:{...(C.v||{})},den:{...(C.den||{})},dsc:{...(C.dsc||{})}}:{date,sh,cashier:whoHas(sh==='am'?'cashier_am':'cashier'),supervisor:whoHas('supervisor'),v:{},den:{},dsc:{},coins:'',float:'',reason:'',notes:'',sig:''};
   clD.date=date;clD.sh=sh;clD.saved=!!C;clD.edit=!C;clD.list=list;clD.baseFloat=(cfg&&cfg.float)||CL_FIXED;drawClose()}
 function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V=clD,R=clCalc(V),lock=!V.edit;
   const inp=(k,val,ph,attr)=>`<span class="clin"><input inputmode="text" dir="ltr" ${attr||'data-cl'}="${k}" value="${esc(val??'')}" placeholder="${ph||'0'}"><small data-eq="${k}">${clIsEx(val)?'= '+c2(clEx(val)):''}</small></span>`;
@@ -1733,7 +1735,7 @@ function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V
     <div class="cltot">إجمالي الخصومات: <b id="cl_disc">${c2(R.disc)}</b> ريال</div></div>
    <div class="card stack"><h3 class="clh">4. العهدة والمطابقة</h3><p class="sub" style="margin:0">العهدة لحالها في الدرج ولا تدخل في حساب كاش فودكس.</p>
     <label class="clrow"><span>العهدة المعدودة في الدرج<small>PETTY CASH · لازم ${c2(CL_FIXED)}</small></span>${inp('float',V.float,String(CL_FIXED))}</label>
-    <div id="cl_fw" class="clwarn" ${R.flt>0&&R.flt<CL_FIXED?'':'hidden'}>⚠️ العهدة ناقصة ${c2(CL_FIXED-R.flt)} ريال عن ${c2(CL_FIXED)}</div>
+    <div id="cl_fw" class="clpetty">${clPettyTxt(V,R)}</div>
     <div class="clmatch"><div><small>كاش فودكس</small><b id="cl_exp">${c2(R.expected)}</b><small>المحسوب من الإجمالي</small></div><div><small>كاش المبيعات المعدود</small><b id="cl_cnt2">${c2(R.counted)}</b></div><div class="cl-${st[0]}" id="cl_res"><small>النتيجة</small><b>${st[1]}</b></div></div>
     <div class="cldep">💵 المبلغ المودع للمالية (كاش المبيعات): <b id="cl_dep">${c2(R.deposit)}</b> ريال · والعهدة اللي تبقى في الدرج: <b id="cl_pret">${c2(R.pret)}</b></div>
     <label class="lbl" id="cl_rsn" ${Math.abs(R.diff)>=5?'':'hidden'}>سبب الفرق (إلزامي)<textarea data-cl="reason" maxlength="300">${esc(V.reason||'')}</textarea></label>
@@ -1757,7 +1759,7 @@ function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V
   const upd=()=>{const R=clCalc(V),s=Math.abs(R.diff)<0.01?['ok','✅ مطابق']:R.diff<0?['bad','🔴 عجز '+c2(-R.diff)+' ريال']:['warn','🟡 زيادة '+c2(R.diff)+' ريال'];
     $('#cl_counted').textContent=c2(R.counted);$('#cl_cnt2').textContent=c2(R.counted);$('#cl_total').textContent=c2(R.total);$('#cl_exp').textContent=c2(R.expected);$('#cl_dep').textContent=c2(R.deposit);$('#cl_pret').textContent=c2(R.pret);$('#cl_disc').textContent=c2(R.disc);
     const ce=$('#cl_cash');if(ce){ce.textContent=V.v.ftotal?c2(R.cash):'—';ce.className=R.cash<0?'neg':''}const sp=$('#cl_split');if(sp)sp.textContent=`(شبكات وحوالات ${c2(R.nonCash-R.apps)} · تطبيقات ${c2(R.apps)} · كاش ${c2(R.cash)})`;
-    const rs=$('#cl_res');rs.className='cl-'+s[0];rs.querySelector('b').textContent=s[1];$('#cl_rsn').hidden=Math.abs(R.diff)<5;$('#cl_fw').hidden=!(R.flt>0&&R.flt<CL_FIXED);
+    const rs=$('#cl_res');rs.className='cl-'+s[0];rs.querySelector('b').textContent=s[1];$('#cl_rsn').hidden=Math.abs(R.diff)<5;{const fw=$('#cl_fw');fw.innerHTML=clPettyTxt(V,R)}
     CL_DEN.forEach(x=>{const e=$('#dn_'+x);if(e)e.textContent=num(V.den[x])?c2(x*num(V.den[x])):''})};
   d.oninput=e=>{const t=e.target;let k=null;if(t.dataset.den){V.den[t.dataset.den]=t.value}else if(t.dataset.cld){k=t.dataset.cld;V.dsc[k]=t.value}else if(t.dataset.cl){k=t.dataset.cl;if(['coins','float','cashier','supervisor','reason','notes'].includes(k))V[k]=t.value;else V.v[k]=t.value}else return;
     if(k){const q=d.querySelector(`[data-eq="${k}"]`);if(q)q.textContent=clIsEx(t.value)?'= '+c2(clEx(t.value)):''}upd()};
@@ -1770,16 +1772,17 @@ function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V
     if(b.id==='cl_save'){const R=clCalc(V),er=$('#cl_e');er.textContent='';if(!V.cashier){er.textContent='اختر الكاشير';return}
       if(!clEx(V.v.ftotal)){er.textContent='اكتب إجمالي فودكس';return}if(R.cash<0){er.textContent='الكاش طلع بالسالب — راجع الأرقام';return}
       if(Math.abs(R.diff)>=5&&!String(V.reason||'').trim()){er.textContent='اكتب سبب الفرق';$('#cl_rsn textarea').focus();return}
-      if(!V.sig){er.textContent='الكاشير لازم يوقّع';return}
+      if(String(V.float||'').trim()===''){er.textContent='اكتب كم لقيت في العهدة';return}if(!V.sig){er.textContent='الكاشير لازم يوقّع';return}
       b.disabled=true;const doc={date:V.date,sh:V.sh,cashier:V.cashier,supervisor:V.supervisor||'',v:V.v,den:V.den,dsc:V.dsc,coins:V.coins,float:V.float,reason:String(V.reason||'').trim(),notes:String(V.notes||'').trim(),sig:V.sig,calc:R,by:uid,ts:Date.now(),...(V.saved?{edited:Date.now()}:{})};
-      try{await db.doc('closing/'+V.date+'_'+V.sh).set(doc);if(clEx(V.float)&&clEx(V.float)!==clD.baseFloat){await db.doc('closing/config').set({float:clEx(V.float),ts:Date.now()});clD.baseFloat=clEx(V.float)}toast('انحفظ الإقفال ✓');openClose(V.date,V.sh)}catch(x){b.disabled=false;er.textContent='ما انحفظ — جرب مرة ثانية'}}}}
+      try{await db.doc('closing/'+V.date+'_'+V.sh).set(doc);toast('انحفظ الإقفال ✓');openClose(V.date,V.sh)}catch(x){b.disabled=false;er.textContent='ما انحفظ — جرب مرة ثانية'}}}}
 /* ---- printing: morning sheet + evening sheet + daily form ---- */
+function clPettyTxt(V,R){if(String(V.float||'').trim()==='')return '<small>اعدّ العهدة لحالها — لازم تكون '+c2(CL_FIXED)+'</small>';const d=R.pdiff;return Math.abs(d)<0.01?'✅ العهدة كاملة '+c2(CL_FIXED):d<0?'🔴 نقص بالعهدة <b>'+c2(-d)+'</b> ريال (لقيت '+c2(R.flt)+' من '+c2(CL_FIXED)+')':'🟡 زيادة بالعهدة <b>'+c2(d)+'</b> ريال'}
 function clSheet(V){const R=clCalc(V),[y,mo,dd]=V.date.split('-');
   const row=(e,a,val)=>`<tr><td class="en">${e}</td><td class="vl">${val===''||val==null?'':c2(val)}</td><td class="ar">${a}</td></tr>`;
   return `<section class="pf"><div class="pfh"><div class="pbox">SHIFT CLOSING</div><img src="${document.querySelector('.logo').src}" alt=""><div class="pbox">إقفال اليومية</div></div>
    <table class="pt"><tr><td class="en">DATE</td><td class="vl">${dd} / ${mo} / ${y}</td><td class="ar">التاريخ</td></tr>
    <tr><td class="en">SHIFT TIME</td><td class="vl">${V.sh==='am'?'☑ AM / ص &nbsp;&nbsp; ☐ PM / م':'☐ AM / ص &nbsp;&nbsp; ☑ PM / م'}</td><td class="ar">موعد الشفت</td></tr></table>
-   <table class="pt">${CL_ROWS.filter(x=>x[3]!=='ret').map(([k,a,e])=>row(e,a,k==='cash'?R.cash:(clEx((V.v||{})[k])??''))).join('')}${row('RETURN','مرتجع',clEx((V.v||{}).ret)??'')}${row('PETTY CASH','عهدة الكاشير',clEx(V.float)??'')}
+   <table class="pt">${CL_ROWS.filter(x=>x[3]!=='ret').map(([k,a,e])=>row(e,a,k==='cash'?R.cash:(clEx((V.v||{})[k])??''))).join('')}${row('RETURN','مرتجع',clEx((V.v||{}).ret)??'')}${row('PETTY CASH','عهدة الكاشير (المعدودة)',clEx(V.float)??'')}${R.pdiff?`<tr><td class="en">PETTY SHORT/OVER</td><td class="vl">${R.pdiff<0?'نقص':'زيادة'} ${c2(Math.abs(R.pdiff))}</td><td class="ar">${R.pdiff<0?'نقص بالعهدة':'زيادة بالعهدة'}</td></tr>`:''}
    <tr class="tot"><td class="en">TOTAL</td><td class="vl">${c2(R.total)}</td><td class="ar">الإجمالي</td></tr></table>
    <table class="pt sm"><tr><th>الفئة</th>${CL_DEN.map(x=>`<th>${x}</th>`).join('')}<th>هللات</th><th>المعدود</th></tr><tr><td>العدد</td>${CL_DEN.map(x=>`<td>${esc((V.den||{})[x]||'')}</td>`).join('')}<td>${esc(V.coins||'')}</td><td><b>${c2(R.counted)}</b></td></tr></table>
    <table class="pt sm"><tr><td>كاش فودكس</td><td><b>${c2(R.expected)}</b></td><td>كاش المبيعات المعدود</td><td><b>${c2(R.counted)}</b></td><td>${Math.abs(R.diff)<0.01?'مطابق':R.diff<0?'عجز':'زيادة'}</td><td><b>${Math.abs(R.diff)<0.01?'—':c2(Math.abs(R.diff))}</b></td></tr></table>
@@ -1802,7 +1805,7 @@ function clDaily(A,P){const RA=A?clCalc(A):null,RP=P?clCalc(P):null,D=(A||P).dat
    <table class="pt">${head.replace('%','بند التسوية')}${r3('العهدة الثابتة المقررة للفرع','Fixed Petty Cash (Float)',CL_FIXED,CL_FIXED)}${r3('العهدة المعدودة فعليًا في بداية الوردية','Actual Petty Cash',RA?RA.flt:'',RP?RP.flt:'')}
    ${r3('المبيعات النقدية حسب النظام','Cash Sales (POS)',RA?RA.cash:'',RP?RP.cash:'')}${r3('كاش المبيعات الفعلي المعدود','Actual Cash',RA?RA.counted:'',RP?RP.counted:'')}
    ${r3('المبلغ المودع (كاش المبيعات)','Deposited',RA?RA.deposit:'',RP?RP.deposit:'')}${r3('العهدة المُعادة وإقفالها في الدرج (يجب أن تساوي 1,000 ريال)','Petty Cash Return',RA?RA.pret:'',RP?RP.pret:'',1)}
-   ${r3('الفرق (عجز − / زيادة +)','Difference',RA?RA.diff:'',RP?RP.diff:'')}</table>
+   ${r3('فرق المبيعات النقدية (عجز − / زيادة +)','Cash Sales Difference',RA?RA.diff:'',RP?RP.diff:'')}${r3('فرق العهدة (نقص − / زيادة +)','Petty Cash Difference',RA?RA.pdiff:'',RP?RP.pdiff:'')}</table>
    <table class="pt"><tr><td class="ar">ملاحظات: Notes</td><td class="vl">${esc(A?[A.reason,A.notes].filter(Boolean).join(' — '):'')}</td><td class="vl">${esc(P?[P.reason,P.notes].filter(Boolean).join(' — '):'')}</td></tr></table>
    <table class="pt sig3"><tr><td class="ar">الكاشير (الاسم + التوقيع + الوقت)<br><span>Cashier name &amp; sign &amp; time</span></td><td class="vl">${A?esc(clName(A.cashier))+(A.sig?`<img class="psig" src="${A.sig}">`:'')+'<small>'+hm(A.ts)+'</small>':''}</td><td class="vl">${P?esc(clName(P.cashier))+(P.sig?`<img class="psig" src="${P.sig}">`:'')+'<small>'+hm(P.ts)+'</small>':''}</td></tr>
    <tr><td class="ar">مشرف الوردية (الاسم + التوقيع)<br><span>Supervisor Name &amp; Sign</span></td><td class="vl">${esc(A?clName(A.supervisor):'')}</td><td class="vl">${esc(P?clName(P.supervisor):'')}</td></tr>
@@ -1812,7 +1815,7 @@ async function clPrintDay(V){let A=null,P=null;try{const [a,p]=await Promise.all
   if(!P&&V.sh==='pm')P=V;if(!A&&!P){toast('ما فيه إقفال محفوظ لهذا اليوم');return}
   let pa=document.getElementById('printArea');if(!pa){pa=document.createElement('div');pa.id='printArea';document.body.appendChild(pa)}
   pa.innerHTML=(A?clSheet(A):'')+(P?clSheet(P):'')+clDaily(A,P);if(!A)toast('تنبيه: إقفال الصباح لهذا اليوم مو محفوظ');
-  setTimeout(()=>window.print(),80)}
+  const ims=[...pa.querySelectorAll('img')];await Promise.all(ims.map(i=>(i.complete&&i.naturalWidth)?0:new Promise(r=>{i.onload=i.onerror=r;setTimeout(r,3000)})));await Promise.all(ims.map(i=>i.decode?i.decode().catch(()=>{}):0));setTimeout(()=>window.print(),400)}
 /* ======================= weekly schedule (everyone) ======================= */
 function openWeek(){closeDash();if(lang==='ar'||isAdmin)dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();
   const ar=lang==='ar'||isAdmin,DN=ar?DOW:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],tdow=dowOf(today());
