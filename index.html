@@ -379,7 +379,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v58</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v59</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1779,7 +1779,7 @@ function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V
    </fieldset>
    <div class="card stack"><div class="err" id="cl_e"></div>
     <div class="edbar">${lock?'':`<button class="btn pri" id="cl_save">💾 حفظ · Save</button>`}${V.sh==='pm'?`<button class="btn" id="cl_print">🖨️ طباعة أوراق اليوم · Print</button>`:''}</div>
-    <p class="sub" style="margin:0">${V.sh==='pm'?'تنطبع: ورقة الصباح + ورقة المساء + نموذج الإقفال اليومي.<span class="ltrl">Prints morning + evening sheets + daily form.</span>':'شفت الصباح ما يطبع — أوراقه تنطبع مع إقفال المساء.<span class="ltrl">Morning is printed with the evening closing.</span>'} 📎 أرفق تقارير التطبيقات وإيصالات الحوالات.<span class="ltrl">Attach app reports &amp; transfer receipts.</span></p></div>
+    <p class="sub" style="margin:0">${V.sh==='pm'?'تنطبع: ورقة الصباح + ورقة المساء + نموذج الإقفال اليومي.<span class="ltrl">Prints the day closing sheet (AM + PM combined) + daily form.</span>':'شفت الصباح ما يطبع — أوراقه تنطبع مع إقفال المساء.<span class="ltrl">Morning is printed with the evening closing.</span>'} 📎 أرفق تقارير التطبيقات وإيصالات الحوالات.<span class="ltrl">Attach app reports &amp; transfer receipts.</span></p></div>
    ${V.list&&V.list.length?`<div class="card stack"><h3 class="clh">آخر الإقفالات · Recent</h3>${V.list.map(x=>{const r=clCalc(x);return `<button class="row clold" data-clopen="${x.date}|${x.sh}"><div class="t"><b>${esc(dayName(x.date))} · ${x.sh==='am'?'صباحي':'مسائي'}</b><small>${esc(clName(x.cashier))} · البيع بدون ضريبة ${c2(r.total/CL_VAT)}</small></div><span class="pill ${Math.abs(r.diff)<0.01?'p-ok':r.diff<0?'p-bad':'p-warn'}">${Math.abs(r.diff)<0.01?'مطابق':(r.diff<0?'عجز ':'زيادة ')+c2(Math.abs(r.diff))}</span></button>`}).join('')}</div>`:''}
   </div>`;
   // signature pad
@@ -1824,6 +1824,23 @@ function clSheet(V){const R=clCalc(V),[y,mo,dd]=V.date.split('-');
    <table class="pt sig"><tr><td class="en">Supervisor /</td><td class="vl">${esc(clName(V.cashier))}</td><td class="ar">مسؤول الإقفال /</td></tr><tr><td class="en">Signature /</td><td class="vl">${V.sig?`<img class="psig" src="${V.sig}">`:''}</td><td class="ar">التوقيع /</td></tr></table>
    <table class="pt sig"><tr><td class="en">Manager /</td><td class="vl"></td><td class="ar">مدير الفرع /</td></tr><tr><td class="en">Signature /</td><td class="vl"></td><td class="ar">التوقيع /</td></tr></table>
    <div class="pnotes"><b>ملاحظات / Notes</b><div>${esc([V.reason?'سبب الفرق: '+V.reason:'',V.notes||''].filter(Boolean).join(' — '))}</div></div></section>`}
+/* one SHIFT CLOSING sheet for the whole day = morning + evening added together */
+function clSheetDay(A,P){const L=[A,P].filter(Boolean),RS=L.map(clCalc),F=P||A,RF=clCalc(F),[y,mo,dd]=F.date.split('-');
+  const sum=k=>{let t=0,any=false;for(const X of L){const n=clEx((X.v||{})[k]);if(n!=null){t+=n;any=true}}return any?t:''};
+  const tot=RS.reduce((a,r)=>a+r.total,0),cash=RS.reduce((a,r)=>a+r.cash,0),dep=RS.reduce((a,r)=>a+r.deposit,0),d=RF.diff;
+  const row=(e,a,val)=>`<tr><td class="en">${e}</td><td class="vl">${val===''||val==null?'':c2(val)}</td><td class="ar">${a}</td></tr>`;
+  const who=(X,lbl)=>X?`<tr><td class="en">${lbl} /</td><td class="vl">${esc(clName(X.cashier))}${X.sig?`<img class="psig" src="${X.sig}">`:''}</td><td class="ar">${lbl==='AM'?'كاشير الصباح':'كاشير المساء'} /</td></tr>`:'';
+  return `<section class="pf"><div class="pfh"><div class="pbox">SHIFT CLOSING</div><img src="${document.querySelector('.logo').src}" alt=""><div class="pbox">إقفال اليومية</div></div>
+   <table class="pt"><tr><td class="en">DATE</td><td class="vl">${dd} / ${mo} / ${y}</td><td class="ar">التاريخ</td></tr>
+   <tr><td class="en">SHIFT TIME</td><td class="vl"><span dir="ltr">${A?'☑':'☐'} AM &nbsp;&nbsp; ${P?'☑':'☐'} PM</span><br><b>إجمالي اليوم · DAY TOTAL</b></td><td class="ar">موعد الشفت</td></tr></table>
+   <table class="pt">${CL_ROWS.filter(x=>x[3]!=='ret').map(([k,a,e])=>row(e,a,k==='cash'?cash:sum(k))).join('')}${row('RETURN','مرتجع',sum('ret'))}${row('PETTY CASH','عهدة الكاشير (نهاية اليوم)',RF.pret)}
+   <tr class="tot"><td class="en">TOTAL</td><td class="vl">${c2(tot)}</td><td class="ar">الإجمالي</td></tr></table>
+   <table class="pt sm"><tr><th>عد الدرج آخر اليوم</th>${CL_DEN.map(x=>`<th>${x}</th>`).join('')}<th>هللات</th><th>المعدود</th></tr><tr><td>العدد</td>${CL_DEN.map(x=>`<td>${esc((F.den||{})[x]||'')}</td>`).join('')}<td>${esc(F.coins||'')}</td><td><b>${c2(RF.counted)}</b></td></tr></table>
+   <table class="pt sm"><tr><td>المسلّم للمالية (صباح + مساء)</td><td><b>${c2(dep)}</b></td><td>العهدة الباقية</td><td><b>${c2(RF.pret)}</b></td><td>${Math.abs(d)<0.01?'العهدة كاملة':d<0?'عجز بالعهدة':'زيادة'}</td><td><b>${Math.abs(d)<0.01?'—':c2(Math.abs(d))}</b></td></tr></table>
+   <div class="pnote">يرجى إرفاق تقارير المبيعات للتطبيقات وكذلك إيصالات الحوالات البنكية<br><span>please attach (chefs, hunger station and jahez) reports as well as bank transfers receipts</span></div>
+   <table class="pt sig">${who(A,'AM')}${who(P,'PM')}</table>
+   <table class="pt sig"><tr><td class="en">Manager /</td><td class="vl"></td><td class="ar">مدير الفرع /</td></tr><tr><td class="en">Signature /</td><td class="vl"></td><td class="ar">التوقيع /</td></tr></table>
+   <div class="pnotes"><b>ملاحظات / Notes</b><div>${esc(L.map(X=>[X.reason?(X.sh==='am'?'الصباح':'المساء')+' — سبب الفرق: '+X.reason:'',X.notes||''].filter(Boolean).join(' — ')).filter(Boolean).join(' | '))}</div></div></section>`}
 function clDaily(A,P){const RA=A?clCalc(A):null,RP=P?clCalc(P):null,D=(A||P).date,[y,mo,dd]=D.split('-');
   const v=(X,k)=>X?(clEx((X.v||{})[k])||''):'',dv=(X,k)=>X?(clEx((X.dsc||{})[k])||''):'',cv=x=>x===''||x==null?'':c2(x);
   const r3=(a,e,va,vp,b)=>`<tr${b?' class="tot"':''}><td class="ar2">${a}<br><span>${e}</span></td><td class="vl">${cv(va)}</td><td class="vl">${cv(vp)}</td></tr>`;
@@ -1848,7 +1865,7 @@ function clDaily(A,P){const RA=A?clCalc(A):null,RP=P?clCalc(P):null,D=(A||P).dat
 async function clPrintDay(V){let A=null,P=null;try{const [a,p]=await Promise.all([db.doc('closing/'+V.date+'_am').get(),db.doc('closing/'+V.date+'_pm').get()]);A=a.exists?a.data():null;P=p.exists?p.data():null}catch(e){}
   if(!P&&V.sh==='pm')P=V;if(!A&&!P){toast('ما فيه إقفال محفوظ لهذا اليوم · No saved closing for this day');return}
   let pa=document.getElementById('printArea');if(!pa){pa=document.createElement('div');pa.id='printArea';document.body.appendChild(pa)}
-  pa.innerHTML=(A?clSheet(A):'')+(P?clSheet(P):'')+clDaily(A,P);if(!A)toast('إقفال الصباح مو محفوظ · Morning closing not saved');
+  pa.innerHTML=clSheetDay(A,P)+clDaily(A,P);if(!A)toast('إقفال الصباح مو محفوظ · Morning closing not saved');
   const ims=[...pa.querySelectorAll('img')];await Promise.all(ims.map(i=>(i.complete&&i.naturalWidth)?0:new Promise(r=>{i.onload=i.onerror=r;setTimeout(r,3000)})));await Promise.all(ims.map(i=>i.decode?i.decode().catch(()=>{}):0));setTimeout(()=>window.print(),400)}
 /* ======================= weekly schedule (everyone) ======================= */
 function openWeek(){closeDash();if(lang==='ar'||isAdmin)dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();
