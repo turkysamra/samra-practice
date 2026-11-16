@@ -365,6 +365,15 @@ tr.slate td{color:var(--bad);font-weight:700}
  .pf:not(.pg) .pfh{margin-bottom:4px}.pf:not(.pg) .pfh img{height:30px}.pf .pbox{padding:3px 8px}.pf:not(.pg) .pnote{margin:4px 0;padding:3px;font-size:9px}
  .pf .psig{height:26px;margin:1px auto}.pf:not(.pg) .pt.sig td{height:auto}.pf .pnotes{min-height:24px;margin-top:4px}
  .pg{font-size:9.5px}.pg .pt td,.pg .pt th{padding:1.5px 5px}.pg .pt{margin-bottom:4px}.pg .sig3 td{height:40px}}
+/*../patch49.css*/@media print{.pday{font-size:10.5px}.pday .pt td,.pday .pt th{padding:3.2px 6px;line-height:1.25}.pday .pt{margin-bottom:6px}
+ .pday .pfh{margin-bottom:6px}.pday .pfh img{height:40px}.pday .pnote{margin:6px 0;padding:5px;font-size:10px}
+ .pday .psig{height:32px}.pday .pt.sig td{height:30px}.pday .pnotes{min-height:30px}}
+/*../patch50.css*/@media print{.pday{font-size:11px}.pday .pt td,.pday .pt th{padding:4.4px 6px}}
+/*../patch51.css*/@media print{.pf.pday:not(.pg){font-size:11px}.pf.pday:not(.pg) .pt td,.pf.pday:not(.pg) .pt th{padding:4.4px 6px;line-height:1.25}.pf.pday:not(.pg) .pt{margin-bottom:6px}
+ .pf.pday:not(.pg) .pfh{margin-bottom:6px}.pf.pday:not(.pg) .pfh img{height:40px}.pf.pday:not(.pg) .pnote{margin:6px 0;padding:5px;font-size:10px}
+ .pf.pday:not(.pg) .psig{height:32px}.pf.pday:not(.pg) .pt.sig td{height:30px}.pf.pday:not(.pg) .pnotes{min-height:30px}}
+/*../patch52.css*/@media print{.pf.pday:not(.pg) .pt td,.pf.pday:not(.pg) .pt th{padding:2.6px 6px}.pf.pday:not(.pg) .psig{height:26px;margin:0 auto}.pf.pday:not(.pg) .pt.sig td{height:auto}.pf.pday:not(.pg) .pfh img{height:34px}}
+/*../patch53.css*/@media print{.pf.pday:not(.pg) .pt td,.pf.pday:not(.pg) .pt th{padding:2.1px 6px}}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -384,7 +393,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v60</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v61</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1762,7 +1771,7 @@ function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V
     ${V.saved?`<div class="clsaved">✓ محفوظ · Saved ${hm(V.ts)}${lock?` <button class="btn sm" id="cl_edit">✏️ تعديل · Edit</button>`:' — تعدّل الحين · editing'}</div>`:''}</div>
    ${clDayCard(V)}
    <fieldset class="clfs" ${lock?'disabled':''}>
-   <div class="card stack"><label class="lbl">الكاشير · Cashier${sel('cashier',V.cashier)}</label><label class="lbl">مشرف الوردية · Supervisor${sel('supervisor',V.supervisor)}</label></div>
+   <div class="card stack"><label class="lbl">مسؤول الإقفال · Closing by${sel('cashier',V.cashier)}</label><label class="lbl">مشرف الوردية · Supervisor${sel('supervisor',V.supervisor)}</label></div>
    <div class="card stack"><h3 class="clh">1. عد كل اللي في الدرج <small class="cle">Count the whole drawer</small></h3><p class="sub" style="margin:0">اعدّ الدرج كامل (العهدة + البيع) — اكتب كم ورقة من كل فئة.<span class="ltrl">Count everything in the drawer (petty cash + sales) — enter how many notes of each.</span></p>
     <div class="clden">${CL_DEN.map(x=>`<label><span>${x}</span><input inputmode="numeric" dir="ltr" data-den="${x}" value="${esc(V.den[x]??'')}" placeholder="0"><small id="dn_${x}">${V.den[x]?c2(x*(num(V.den[x])||0)):''}</small></label>`).join('')}
      <label><span>هللات · Coins</span>${inp('coins',V.coins)}<small></small></label></div>
@@ -1808,7 +1817,7 @@ function drawClose(){const d=$('#dash');if(view!=='closing'||!clD)return;const V
     if(b.dataset.clopen){const [x,s]=b.dataset.clopen.split('|');openClose(x,s);return}
     if(b.id==='cl_edit'){V.edit=true;drawClose();return}
     if(b.id==='cl_print'){clPrintDay(V);return}
-    if(b.id==='cl_save'){const R=clCalc(V),er=$('#cl_e');er.textContent='';if(!V.cashier){er.textContent='اختر الكاشير · Select the cashier';return}
+    if(b.id==='cl_save'){const R=clCalc(V),er=$('#cl_e');er.textContent='';if(!V.cashier){er.textContent='اختر مسؤول الإقفال · Select who is closing';return}
       if(!clEx(V.v.ftotal)){er.textContent='اكتب إجمالي فودكس · Enter the Foodics total';return}if(R.cash<0){er.textContent='الكاش طلع بالسالب — راجع الأرقام · Cash is negative, check the numbers';return}
       if(Math.abs(R.diff)>=5&&!String(V.reason||'').trim()){er.textContent='اكتب سبب الفرق · Write the reason';$('#cl_rsn textarea').focus();return}
       if(!V.sig){er.textContent='الكاشير لازم يوقّع · The cashier must sign';return}
@@ -1834,8 +1843,8 @@ function clSheetDay(A,P){const L=[A,P].filter(Boolean),RS=L.map(clCalc),F=P||A,R
   const sum=k=>{let t=0,any=false;for(const X of L){const n=clEx((X.v||{})[k]);if(n!=null){t+=n;any=true}}return any?t:''};
   const tot=RS.reduce((a,r)=>a+r.total,0),cash=RS.reduce((a,r)=>a+r.cash,0),dep=RS.reduce((a,r)=>a+r.deposit,0),d=RF.diff;
   const row=(e,a,val)=>`<tr><td class="en">${e}</td><td class="vl">${val===''||val==null?'':c2(val)}</td><td class="ar">${a}</td></tr>`;
-  const who=(X,lbl)=>X?`<tr><td class="en">${lbl} /</td><td class="vl">${esc(clName(X.cashier))}${X.sig?`<img class="psig" src="${X.sig}">`:''}</td><td class="ar">${lbl==='AM'?'كاشير الصباح':'كاشير المساء'} /</td></tr>`:'';
-  return `<section class="pf"><div class="pfh"><div class="pbox">SHIFT CLOSING</div><img src="${document.querySelector('.logo').src}" alt=""><div class="pbox">إقفال اليومية</div></div>
+  const who=(X,lbl)=>X?`<tr><td class="en">Supervisor (${lbl}) /</td><td class="vl">${esc(clName(X.cashier))}</td><td class="ar">مسؤول الإقفال (${lbl==='AM'?'الصباح':'المساء'}) /</td></tr><tr><td class="en">Signature /</td><td class="vl">${X.sig?`<img class="psig" src="${X.sig}">`:''}</td><td class="ar">التوقيع /</td></tr>`:'';
+  return `<section class="pf pday"><div class="pfh"><div class="pbox">SHIFT CLOSING</div><img src="${document.querySelector('.logo').src}" alt=""><div class="pbox">إقفال اليومية</div></div>
    <table class="pt"><tr><td class="en">DATE</td><td class="vl">${dd} / ${mo} / ${y}</td><td class="ar">التاريخ</td></tr>
    <tr><td class="en">SHIFT TIME</td><td class="vl"><span dir="ltr">${A?'☑':'☐'} AM &nbsp;&nbsp; ${P?'☑':'☐'} PM</span><br><b>إجمالي اليوم · DAY TOTAL</b></td><td class="ar">موعد الشفت</td></tr></table>
    <table class="pt">${CL_ROWS.filter(x=>x[3]!=='ret').map(([k,a,e])=>row(e,a,k==='cash'?cash:sum(k))).join('')}${row('RETURN','مرتجع',sum('ret'))}${row('PETTY CASH','عهدة الكاشير (نهاية اليوم)',RF.pret)}
@@ -1843,7 +1852,7 @@ function clSheetDay(A,P){const L=[A,P].filter(Boolean),RS=L.map(clCalc),F=P||A,R
    <table class="pt sm"><tr><td>المسلّم للمالية (صباح + مساء)</td><td><b>${c2(dep)}</b></td><td>الدرج آخر اليوم</td><td><b>${c2(RF.counted)}</b></td><td>العهدة الباقية</td><td><b>${c2(RF.pret)}</b></td><td>${Math.abs(d)<0.01?'العهدة كاملة':d<0?'عجز بالعهدة':'زيادة'}</td><td><b>${Math.abs(d)<0.01?'—':c2(Math.abs(d))}</b></td></tr></table>
    <div class="pnote">يرجى إرفاق تقارير المبيعات للتطبيقات وكذلك إيصالات الحوالات البنكية<br><span>please attach (chefs, hunger station and jahez) reports as well as bank transfers receipts</span></div>
    <table class="pt sig">${who(A,'AM')}${who(P,'PM')}</table>
-   <table class="pt sig"><tr><td class="en">Manager /</td><td class="vl"></td><td class="ar">مدير الفرع والتوقيع /</td></tr></table>
+   <table class="pt sig"><tr><td class="en">Manager /</td><td class="vl"></td><td class="ar">مدير الفرع /</td></tr><tr><td class="en">Signature /</td><td class="vl"></td><td class="ar">التوقيع /</td></tr></table>
    <div class="pnotes"><b>ملاحظات / Notes</b><div>${esc(L.map(X=>[X.reason?(X.sh==='am'?'الصباح':'المساء')+' — سبب الفرق: '+X.reason:'',X.notes||''].filter(Boolean).join(' — ')).filter(Boolean).join(' | '))}</div></div></section>`}
 function clDaily(A,P){const RA=A?clCalc(A):null,RP=P?clCalc(P):null,D=(A||P).date,[y,mo,dd]=D.split('-');
   const v=(X,k)=>X?(clEx((X.v||{})[k])||''):'',dv=(X,k)=>X?(clEx((X.dsc||{})[k])||''):'',cv=x=>x===''||x==null?'':c2(x);
