@@ -394,7 +394,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v63</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v64</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1019,14 +1019,18 @@ let dayUnsub=null,msgUnsub=null,staffMsg=null,vipMsg=null;
 const inboxSync=()=>{const ib=$('#inbox');if(ib)ib.hidden=$('#staffMsg').hidden&&$('#vipMsg').hidden};
 const vipGet=(V,D)=>(V&&V.days&&V.days[D])||(V&&V.date===D?V:null);
 const vipWho=u=>{const p=roster.find(x=>x.uid===u);return p?(p.ar||p.name):(u===uid?'أنت':'')};
-function vipDoneHTML(v,i,D){const dn=(v.done||{})[i],can=D&&((v.doneBy||[]).includes(uid)||isOwnerF())&&D>=addDays(today(),-1);
+function vipDoneHTML(v,i0,D){const i=v._map?v._map[i0]:i0,dn=(v.done||{})[i],can=D&&((v.doneBy||[]).includes(uid)||isOwnerF())&&D>=addDays(today(),-1);
   if(dn)return `<div class="vpdone on">✅ تم <small>${esc(vipWho(dn.by))} · ${hm(dn.ts)}</small>${can?`<button class="link" data-vdone="${i}" data-vd="${D}" data-von="0">تراجع</button>`:''}</div>`;
   return can?`<button class="btn sm vpbtn" data-vdone="${i}" data-vd="${D}" data-von="1">تم ✓</button>`:(v.doneBy&&v.doneBy.length?'<div class="vpdone">⏳ لسا</div>':'')}
+function vipOpen(v){const its=v.items||[],dn=v.done||{},keep=[],done={};its.forEach((x,i)=>{if(!dn[i])keep.push(i)});
+  if(keep.length===its.length)return v;if(!keep.length)return {...v,items:[],note:''};
+  return {...v,items:keep.map(i=>its[i]),done:{},_map:keep}}
 function vipHTML(v,title,D){const its=v.items||[],chips=t=>String(t||'').split(/\s*[+،,\n]\s*/).filter(Boolean).map(x=>`<span class="vpc">${esc(x)}</span>`).join('');
   return `<div class="vph"><span>📣 ${esc(title)}</span>${its.length>1?`<span class="vpn">${its.length}</span>`:''}</div>`
    +its.map((x,i)=>`<div class="vpi"><div class="vpt"><b><bdi>${esc(x.n||'—')}</bdi></b>${x.t?`<span class="vptm">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}</div>${x.p?`<div class="vpcs">${chips(x.p)}</div>`:''}${vipDoneHTML(v,i,D)}</div>`).join('')
    +(v.note?`<div class="vpnote">📝 ${esc(v.note)}</div>`:'')}
-function showVip(){const b=$('#vipMsg');if(!b)return;setTimeout(inboxSync,0);const v=vipGet(vipMsg,today()),ok=v&&((v.items||[]).length||v.note);b.hidden=!ok;if(!ok)return;
+/* advertisers marked done disappear from the home page */
+function showVip(){const b=$('#vipMsg');if(!b)return;setTimeout(inboxSync,0);const v0=vipGet(vipMsg,today()),v=v0&&vipOpen(v0),ok=v&&((v.items||[]).length||v.note);b.hidden=!ok;if(!ok)return;
   b.innerHTML=vipHTML(v,'معلنين اليوم',today());return;}
 async function pushCard(){const b=$('#pushc');if(!b||!window.__push)return;const P=window.__push;let dis=false;try{dis=localStorage.getItem('samraa_push_x')==='1'}catch(e){}
   if(dis||await P.isOn()){b.hidden=true;return}
