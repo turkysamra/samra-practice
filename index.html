@@ -394,7 +394,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v62</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v63</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1019,7 +1019,7 @@ let dayUnsub=null,msgUnsub=null,staffMsg=null,vipMsg=null;
 const inboxSync=()=>{const ib=$('#inbox');if(ib)ib.hidden=$('#staffMsg').hidden&&$('#vipMsg').hidden};
 const vipGet=(V,D)=>(V&&V.days&&V.days[D])||(V&&V.date===D?V:null);
 const vipWho=u=>{const p=roster.find(x=>x.uid===u);return p?(p.ar||p.name):(u===uid?'أنت':'')};
-function vipDoneHTML(v,i,D){const dn=(v.done||{})[i],can=D&&(v.doneBy||[]).includes(uid)&&D>=addDays(today(),-1);
+function vipDoneHTML(v,i,D){const dn=(v.done||{})[i],can=D&&((v.doneBy||[]).includes(uid)||isOwnerF())&&D>=addDays(today(),-1);
   if(dn)return `<div class="vpdone on">✅ تم <small>${esc(vipWho(dn.by))} · ${hm(dn.ts)}</small>${can?`<button class="link" data-vdone="${i}" data-vd="${D}" data-von="0">تراجع</button>`:''}</div>`;
   return can?`<button class="btn sm vpbtn" data-vdone="${i}" data-vd="${D}" data-von="1">تم ✓</button>`:(v.doneBy&&v.doneBy.length?'<div class="vpdone">⏳ لسا</div>':'')}
 function vipHTML(v,title,D){const its=v.items||[],chips=t=>String(t||'').split(/\s*[+،,\n]\s*/).filter(Boolean).map(x=>`<span class="vpc">${esc(x)}</span>`).join('');
@@ -1681,7 +1681,7 @@ async function openReport(){
 /* ======================= today's advertisers — private to chosen staff ======================= */
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-vdone]');if(!b)return;e.preventDefault();e.stopPropagation();
   if(!window.__rpc){toast('غير متاح');return}b.disabled=true;const on=b.dataset.von==='1';
-  try{const {error}=await window.__rpc('vip_done',{d:b.dataset.vd,i:+b.dataset.vdone,on_:on});if(error)throw error;toast(on?'تم ✓':'تراجعت')}catch(x){b.disabled=false;toast('ما انحفظ — جرب مرة ثانية')}},true);
+  try{const {error}=await window.__rpc('vip_done',{d:b.dataset.vd,i:+b.dataset.vdone,on_:on});if(error)throw error;toast(on?'تم ✓':'تراجعت');if(view==='vipmsg'&&vipD)openVip(vipD.date)}catch(x){b.disabled=false;toast('ما انحفظ — جرب مرة ثانية')}},true);
 const VIPDEF=['youssef','fahad','azzam'];let vipD=null;
 async function openVip(D){closeDash();dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();d.innerHTML='<div class="msg">جاري التحميل…</div>';
   const day=D||(vipD&&vipD.date>=today()?vipD.date:today());let M=null,L=null,IX=null;
@@ -1699,7 +1699,7 @@ function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=v
     ${up.length?`<div class="sub">المجدول:</div><div class="edchips">${up.map(([k,n])=>`<button class="edchip ${k===V.date?'on':''}" data-vgo="${k}">${esc(dayName(k))} · ${n}</button>`).join('')}</div>`:''}
     <div class="sub">يوصل لـ:</div><div class="edchips">${roster.map(p=>`<button class="edchip ${V.to.includes(p.id)?'on':''}" data-vto="${esc(p.id)}">${esc(p.ar||p.name)}${p.uid?'':' ·  ما سجّل'}</button>`).join('')}</div>
     <div class="sub">✅ مين يقدر يضغط "تم":</div><div class="edchips">${roster.filter(p=>V.to.includes(p.id)).map(p=>`<button class="edchip ${V.doneByR.includes(p.id)?'on':''}" data-vdb="${esc(p.id)}">${esc(p.ar||p.name)}</button>`).join('')||'<span class="sub">اختر اللي يوصلهم أول</span>'}</div></div>
-   ${V.items.map((x,i)=>`<div class="card stack vipe"><div class="vh"><b>معلن ${i+1}</b>${V.sent&&(V.done||{})[i]?`<span class="pill p-ok">✅ تم · ${esc(vipWho(V.done[i].by))} ${hm(V.done[i].ts)}</span>`:V.sent?'<span class="pill p-warn">⏳ لسا</span>':''}${V.items.length>1?`<button class="btn sm badb" data-vdel="${i}">🗑</button>`:''}</div>
+   ${V.items.map((x,i)=>`<div class="card stack vipe"><div class="vh"><b>معلن ${i+1}</b>${V.sent&&(V.done||{})[i]?`<span class="pill p-ok">✅ تم · ${esc(vipWho(V.done[i].by))} ${hm(V.done[i].ts)}</span>${V.date>=addDays(today(),-1)?`<button class="link" data-vdone="${i}" data-vd="${V.date}" data-von="0">تراجع</button>`:''}`:V.sent?`<span class="pill p-warn">⏳ لسا</span>${V.date>=addDays(today(),-1)?`<button class="btn sm vpbtn" data-vdone="${i}" data-vd="${V.date}" data-von="1">تم ✓</button>`:''}`:''}${V.items.length>1?`<button class="btn sm badb" data-vdel="${i}">🗑</button>`:''}</div>
      <label class="lbl">اسم المعلن<input data-vf="n" data-vi="${i}" maxlength="80" value="${esc(x.n)}" placeholder="مثلاً: @name"></label>
      <label class="lbl">الوقت (اختياري)<input data-vf="t" data-vi="${i}" maxlength="40" value="${esc(x.t)}" placeholder="مثلاً: 9:00 م"></label>
      <label class="lbl">المنتجات<textarea data-vf="p" data-vi="${i}" maxlength="1000" placeholder="مثلاً: لاتيه بارد + كيكة التمر + سبانش">${esc(x.p)}</textarea></label></div>`).join('')}
