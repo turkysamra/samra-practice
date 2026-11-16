@@ -374,6 +374,7 @@ tr.slate td{color:var(--bad);font-weight:700}
  .pf.pday:not(.pg) .psig{height:32px}.pf.pday:not(.pg) .pt.sig td{height:30px}.pf.pday:not(.pg) .pnotes{min-height:30px}}
 /*../patch52.css*/@media print{.pf.pday:not(.pg) .pt td,.pf.pday:not(.pg) .pt th{padding:2.6px 6px}.pf.pday:not(.pg) .psig{height:26px;margin:0 auto}.pf.pday:not(.pg) .pt.sig td{height:auto}.pf.pday:not(.pg) .pfh img{height:34px}}
 /*../patch53.css*/@media print{.pf.pday:not(.pg) .pt td,.pf.pday:not(.pg) .pt th{padding:2.1px 6px}}
+/*../patch54.css*/.vpbtn{align-self:flex-start;margin-top:2px}.vpdone{font-size:.85em;color:var(--mut);display:flex;gap:8px;align-items:center;flex-wrap:wrap}.vpdone.on{color:var(--ok,#2e7d32);font-weight:600}.vpdone small{font-weight:400;color:var(--mut)}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -393,7 +394,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v61</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v62</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1017,16 +1018,16 @@ function watchPlan(){
 let dayUnsub=null,msgUnsub=null,staffMsg=null,vipMsg=null;
 const inboxSync=()=>{const ib=$('#inbox');if(ib)ib.hidden=$('#staffMsg').hidden&&$('#vipMsg').hidden};
 const vipGet=(V,D)=>(V&&V.days&&V.days[D])||(V&&V.date===D?V:null);
-function vipHTML(v,title){const its=v.items||[],chips=t=>String(t||'').split(/\s*[+،,\n]\s*/).filter(Boolean).map(x=>`<span class="vpc">${esc(x)}</span>`).join('');
+const vipWho=u=>{const p=roster.find(x=>x.uid===u);return p?(p.ar||p.name):(u===uid?'أنت':'')};
+function vipDoneHTML(v,i,D){const dn=(v.done||{})[i],can=D&&(v.doneBy||[]).includes(uid)&&D>=addDays(today(),-1);
+  if(dn)return `<div class="vpdone on">✅ تم <small>${esc(vipWho(dn.by))} · ${hm(dn.ts)}</small>${can?`<button class="link" data-vdone="${i}" data-vd="${D}" data-von="0">تراجع</button>`:''}</div>`;
+  return can?`<button class="btn sm vpbtn" data-vdone="${i}" data-vd="${D}" data-von="1">تم ✓</button>`:(v.doneBy&&v.doneBy.length?'<div class="vpdone">⏳ لسا</div>':'')}
+function vipHTML(v,title,D){const its=v.items||[],chips=t=>String(t||'').split(/\s*[+،,\n]\s*/).filter(Boolean).map(x=>`<span class="vpc">${esc(x)}</span>`).join('');
   return `<div class="vph"><span>📣 ${esc(title)}</span>${its.length>1?`<span class="vpn">${its.length}</span>`:''}</div>`
-   +its.map(x=>`<div class="vpi"><div class="vpt"><b><bdi>${esc(x.n||'—')}</bdi></b>${x.t?`<span class="vptm">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}</div>${x.p?`<div class="vpcs">${chips(x.p)}</div>`:''}</div>`).join('')
+   +its.map((x,i)=>`<div class="vpi"><div class="vpt"><b><bdi>${esc(x.n||'—')}</bdi></b>${x.t?`<span class="vptm">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}</div>${x.p?`<div class="vpcs">${chips(x.p)}</div>`:''}${vipDoneHTML(v,i,D)}</div>`).join('')
    +(v.note?`<div class="vpnote">📝 ${esc(v.note)}</div>`:'')}
 function showVip(){const b=$('#vipMsg');if(!b)return;setTimeout(inboxSync,0);const v=vipGet(vipMsg,today()),ok=v&&((v.items||[]).length||v.note);b.hidden=!ok;if(!ok)return;
-  b.innerHTML=vipHTML(v,'معلنين اليوم');return;
-  const its=v.items||[],chips=t=>String(t||'').split(/\s*[+،,\n]\s*/).filter(Boolean).map(x=>`<span class="vpc">${esc(x)}</span>`).join('');
-  b.innerHTML=`<div class="vph"><span>📣 معلنين اليوم</span>${its.length>1?`<span class="vpn">${its.length}</span>`:''}</div>`
-   +its.map(x=>`<div class="vpi"><div class="vpt"><b><bdi>${esc(x.n||'—')}</bdi></b>${x.t?`<span class="vptm">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}</div>${x.p?`<div class="vpcs">${chips(x.p)}</div>`:''}</div>`).join('')
-   +(v.note?`<div class="vpnote">📝 ${esc(v.note)}</div>`:'')}
+  b.innerHTML=vipHTML(v,'معلنين اليوم',today());return;}
 async function pushCard(){const b=$('#pushc');if(!b||!window.__push)return;const P=window.__push;let dis=false;try{dis=localStorage.getItem('samraa_push_x')==='1'}catch(e){}
   if(dis||await P.isOn()){b.hidden=true;return}
   const iosWeb=P.ios()&&!P.standalone();if(!P.ok()&&!iosWeb){b.hidden=true;return}
@@ -1087,7 +1088,7 @@ async function dayView(){const D=vD;shownSheets='day:'+D;
     const body=e?entryDetail(s,e):'';
     return `<details class="row dday" ${body?'':'data-empty'}><summary><div class="t"><b>${esc(sheetName(s))}</b><small>${e?(e.total?e.done+'/'+e.total+' · ':'')+esc(new Date(e.ts).toLocaleTimeString(loc(),{timeZone:'Asia/Riyadh',hour:'numeric',minute:'2-digit'}))+(lm?' · ⏰ '+(lang==='ar'?fmtLate(lm):'+'+(lm>=60?Math.floor(lm/60)+'h '+(lm%60?lm%60+'m':''):lm+'m')):''):''}</small>${rv&&rv.note?`<small>${esc(rv.note)}</small>`:''}${mine['q_'+D+'_'+id]?`<small>💬 ${esc(mine['q_'+D+'_'+id].q)}${mine['a_'+D+'_'+id]?' ↩ '+esc(mine['a_'+D+'_'+id].a):''}</small>`:''}</div>${pl}</summary>${body?`<div class="ddb">${body}</div>`:''}</details>`};
   $('#main').innerHTML=`<div class="stack">${dnavHTML()}
-   ${(()=>{const V=vipGet(vipMsg,D),hv=V&&((V.items||[]).length||V.note);if(!(M&&M.text)&&!hv)return '';return `<div class="inbox rv in">${M&&M.text?`<div class="staffmsg"><div class="smh">📢 ${esc(t_('dayMsg'))}</div><div class="smt">${esc(M.text)}</div></div>`:''}${hv?`<div class="staffmsg vipmsg">${vipHTML(V,'المعلنين')}</div>`:''}</div>`})()}
+   ${(()=>{const V=vipGet(vipMsg,D),hv=V&&((V.items||[]).length||V.note);if(!(M&&M.text)&&!hv)return '';return `<div class="inbox rv in">${M&&M.text?`<div class="staffmsg"><div class="smh">📢 ${esc(t_('dayMsg'))}</div><div class="smt">${esc(M.text)}</div></div>`:''}${hv?`<div class="staffmsg vipmsg">${vipHTML(V,'المعلنين',D)}</div>`:''}</div>`})()}
    <section class="hsec"><div class="sech rv in"><h2>📝 ${esc(t_('myChecklist'))}</h2></div>
    ${a&&a.off?`<div class="card rv in" style="text-align:center"><div style="font-size:34px">🌴</div><p class="sub" style="margin:6px 0 0">${esc(t_('dayOff'))}</p></div>`
      :list.length?`<div class="stack" style="gap:10px">${list.map(row).join('')}</div>`:`<div class="msg rv in">${esc(t_('noAssign'))}</div>`}</section>
@@ -1678,13 +1679,17 @@ async function openReport(){
     try{await db.doc('plan/msg_'+day).set({text:tx,by:uid,ts:Date.now()});toast('انرسلت للموظفين ✓');b.disabled=false;b.textContent='تحديث الرسالة'}catch(e){b.disabled=false;$('#rep_e').textContent='ما انرسلت — جرب مرة ثانية'}};
 }
 /* ======================= today's advertisers — private to chosen staff ======================= */
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-vdone]');if(!b)return;e.preventDefault();e.stopPropagation();
+  if(!window.__rpc){toast('غير متاح');return}b.disabled=true;const on=b.dataset.von==='1';
+  try{const {error}=await window.__rpc('vip_done',{d:b.dataset.vd,i:+b.dataset.vdone,on_:on});if(error)throw error;toast(on?'تم ✓':'تراجعت')}catch(x){b.disabled=false;toast('ما انحفظ — جرب مرة ثانية')}},true);
 const VIPDEF=['youssef','fahad','azzam'];let vipD=null;
 async function openVip(D){closeDash();dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();d.innerHTML='<div class="msg">جاري التحميل…</div>';
   const day=D||(vipD&&vipD.date>=today()?vipD.date:today());let M=null,L=null,IX=null;
   try{const [a,b,c]=await Promise.all([db.doc('admin/vip_'+day).get(),db.doc('admin/vipday').get(),db.doc('admin/vipidx').get()]);M=a.exists?a.data():null;L=b.exists?b.data():null;IX=c.exists?c.data():null}catch(e){}
   if(view!=='vipmsg')return;if(!M&&L&&L.date===day)M=L;
   const lastTo=(M&&M.to)||(IX&&IX.to)||(L&&L.to)||VIPDEF.filter(id=>roster.some(p=>p.id===id));
-  vipD={date:day,to:[...lastTo],items:M?(M.items||[]):[],note:M?(M.note||''):'',prevTo:M?(M.to||[]):[],sent:!!(M&&M.ts&&((M.items||[]).length||M.note)),ts:M&&M.ts,idx:(IX&&IX.dates)||{}};
+  const lastDone=(M&&M.doneByR)||(IX&&IX.doneByR)||[...lastTo];
+  vipD={date:day,done:(M&&M.done)||{},doneByR:[...lastDone],to:[...lastTo],items:M?(M.items||[]):[],note:M?(M.note||''):'',prevTo:M?(M.to||[]):[],sent:!!(M&&M.ts&&((M.items||[]).length||M.note)),ts:M&&M.ts,idx:(IX&&IX.dates)||{},savedItems:M?(M.items||[]).map(x=>({...x})):[]};
   if(L&&L.date&&L.ts&&((L.items||[]).length||L.note)&&!vipD.idx[L.date])vipD.idx[L.date]=(L.items||[]).length||1;
   if(!vipD.items.length)vipD.items=[{n:'',t:'',p:''}];drawVip()}
 function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=vipD,isT=V.date===today();
@@ -1692,8 +1697,9 @@ function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=v
   d.innerHTML=`<div class="fade stack"><div class="card stack"><h2>📣 المعلنين</h2><p class="sub" style="margin-top:-6px">اختر اليوم، واكتب المعلنين. يطلعون في ذاك اليوم بس، فوق صفحة اللي تختارهم.</p>
     <div class="datebar"><button class="btn" data-vday="-1">‹ السابق</button><label class="dpick"><span>${esc(dayName(V.date))}${isT?' · اليوم':''}</span><input type="date" id="vip_date" value="${V.date}" min="${today()}"></label><button class="btn" data-vday="1">التالي ›</button><button class="btn" data-vday="0">اليوم</button></div>
     ${up.length?`<div class="sub">المجدول:</div><div class="edchips">${up.map(([k,n])=>`<button class="edchip ${k===V.date?'on':''}" data-vgo="${k}">${esc(dayName(k))} · ${n}</button>`).join('')}</div>`:''}
-    <div class="sub">يوصل لـ:</div><div class="edchips">${roster.map(p=>`<button class="edchip ${V.to.includes(p.id)?'on':''}" data-vto="${esc(p.id)}">${esc(p.ar||p.name)}${p.uid?'':' ·  ما سجّل'}</button>`).join('')}</div></div>
-   ${V.items.map((x,i)=>`<div class="card stack vipe"><div class="vh"><b>معلن ${i+1}</b>${V.items.length>1?`<button class="btn sm badb" data-vdel="${i}">🗑</button>`:''}</div>
+    <div class="sub">يوصل لـ:</div><div class="edchips">${roster.map(p=>`<button class="edchip ${V.to.includes(p.id)?'on':''}" data-vto="${esc(p.id)}">${esc(p.ar||p.name)}${p.uid?'':' ·  ما سجّل'}</button>`).join('')}</div>
+    <div class="sub">✅ مين يقدر يضغط "تم":</div><div class="edchips">${roster.filter(p=>V.to.includes(p.id)).map(p=>`<button class="edchip ${V.doneByR.includes(p.id)?'on':''}" data-vdb="${esc(p.id)}">${esc(p.ar||p.name)}</button>`).join('')||'<span class="sub">اختر اللي يوصلهم أول</span>'}</div></div>
+   ${V.items.map((x,i)=>`<div class="card stack vipe"><div class="vh"><b>معلن ${i+1}</b>${V.sent&&(V.done||{})[i]?`<span class="pill p-ok">✅ تم · ${esc(vipWho(V.done[i].by))} ${hm(V.done[i].ts)}</span>`:V.sent?'<span class="pill p-warn">⏳ لسا</span>':''}${V.items.length>1?`<button class="btn sm badb" data-vdel="${i}">🗑</button>`:''}</div>
      <label class="lbl">اسم المعلن<input data-vf="n" data-vi="${i}" maxlength="80" value="${esc(x.n)}" placeholder="مثلاً: @name"></label>
      <label class="lbl">الوقت (اختياري)<input data-vf="t" data-vi="${i}" maxlength="40" value="${esc(x.t)}" placeholder="مثلاً: 9:00 م"></label>
      <label class="lbl">المنتجات<textarea data-vf="p" data-vi="${i}" maxlength="1000" placeholder="مثلاً: لاتيه بارد + كيكة التمر + سبانش">${esc(x.p)}</textarea></label></div>`).join('')}
@@ -1705,20 +1711,24 @@ function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=v
   d.onclick=async e=>{const b=e.target.closest('button');if(!b)return;
     if(b.dataset.vday!=null){const n=+b.dataset.vday,nd=n===0?today():addDays(V.date,n);openVip(nd<today()?today():nd);return}
     if(b.dataset.vgo){openVip(b.dataset.vgo);return}
-    if(b.dataset.vto){const id=b.dataset.vto,i=V.to.indexOf(id);if(i>=0)V.to.splice(i,1);else V.to.push(id);drawVip();return}
+    if(b.dataset.vto){const id=b.dataset.vto,i=V.to.indexOf(id);if(i>=0){V.to.splice(i,1);V.doneByR=V.doneByR.filter(x=>x!==id)}else V.to.push(id);drawVip();return}
+    if(b.dataset.vdb){const id=b.dataset.vdb,i=V.doneByR.indexOf(id);if(i>=0)V.doneByR.splice(i,1);else V.doneByR.push(id);drawVip();return}
     if(b.dataset.vdel!=null){V.items.splice(+b.dataset.vdel,1);drawVip();return}
     if(b.id==='vip_add'){V.items.push({n:'',t:'',p:''});drawVip();const ins=d.querySelectorAll('[data-vf=n]');ins[ins.length-1].focus();return}
     if(b.id==='vip_s'||b.id==='vip_c'){const clear=b.id==='vip_c';const items=clear?[]:V.items.map(x=>({n:x.n.trim(),t:x.t.trim(),p:x.p.trim()})).filter(x=>x.n||x.p);const note=clear?'':V.note.trim();
       if(!clear&&!items.length&&!note){$('#vip_e').textContent='اكتب معلن واحد على الأقل';return}if(!clear&&!V.to.length){$('#vip_e').textContent='اختر مين يوصله';return}
-      b.disabled=true;const ts=Date.now(),D=V.date,msg={items,note,ts},keep=addDays(today(),-7);
+      b.disabled=true;const ts=Date.now(),D=V.date,keep=addDays(today(),-7);
+      const oldIt=V.savedItems||[],done={};items.forEach((x,i)=>{const j=oldIt.findIndex(o=>(o.n||'').trim()===x.n);if(j>=0&&(V.done||{})[j])done[i]=V.done[j]});
+      const doneBy=roster.filter(p=>p.uid&&V.doneByR.includes(p.id)&&V.to.includes(p.id)).map(p=>p.uid);
+      const msg={items,note,ts,done,doneBy};
       try{const ppl=roster.filter(p=>p.uid&&(V.to.includes(p.id)||V.prevTo.includes(p.id)));
         await Promise.all(ppl.map(async p=>{let cur={};try{const s=await db.doc('vip/'+p.uid).get();cur=s.exists?(s.data()||{}):{}}catch(x){}
           const days={...(cur.days||{})};if(cur.date&&!days[cur.date]&&((cur.items||[]).length||cur.note))days[cur.date]={items:cur.items||[],note:cur.note||'',ts:cur.ts||0};
           if(!clear&&V.to.includes(p.id))days[D]=msg;else delete days[D];Object.keys(days).forEach(k=>{if(k<keep)delete days[k]});
           await db.doc('vip/'+p.uid).set({days,ts})}));
-        await db.doc('admin/vip_'+D).set({date:D,...msg,by:uid,to:[...V.to]});
+        await db.doc('admin/vip_'+D).set({date:D,...msg,by:uid,to:[...V.to],doneByR:[...V.doneByR],toU:roster.filter(p=>p.uid&&V.to.includes(p.id)).map(p=>p.uid)});V.done=done;V.savedItems=items.map(x=>({...x}));
         const idx={...(V.idx||{})};if(clear||!items.length&&!note)delete idx[D];else idx[D]=items.length||1;Object.keys(idx).forEach(k=>{if(k<keep)delete idx[k]});
-        await db.doc('admin/vipidx').set({dates:idx,to:[...V.to],ts});V.idx=idx;
+        await db.doc('admin/vipidx').set({dates:idx,to:[...V.to],doneByR:[...V.doneByR],ts});V.idx=idx;
         V.prevTo=clear?[]:[...V.to];V.sent=!clear;V.ts=ts;if(clear){V.items=[{n:'',t:'',p:''}];V.note=''}
         const send=roster.filter(p=>V.to.includes(p.id)&&p.uid),miss=roster.filter(p=>V.to.includes(p.id)&&!p.uid).map(p=>p.ar||p.name);
         toast(clear?'انمسحت ✓':(D===today()?'انرسلت لـ ':'انحفظت ليوم '+dayName(D).split('،')[0]+' — تطلع لـ ')+send.map(p=>p.ar||p.name).join('، ')+' ✓'+(miss.length?' — '+miss.join('، ')+' ما سجّل بعد':''));drawVip()}
