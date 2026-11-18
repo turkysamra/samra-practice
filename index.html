@@ -395,7 +395,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v65</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v66</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1730,6 +1730,7 @@ function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=v
       const oldIt=V.savedItems||[],done={};items.forEach((x,i)=>{const j=oldIt.findIndex(o=>(o.n||'').trim()===x.n);if(j>=0&&(V.done||{})[j])done[i]=V.done[j]});
       const doneBy=roster.filter(p=>p.uid&&V.doneByR.includes(p.id)&&V.to.includes(p.id)).map(p=>p.uid);
       const msg={items,note,ts,done,doneBy};
+      const newNames=items.filter(x=>x.n&&!oldIt.some(o=>(o.n||'').trim()===x.n)).map(x=>x.n),prevTo0=[...(V.prevTo||[])];
       try{const ppl=roster.filter(p=>p.uid&&(V.to.includes(p.id)||V.prevTo.includes(p.id)));
         await Promise.all(ppl.map(async p=>{let cur={};try{const s=await db.doc('vip/'+p.uid).get();cur=s.exists?(s.data()||{}):{}}catch(x){}
           const days={...(cur.days||{})};if(cur.date&&!days[cur.date]&&((cur.items||[]).length||cur.note))days[cur.date]={items:cur.items||[],note:cur.note||'',ts:cur.ts||0};
@@ -1738,6 +1739,9 @@ function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=v
         await db.doc('admin/vip_'+D).set({date:D,...msg,by:uid,to:[...V.to],doneByR:[...V.doneByR],toU:roster.filter(p=>p.uid&&V.to.includes(p.id)).map(p=>p.uid)});V.done=done;V.savedItems=items.map(x=>({...x}));
         const idx={...(V.idx||{})};if(clear||!items.length&&!note)delete idx[D];else idx[D]=items.length||1;Object.keys(idx).forEach(k=>{if(k<keep)delete idx[k]});
         await db.doc('admin/vipidx').set({dates:idx,to:[...V.to],doneByR:[...V.doneByR],ts});V.idx=idx;
+        if(!clear&&window.__push&&window.__push.notify){const dl=D===today()?'اليوم':dayName(D).split('،')[0];
+          roster.filter(p=>p.uid&&p.uid!==uid&&V.to.includes(p.id)).forEach(p=>{const fresh=!prevTo0.includes(p.id),names=fresh?items.filter(x=>x.n).map(x=>x.n):newNames;
+            if(names.length)try{window.__push.notify(p.uid,'📣 '+(names.length>1?'معلنين جدد':'معلن جديد')+' — '+dl,names.join('، ')+(items.length>names.length?' (المجموع '+items.length+')':''))}catch(x){}})}
         V.prevTo=clear?[]:[...V.to];V.sent=!clear;V.ts=ts;if(clear){V.items=[{n:'',t:'',p:''}];V.note=''}
         const send=roster.filter(p=>V.to.includes(p.id)&&p.uid),miss=roster.filter(p=>V.to.includes(p.id)&&!p.uid).map(p=>p.ar||p.name);
         toast(clear?'انمسحت ✓':(D===today()?'انرسلت لـ ':'انحفظت ليوم '+dayName(D).split('،')[0]+' — تطلع لـ ')+send.map(p=>p.ar||p.name).join('، ')+' ✓'+(miss.length?' — '+miss.join('، ')+' ما سجّل بعد':''));drawVip()}
