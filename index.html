@@ -375,6 +375,7 @@ tr.slate td{color:var(--bad);font-weight:700}
 /*../patch52.css*/@media print{.pf.pday:not(.pg) .pt td,.pf.pday:not(.pg) .pt th{padding:2.6px 6px}.pf.pday:not(.pg) .psig{height:26px;margin:0 auto}.pf.pday:not(.pg) .pt.sig td{height:auto}.pf.pday:not(.pg) .pfh img{height:34px}}
 /*../patch53.css*/@media print{.pf.pday:not(.pg) .pt td,.pf.pday:not(.pg) .pt th{padding:2.1px 6px}}
 /*../patch54.css*/.vpbtn{align-self:flex-start;margin-top:2px}.vpdone{font-size:.85em;color:var(--mut);display:flex;gap:8px;align-items:center;flex-wrap:wrap}.vpdone.on{color:var(--ok,#2e7d32);font-weight:600}.vpdone small{font-weight:400;color:var(--mut)}
+/*../patch55.css*/.vparm{background:var(--warnbg,#fbe9c6)!important;color:#7a4b00!important;border-color:#e0b04a!important}.vpcancel{margin-inline-start:8px}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -394,7 +395,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v64</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v65</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1684,7 +1685,11 @@ async function openReport(){
 }
 /* ======================= today's advertisers — private to chosen staff ======================= */
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-vdone]');if(!b)return;e.preventDefault();e.stopPropagation();
-  if(!window.__rpc){toast('غير متاح');return}b.disabled=true;const on=b.dataset.von==='1';
+  if(!window.__rpc){toast('غير متاح');return}const on=b.dataset.von==='1';
+  if(on&&b.dataset.armed!=='1'){b.dataset.armed='1';b.dataset.txt=b.textContent;b.textContent='متأكد؟ اضغط للتأكيد · Sure?';b.classList.add('vparm');
+    const c=document.createElement('button');c.type='button';c.className='link vpcancel';c.textContent='إلغاء';b.after(c);
+    const reset=()=>{b.dataset.armed='';b.textContent=b.dataset.txt||'تم ✓';b.classList.remove('vparm');c.remove()};c.onclick=ev=>{ev.stopPropagation();reset()};setTimeout(()=>{if(b.isConnected&&b.dataset.armed==='1')reset()},6000);return}
+  b.disabled=true;
   try{const {error}=await window.__rpc('vip_done',{d:b.dataset.vd,i:+b.dataset.vdone,on_:on});if(error)throw error;toast(on?'تم ✓':'تراجعت');if(view==='vipmsg'&&vipD)openVip(vipD.date)}catch(x){b.disabled=false;toast('ما انحفظ — جرب مرة ثانية')}},true);
 const VIPDEF=['youssef','fahad','azzam'];let vipD=null;
 async function openVip(D){closeDash();dashDir();$('#emp').hidden=true;const d=$('#dash');d.hidden=false;scrollTo(0,0);setTitle();d.innerHTML='<div class="msg">جاري التحميل…</div>';
