@@ -395,7 +395,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v66</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v67</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -1739,9 +1739,12 @@ function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=v
         await db.doc('admin/vip_'+D).set({date:D,...msg,by:uid,to:[...V.to],doneByR:[...V.doneByR],toU:roster.filter(p=>p.uid&&V.to.includes(p.id)).map(p=>p.uid)});V.done=done;V.savedItems=items.map(x=>({...x}));
         const idx={...(V.idx||{})};if(clear||!items.length&&!note)delete idx[D];else idx[D]=items.length||1;Object.keys(idx).forEach(k=>{if(k<keep)delete idx[k]});
         await db.doc('admin/vipidx').set({dates:idx,to:[...V.to],doneByR:[...V.doneByR],ts});V.idx=idx;
-        if(!clear&&window.__push&&window.__push.notify){const dl=D===today()?'اليوم':dayName(D).split('،')[0];
+        /* scheduled for a later day: the server tells them on that day at the start of their shift; same day: tell them now */
+        if(!clear&&D>today())toast('الإشعار يوصلهم يوم المعلن مع بداية دوامهم');
+        if(!clear&&D===today()&&window.__push&&window.__push.notify){const sentTo=[];
           roster.filter(p=>p.uid&&p.uid!==uid&&V.to.includes(p.id)).forEach(p=>{const fresh=!prevTo0.includes(p.id),names=fresh?items.filter(x=>x.n).map(x=>x.n):newNames;
-            if(names.length)try{window.__push.notify(p.uid,'📣 '+(names.length>1?'معلنين جدد':'معلن جديد')+' — '+dl,names.join('، ')+(items.length>names.length?' (المجموع '+items.length+')':''))}catch(x){}})}
+            if(names.length){sentTo.push(p.uid);try{window.__push.notify(p.uid,'📣 '+(names.length>1?'معلنين جدد':'معلن جديد')+' — اليوم',names.join('، ')+(items.length>names.length?' (المجموع '+items.length+')':''))}catch(x){}}});
+          if(sentTo.length)(async()=>{try{const r=await db.doc('admin/remind_'+D).get(),L=r.exists?r.data():{};sentTo.forEach(u=>{L[u+':v']=Date.now()});await db.doc('admin/remind_'+D).set(L)}catch(x){}})()}
         V.prevTo=clear?[]:[...V.to];V.sent=!clear;V.ts=ts;if(clear){V.items=[{n:'',t:'',p:''}];V.note=''}
         const send=roster.filter(p=>V.to.includes(p.id)&&p.uid),miss=roster.filter(p=>V.to.includes(p.id)&&!p.uid).map(p=>p.ar||p.name);
         toast(clear?'انمسحت ✓':(D===today()?'انرسلت لـ ':'انحفظت ليوم '+dayName(D).split('،')[0]+' — تطلع لـ ')+send.map(p=>p.ar||p.name).join('، ')+' ✓'+(miss.length?' — '+miss.join('، ')+' ما سجّل بعد':''));drawVip()}
