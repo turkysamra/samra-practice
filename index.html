@@ -376,6 +376,7 @@ tr.slate td{color:var(--bad);font-weight:700}
 /*../patch53.css*/@media print{.pf.pday:not(.pg) .pt td,.pf.pday:not(.pg) .pt th{padding:2.1px 6px}}
 /*../patch54.css*/.vpbtn{align-self:flex-start;margin-top:2px}.vpdone{font-size:.85em;color:var(--mut);display:flex;gap:8px;align-items:center;flex-wrap:wrap}.vpdone.on{color:var(--ok,#2e7d32);font-weight:600}.vpdone small{font-weight:400;color:var(--mut)}
 /*../patch55.css*/.vparm{background:var(--warnbg,#fbe9c6)!important;color:#7a4b00!important;border-color:#e0b04a!important}.vpcancel{margin-inline-start:8px}
+/*../patch56.css*/.vptr{display:block;font-weight:400;color:var(--mut);font-size:.85em}
 .copy{direction:ltr;user-select:all;color:var(--fg)}
 .pin{max-width:340px;margin:12dvh auto 0;text-align:center}
 .pin input{text-align:center;font-size:26px;letter-spacing:10px;direction:ltr}
@@ -395,7 +396,7 @@ tr.slate td{color:var(--bad);font-weight:700}
     <p class="mid gold hl drop" id="l3" style="animation-delay:.75s;font-weight:700">جاهز تشيك ليستك؟</p>
   </section>
   <main id="main"><div class="msg rv">جاري التحميل…</div></main>
-  <footer><span>سمراء كافيه · Samraa Cafe · v67</span></footer>
+  <footer><span>سمراء كافيه · Samraa Cafe · v68</span></footer>
 </div>
 <div class="wrap" id="dash" hidden></div>
 <button class="todash" id="toDash" hidden>📊 لوحة المتابعة</button>
@@ -485,6 +486,7 @@ async function fetchMember(){const {data}=await sb.from('members').select('uid,n
 async function loadMember(){cUser();if(CC.m&&CC.m.uid===SESSION.user.id){MEMBER=CC.m;fetchMember().then(m=>{CC.m=m;cSave();if(m.level!==MEMBER.level)location.reload()}).catch(()=>{});return}
   MEMBER=await fetchMember();CC.m=MEMBER;cSave()}
 window.__rpc=(fn,args)=>sb.rpc(fn,args);
+window.__fn=(name,body)=>sb.functions.invoke(name,{body});
 window.__logout=async()=>{try{localStorage.removeItem(CK)}catch(e){}try{await sb.auth.signOut()}catch(e){}location.reload()};
 function authScreen(){
   const box=document.getElementById('auth');box.hidden=false;document.getElementById('emp').hidden=true;
@@ -1019,17 +1021,25 @@ function watchPlan(){
 let dayUnsub=null,msgUnsub=null,staffMsg=null,vipMsg=null;
 const inboxSync=()=>{const ib=$('#inbox');if(ib)ib.hidden=$('#staffMsg').hidden&&$('#vipMsg').hidden};
 const vipGet=(V,D)=>(V&&V.days&&V.days[D])||(V&&V.date===D?V:null);
+const VL={ar:{t:'معلنين اليوم',done:'✅ تم',btn:'تم ✓',undo:'تراجع',wait:'⏳ لسا',sure:'متأكد؟ اضغط للتأكيد',cancel:'إلغاء'},
+  en:{t:"Today's advertisers",done:'✅ Done',btn:'Done ✓',undo:'Undo',wait:'⏳ Pending',sure:'Sure? Tap again',cancel:'Cancel'},
+  hi:{t:'आज के विज्ञापनदाता',done:'✅ हो गया',btn:'हो गया ✓',undo:'वापस',wait:'⏳ बाकी',sure:'पक्का? फिर दबाएँ',cancel:'रद्द'},
+  bn:{t:'আজকের বিজ্ঞাপনদাতা',done:'✅ হয়েছে',btn:'হয়েছে ✓',undo:'ফেরত',wait:'⏳ বাকি',sure:'নিশ্চিত? আবার চাপুন',cancel:'বাতিল'}};
+const vl=()=>VL[lang]||VL.ar;
 const vipWho=u=>{const p=roster.find(x=>x.uid===u);return p?(p.ar||p.name):(u===uid?'أنت':'')};
 function vipDoneHTML(v,i0,D){const i=v._map?v._map[i0]:i0,dn=(v.done||{})[i],can=D&&((v.doneBy||[]).includes(uid)||isOwnerF())&&D>=addDays(today(),-1);
-  if(dn)return `<div class="vpdone on">✅ تم <small>${esc(vipWho(dn.by))} · ${hm(dn.ts)}</small>${can?`<button class="link" data-vdone="${i}" data-vd="${D}" data-von="0">تراجع</button>`:''}</div>`;
-  return can?`<button class="btn sm vpbtn" data-vdone="${i}" data-vd="${D}" data-von="1">تم ✓</button>`:(v.doneBy&&v.doneBy.length?'<div class="vpdone">⏳ لسا</div>':'')}
+  const W=vl();if(dn)return `<div class="vpdone on">${W.done} <small>${esc(vipWho(dn.by))} · ${hm(dn.ts)}</small>${can?`<button class="link" data-vdone="${i}" data-vd="${D}" data-von="0">${W.undo}</button>`:''}</div>`;
+  return can?`<button class="btn sm vpbtn" data-vdone="${i}" data-vd="${D}" data-von="1">${W.btn}</button>`:(v.doneBy&&v.doneBy.length?`<div class="vpdone">${W.wait}</div>`:'')}
 function vipOpen(v){const its=v.items||[],dn=v.done||{},keep=[],done={};its.forEach((x,i)=>{if(!dn[i])keep.push(i)});
   if(keep.length===its.length)return v;if(!keep.length)return {...v,items:[],note:''};
   return {...v,items:keep.map(i=>its[i]),done:{},_map:keep}}
+/* each recipient reads the advertisers in their own language (translated on save; Arabic until it arrives) */
 function vipHTML(v,title,D){const its=v.items||[],chips=t=>String(t||'').split(/\s*[+،,\n]\s*/).filter(Boolean).map(x=>`<span class="vpc">${esc(x)}</span>`).join('');
-  return `<div class="vph"><span>📣 ${esc(title)}</span>${its.length>1?`<span class="vpn">${its.length}</span>`:''}</div>`
-   +its.map((x,i)=>`<div class="vpi"><div class="vpt"><b><bdi>${esc(x.n||'—')}</bdi></b>${x.t?`<span class="vptm">🕘 <bdi>${esc(x.t)}</bdi></span>`:''}</div>${x.p?`<div class="vpcs">${chips(x.p)}</div>`:''}${vipDoneHTML(v,i,D)}</div>`).join('')
-   +(v.note?`<div class="vpnote">📝 ${esc(v.note)}</div>`:'')}
+  const T=lang!=='ar'&&v.tr&&v.tr[lang]?v.tr[lang]:null,ti=i=>T&&T.items?(T.items[v._map?v._map[i]:i]||{}):{};
+  const ttl=lang==='ar'?title:title==='معلنين اليوم'?vl().t:title==='المعلنين'?({en:'Advertisers',hi:'विज्ञापनदाता',bn:'বিজ্ঞাপনদাতা'}[lang]||title):title;
+  return `<div class="vph"><span>📣 ${esc(ttl)}</span>${its.length>1?`<span class="vpn">${its.length}</span>`:''}</div>`
+   +its.map((x,i)=>{const y=ti(i),nm=y.n&&y.n!==x.n?y.n:'';return `<div class="vpi"><div class="vpt"><b><bdi>${esc(x.n||'—')}</bdi></b>${nm?`<small class="vptr"><bdi>${esc(nm)}</bdi></small>`:''}${x.t?`<span class="vptm">🕘 <bdi>${esc(y.t||x.t)}</bdi></span>`:''}</div>${x.p?`<div class="vpcs">${chips(y.p||x.p)}</div>`:''}${vipDoneHTML(v,i,D)}</div>`}).join('')
+   +(v.note?`<div class="vpnote">📝 ${esc((T&&T.note)||v.note)}</div>`:'')}
 /* advertisers marked done disappear from the home page */
 function showVip(){const b=$('#vipMsg');if(!b)return;setTimeout(inboxSync,0);const v0=vipGet(vipMsg,today()),v=v0&&vipOpen(v0),ok=v&&((v.items||[]).length||v.note);b.hidden=!ok;if(!ok)return;
   b.innerHTML=vipHTML(v,'معلنين اليوم',today());return;}
@@ -1686,8 +1696,8 @@ async function openReport(){
 /* ======================= today's advertisers — private to chosen staff ======================= */
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-vdone]');if(!b)return;e.preventDefault();e.stopPropagation();
   if(!window.__rpc){toast('غير متاح');return}const on=b.dataset.von==='1';
-  if(on&&b.dataset.armed!=='1'){b.dataset.armed='1';b.dataset.txt=b.textContent;b.textContent='متأكد؟ اضغط للتأكيد · Sure?';b.classList.add('vparm');
-    const c=document.createElement('button');c.type='button';c.className='link vpcancel';c.textContent='إلغاء';b.after(c);
+  if(on&&b.dataset.armed!=='1'){b.dataset.armed='1';b.dataset.txt=b.textContent;b.textContent=vl().sure;b.classList.add('vparm');
+    const c=document.createElement('button');c.type='button';c.className='link vpcancel';c.textContent=vl().cancel;b.after(c);
     const reset=()=>{b.dataset.armed='';b.textContent=b.dataset.txt||'تم ✓';b.classList.remove('vparm');c.remove()};c.onclick=ev=>{ev.stopPropagation();reset()};setTimeout(()=>{if(b.isConnected&&b.dataset.armed==='1')reset()},6000);return}
   b.disabled=true;
   try{const {error}=await window.__rpc('vip_done',{d:b.dataset.vd,i:+b.dataset.vdone,on_:on});if(error)throw error;toast(on?'تم ✓':'تراجعت');if(view==='vipmsg'&&vipD)openVip(vipD.date)}catch(x){b.disabled=false;toast('ما انحفظ — جرب مرة ثانية')}},true);
@@ -1745,6 +1755,7 @@ function drawVip(){const d=$('#dash');if(view!=='vipmsg'||!vipD)return;const V=v
           roster.filter(p=>p.uid&&p.uid!==uid&&V.to.includes(p.id)).forEach(p=>{const fresh=!prevTo0.includes(p.id),names=fresh?items.filter(x=>x.n).map(x=>x.n):newNames;
             if(names.length){sentTo.push(p.uid);try{window.__push.notify(p.uid,'📣 '+(names.length>1?'معلنين جدد':'معلن جديد')+' — اليوم',names.join('، ')+(items.length>names.length?' (المجموع '+items.length+')':''))}catch(x){}}});
           if(sentTo.length)(async()=>{try{const r=await db.doc('admin/remind_'+D).get(),L=r.exists?r.data():{};sentTo.forEach(u=>{L[u+':v']=Date.now()});await db.doc('admin/remind_'+D).set(L)}catch(x){}})()}
+        if(!clear&&window.__fn)window.__fn('vip_tr',{date:D}).catch(()=>{});
         V.prevTo=clear?[]:[...V.to];V.sent=!clear;V.ts=ts;if(clear){V.items=[{n:'',t:'',p:''}];V.note=''}
         const send=roster.filter(p=>V.to.includes(p.id)&&p.uid),miss=roster.filter(p=>V.to.includes(p.id)&&!p.uid).map(p=>p.ar||p.name);
         toast(clear?'انمسحت ✓':(D===today()?'انرسلت لـ ':'انحفظت ليوم '+dayName(D).split('،')[0]+' — تطلع لـ ')+send.map(p=>p.ar||p.name).join('، ')+' ✓'+(miss.length?' — '+miss.join('، ')+' ما سجّل بعد':''));drawVip()}
@@ -1956,7 +1967,7 @@ function drawSheets(){const d=$('#dash');if(view!=='sheets')return;let n=0;
   }}
 /* ======================= app shell: ☰ menu ======================= */
 const isOwnerF=()=>ownerFlag;
-const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين'],['vipmsg','📣','المعلنين (السعوديين)'],['sheets','📝','القوائم والمهام'],['closing','🧾','إقفال الكاشير (تجربة)']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
+const ADMIN_NAV=[['المتابعة',[['review','✅','مراجعة القوائم'],['staff','🧑‍🍳','الموظفين اليوم'],['plan','🗓️','التوزيع'],['month','🏆','ملخص الموظفين الشهري'],['reports','📋','التقارير اليومية'],['staffmsg','📢','رسالة اليوم للموظفين'],['vipmsg','📣','المعلنين'],['sheets','📝','القوائم والمهام'],['closing','🧾','إقفال الكاشير']]],['الإدارة',[['m_day','📊','المبيعات واليوم'],['m_month','📈','أداء الشهر'],['m_targets','🎯','الأهداف']]]];
 const TITLES={closing:'إقفال الكاشير',vipmsg:'المعلنين',sheets:'القوائم والمهام',staffmsg:'رسالة اليوم للموظفين',reports:'التقارير اليومية',review:'مراجعة القوائم',staff:'الموظفين اليوم',plan:'التوزيع',month:'ملخص الموظفين الشهري',m_day:'المبيعات واليوم',m_month:'أداء الشهر',m_targets:'الأهداف'};
 let view='home';
 function setTitle(){const t=$('#tbTitle');if(!t)return;t.textContent=TITLES[view]||({week:t_('weekSched'),home:t_('home'),checklist:t_('myChecklist'),team:t_('team'),me:t_('myDetails')}[view])||''}
